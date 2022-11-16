@@ -18,7 +18,7 @@ struct FiniteRotCart
     FiniteRotCart(x, y, z) = new(x, y, z, Covariance())
     FiniteRotCart(ar::Union{Matrix, Vector}) = new(ar[1], ar[2], ar[3], Covariance())
     FiniteRotCart(x, y, z, Covariance) = new(x, y, z, Covariance)
-    FiniteRotCart(x, y, z, array::Matrix) = new(x, y, z, Covariance(array))
+    FiniteRotCart(x, y, z, array::Union{Matrix, Vector}) = new(x, y, z, Covariance(array))
 end
 
 struct FiniteRotMatrix
