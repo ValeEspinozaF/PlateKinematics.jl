@@ -15,4 +15,5 @@
     FRs_out = FiniteRotSph(-44.3912414152301, -62.660029601043, 8.253188013001926, 40)
 
     @test Interpolate_FiniteRotation(FRs1, FRs2, 40) == FRs_out
+    @test Interpolate_FiniteRotation([FRs1, FRs2], [40, 40]) == [FRs_out, FRs_out] 
 end
