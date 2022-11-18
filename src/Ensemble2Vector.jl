@@ -3,7 +3,7 @@ using PlateKinematics: FiniteRotCart, EulerVectorCart
 function Ensemble2Vector(ensembleXYZ::Matrix{FiniteRotCart})
 
     # Ensemble length
-    Nsize = size(ensembleXYZ)[1]
+    Nsize = length(ensembleXYZ)
     
     # Ensemble components [ensMag]
     x = [v.X for v in ensembleXYZ]

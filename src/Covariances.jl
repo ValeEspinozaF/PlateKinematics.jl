@@ -5,10 +5,10 @@ struct Covariance
     C22::Number
     C23::Number
     C33::Number
-    Covariance() = new(0,0,0,0,0,0)
-    Covariance(a, b, c, d, e, f) = new(a, b, c, d, e, f)
-    Covariance(ar::Union{Matrix, Vector}) = new(ar[1], ar[2], ar[3], ar[4], ar[5], ar[6])
 end
+
+Covariance() = Covariance(0,0,0,0,0,0)
+Covariance(ar::Union{Matrix, Vector}) = Covariance(ar[1], ar[2], ar[3], ar[4], ar[5], ar[6])
 
 
 """

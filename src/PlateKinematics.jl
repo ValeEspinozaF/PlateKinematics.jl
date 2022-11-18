@@ -27,6 +27,7 @@ include("CorrelatedEnsemble3D.jl")
 include("BuildEnsemble.jl")
 include("Ensemble2Vector.jl")
 include("Add_FiniteRotations.jl")
+include("Interpolate_FiniteRotations.jl")
 
 
 end

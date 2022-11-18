@@ -2,9 +2,9 @@
 
     using PlateKinematics: Add_FiniteRotations
 
-    FRs1 = FiniteRotSph(87.21, -62.00, 19.63)
-    FRs2 = FiniteRotSph(86.73, -60.01, -16.86)
-    FRs_out = FiniteRotSph(85.02148146350461, -73.90357631188796, 2.8415079851017944)
+    FRs1 = FiniteRotSph(150.1, 70.5, 20.3)
+    FRs2 = FiniteRotSph(145.0, 40.0, -11.4)
+    FRs_out = FiniteRotSph(-75.94058301542901, 78.09279618197233, 11.973721246059403)
 
     @test Add_FiniteRotations(FRs1, FRs2) == FRs_out
 end

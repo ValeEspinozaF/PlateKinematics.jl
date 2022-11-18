@@ -3,20 +3,35 @@ using PlateKinematics: Covariance
 struct EulerVectorSph
     Lon::Number
     Lat::Number
-    AngVelocity::Number
+    angVelocity::Number
+    TimeRange::Union{Matrix, Nothing}
     Covariance::Covariance
-    EulerVectorSph(Lon, Lat, AngVelocity) = new(Lon, Lat, AngVelocity, Covariance())
-    EulerVectorSph(Lon, Lat, AngVelocity, covariance) = new(Lon, Lat, AngVelocity, covariance)
-    EulerVectorSph(Lon, Lat, AngVelocity, array::Matrix) = new(Lon, Lat, AngVelocity, Covariance(array))
+    
 end
     
 struct EulerVectorCart
     X::Number
     Y::Number
     Z::Number
+    TimeRange::Union{Matrix, Nothing}
     Covariance::Covariance
-    EulerVectorCart(x, y, z) = new(x, y, z, Covariance())
-    EulerVectorCart(ar::Union{Matrix, Vector}) = new(ar[1], ar[2], ar[3], Covariance())
-    EulerVectorCart(x, y, z, Covariance) = new(x, y, z, Covariance)
-    EulerVectorCart(x, y, z, array::Union{Matrix, Vector}) = new(x, y, z, Covariance(array))
 end
+
+
+# --- Aditional outer structure methods ---
+
+# Spherical Euler vector
+EulerVectorSph(lon, lat, angVelocity) = EulerVectorSph(lon, lat, angVelocity, nothing, Covariance())
+EulerVectorSph(lon, lat, angVelocity, timeRange) = EulerVectorSph(lon, lat, angVelocity, timeRange, Covariance())
+EulerVectorSph(lon, lat, angVelocity, covariance::Covariance) = EulerVectorSph(lon, lat, angVelocity, nothing, covariance)
+EulerVectorSph(lon, lat, angVelocity, array::Matrix) = EulerVectorSph(lon, lat, angVelocity, nothing, Covariance(array))
+EulerVectorSph(lon, lat, angVelocity, timeRange, array::Matrix) = EulerVectorSph(lon, lat, angVelocity, timeRange, Covariance(array))
+
+# Cartesian Euler vector
+EulerVectorCart(x, y, z) = EulerVectorCart(x, y, z, nothing, Covariance())
+EulerVectorCart(x, y, z, timeRange) = EulerVectorCart(x, y, z, timeRange, Covariance())
+EulerVectorCart(array::Union{Matrix, Vector}) = EulerVectorCart(array[1], array[2], array[3], nothing, Covariance())
+EulerVectorCart(array::Union{Matrix, Vector}, timeRange) = EulerVectorCart(array[1], array[2], array[3], timeRange, Covariance())
+EulerVectorCart(x, y, z, covariance::Covariance) = EulerVectorCart(x, y, z, nothing, covariance)
+EulerVectorCart(x, y, z, array::Union{Matrix, Vector}) = EulerVectorCart(x, y, z, nothing, Covariance(array))
+EulerVectorCart(x, y, z, timeRange, array::Union{Matrix, Vector}) = EulerVectorCart(x, y, z, timeRange, Covariance(array))
