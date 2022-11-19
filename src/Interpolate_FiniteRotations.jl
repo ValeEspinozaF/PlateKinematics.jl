@@ -46,7 +46,7 @@ function Interpolate_FiniteRotation(FRc1::FiniteRotCart, FRc2::FiniteRotCart, ti
 end
 
 
-function Interpolate_FiniteRotation(FRsArray::Array{FiniteRotSph}, times::Union{Matrix, Vector}, Nsize = 1e5)
+function Interpolate_FiniteRotation(FRsArray, times::Union{Matrix, Vector}, Nsize = 1e5) #::Array{FiniteRotSph}
 
     if typeof(FRsArray) == Matrix{FiniteRotSph}
         FRsArray = vec(FRsArray)
@@ -67,12 +67,8 @@ function Interpolate_FiniteRotation(FRsArray::Array{FiniteRotSph}, times::Union{
             FRs = Interpolate_FiniteRotation(FRsArray[index], FRsArray[index], time, Nsize)
 
         # t <= tn
-        elseif index == length(FRsArray)
-            FRs = Interpolate_FiniteRotation(FRsArray[index-1], FRsArray[index], time, Nsize)
-
-        # t <= tn-1
         else
-            FRs = Interpolate_FiniteRotation(FRsArray[index], FRsArray[index+1], time, Nsize)
+            FRs = Interpolate_FiniteRotation(FRsArray[index-1], FRsArray[index], time, Nsize)
         end
 
         FRs_out = vcat(FRs_out, FRs)

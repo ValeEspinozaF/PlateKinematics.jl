@@ -54,7 +54,6 @@ end
 
 function FileToFiniteRotation(filePath::String, delimiter=' '::Char, comment='#'::Char)
 
-    FRarray = []
     dictRot = FileToDictionary(filePath, delimiter, comment, true)
     rows = length(collect(values(dictRot))[1])
 
@@ -109,6 +108,8 @@ function FileToFiniteRotation(filePath::String, delimiter=' '::Char, comment='#'
 
     if isCart
 
+        FRarray = Vector{FiniteRotCart}()
+
         keyX = cartKeys_x[[haskey(dictRot, key) for key in cartKeys_x]][1]
         keyY = cartKeys_y[[haskey(dictRot, key) for key in cartKeys_y]][1]
         keyZ = cartKeys_z[[haskey(dictRot, key) for key in cartKeys_z]][1]
@@ -123,6 +124,8 @@ function FileToFiniteRotation(filePath::String, delimiter=' '::Char, comment='#'
         end
 
     elseif isSph
+
+        FRarray = Vector{FiniteRotSph}()
 
         keyLon = sphKeys_lon[[haskey(dictRot, key) for key in sphKeys_lon]][1]
         keyLat = sphKeys_lat[[haskey(dictRot, key) for key in sphKeys_lat]][1]
