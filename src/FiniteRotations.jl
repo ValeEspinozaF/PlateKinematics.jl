@@ -20,6 +20,11 @@ struct FiniteRotMatrix
     Values::Matrix
 end
 
+struct EulerAngles
+    X::Number
+    Y::Number
+    Z::Number
+end
 
 
 # --- Aditional outer structure methods ---

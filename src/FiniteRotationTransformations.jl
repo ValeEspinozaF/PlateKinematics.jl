@@ -1,7 +1,7 @@
 module FiniteRotationsTransformations
 
 using PlateKinematics: ToRadians, ToDegrees, sph2cart, cart2sph
-using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix
+using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix, EulerAngles
 
 
 export Finrot2Rad, Finrot2Deg, Finrot2Cart, Finrot2Sph, Finrot2Matrix
@@ -136,4 +136,54 @@ function Finrot2Cart(FRm::FiniteRotMatrix)
 function Finrot2Cart(FRmArray::Matrix{FiniteRotMatrix})
     return map(FRm -> Finrot2Cart(FRm), FRmArray); end
 
+"""
+Converts a finite rotation in spherical coordinates [degrees] 
+into the corresponding set of Euler angles along x, y and z axis."""
+function Finrot2EuAngle(FRs::FiniteRotSph)
+
+    MTX = Finrot2Matrix(FRs).Values
+
+    EAx = atan(MTX[3,2], MTX[3,3])
+    EAy = atan(-1 * MTX[3,1], (MTX[3,2]^2 + MTX[3,3]^2)^0.5)
+    EAz = atan(MTX[2,1], MTX[1,1])
+
+    return EulerAngles(EAx, EAy, EAz); end
+
+
+"""
+Converts a set of Euler angles into the corresponding finite 
+rotation in spherical coordinates [degrees]."""
+function EuAngle2Sph(EA::EulerAngles)
+
+    MTX = Array{Float64}(undef, 3, 3)
+
+    MTX[1,1] = cos(EA.Z) * cos(EA.Y)
+    MTX[1,2] = cos(EA.Z) * sin(EA.Y) * sin(EA.X) - sin(EA.Z) * cos(EA.X)
+    MTX[1,3] = cos(EA.Z) * sin(EA.Y) * cos(EA.X) + sin(EA.Z) * sin(EA.X)
+    MTX[2,1] = sin(EA.Z) * cos(EA.Y) 
+    MTX[2,2] = sin(EA.Z) * sin(EA.Y) * sin(EA.X) + cos(EA.Z) * cos(EA.X)
+    MTX[2,3] = sin(EA.Z) * sin(EA.Y) * cos(EA.X) - cos(EA.Z) * sin(EA.X)
+    MTX[3,1] = -1 * sin(EA.Y) 
+    MTX[3,2] = cos(EA.Y) * sin(EA.X) 
+    MTX[3,3] = cos(EA.Y) * cos(EA.X) 
+
+    return Finrot2Sph(FiniteRotMatrix(MTX)); end
+
+function EuAngle2Sph(EAx::Union{Matrix, Vector}, EAy::Union{Matrix, Vector}, EAz::Union{Matrix, Vector})
+
+    MTX = Array{Float64}(undef, 3, 3, length(EAx))
+
+    MTX[1,1,:] .= cos.(EAz) .* cos.(EAy)
+    MTX[1,2,:] .= cos.(EAz) .* sin.(EAy) .* sin.(EAx) - sin.(EAz) .* cos.(EAx)
+    MTX[1,3,:] .= cos.(EAz) .* sin.(EAy) .* cos.(EAx) + sin.(EAz) .* sin.(EAx)
+    MTX[2,1,:] .= sin.(EAz) .* cos.(EAy) 
+    MTX[2,2,:] .= sin.(EAz) .* sin.(EAy) .* sin.(EAx) + cos.(EAz) .* cos.(EAx)
+    MTX[2,3,:] .= sin.(EAz) .* sin.(EAy) .* cos.(EAx) - cos.(EAz) .* sin.(EAx)
+    MTX[3,1,:] .= -1 * sin.(EAy) 
+    MTX[3,2,:] .= cos.(EAy) .* sin.(EAx) 
+    MTX[3,3,:] .= cos.(EAy) .* cos.(EAx) 
+ 
+    return [Finrot2Sph(FiniteRotMatrix(m)) for m in eachslice(MTX, dims=3)]; end
+
 end
+
