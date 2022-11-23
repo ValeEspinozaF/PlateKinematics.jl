@@ -17,7 +17,7 @@ function FileToDictionary(filePath::String, delimiter=' '::Char, comment='#'::Ch
             continue
         end
 
-        stringArray = split(line, delimiter)
+        stringArray = split(line, delimiter, keepempty=false)
 
         # Parse header/floats
         if header && i == lineCount
@@ -40,11 +40,10 @@ function FileToDictionary(filePath::String, delimiter=' '::Char, comment='#'::Ch
     # Array of vectors to dictionary
     if length(dictKeys) == 0
         global dictKeys = repeat(["empty"], size(valuesArray)[1])
-
-    else
-        for (j, key) in pairs(dictKeys)
-            dict[key] = valuesArray[j,:]
-        end
+    end
+    
+    for (j, key) in pairs(dictKeys)
+        dict[key] = valuesArray[j,:]
     end
 
     return dict

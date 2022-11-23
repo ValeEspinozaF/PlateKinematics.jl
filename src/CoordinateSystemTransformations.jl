@@ -1,7 +1,7 @@
 """
 Converts a value/array from [radians] to [degrees]
 """
-function ToDegrees(radValue)
+function ToDegrees(radValue::Union{Number, Vector, Matrix})
 	degValue = radValue * (180/pi)
 	return degValue
 end
@@ -9,7 +9,7 @@ end
 """
 Converts a value/array from [degrees] to [radians].
 """
-function ToRadians(degValue)
+function ToRadians(degValue::Union{Number, Vector, Matrix})
 	radValue = degValue * (pi/180)
 	return radValue
 end
@@ -48,8 +48,7 @@ Lon_deg, lat_deg, mag may be Numbers, 1xn Matrices or Vectors.
 
 Output will have the same unit of measurement as "mag" input.
 """
-function sph2cart(lon_deg, lat_deg, mag=1)
-
+function sph2cart(lon_deg::Union{Number, Matrix, Vector}, lat_deg::Union{Number, Matrix, Vector}, mag=1::Union{Number, Matrix, Vector})
 
 	if typeof(lon_deg) != typeof(lat_deg)
 		error("Longitude and latitude input types are not the same. Output may have unexpected shape.")
@@ -68,4 +67,3 @@ function sph2cart(lon_deg, lat_deg, mag=1)
 
 	return x, y, z
 end
-

@@ -12,7 +12,7 @@
     # Taken from Cox - Plate Tectonics, pp. 246 
     FRs1 = FiniteRotSph(129.9, 68.0, -7.8, 37)
     FRs2 = FiniteRotSph(142.8, 50.8, -9.8, 48)   
-    FRs_out = FiniteRotSph(-44.3912414152301, -62.660029601043, 8.253188013001926, 40)
+    FRs_out = FiniteRotSph(-44.391241415230084, -62.660029601043, 8.253188013001928, 40)
 
     @test Interpolate_FiniteRotation(FRs1, FRs2, 40) == FRs_out
     @test Interpolate_FiniteRotation([FRs1, FRs2], [40, 40]) == [FRs_out, FRs_out] 

@@ -1,8 +1,6 @@
-function CorrelatedEnsemble3D(correlationMatrix, N)
-
 """
-This function generates a series of N samples [x y z]
-whose covariance matrix is CORRELATION_MATRIX.
+Generates a series of N samples [x y z] whose covariance matrix 
+is correlationMatrix.
 
 
 Parameters
@@ -18,7 +16,7 @@ x,y,z : array [1xn]
     Series of xyz samples (in [Any] units of measurement) 
     whose covariance matrix is CORRELATION_MATRIX.
 """
-
+function CorrelatedEnsemble3D(correlationMatrix, N)
 
 N = floor(Int, N)
 

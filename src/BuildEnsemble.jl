@@ -1,5 +1,5 @@
 using PlateKinematics: CorrelatedEnsemble3D
-using PlateKinematics: Covariance, CovToMatrix, FiniteRotCart
+using PlateKinematics: Covariance, CovToMatrix, FiniteRotSph
 using PlateKinematics.FiniteRotationsTransformations: Finrot2EuAngle, EuAngle2Sph
 
 function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
@@ -7,7 +7,13 @@ function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
     N = floor(Int, Nsize)
 
     covMatrix = CovToMatrix(FRs.Covariance)
+    
+    if !CheckCovariance(covMatrix)
+        covMatrix = ReplaceCovariaceEigs(covMatrix)
+    end
+
     xc, yc, zc = CorrelatedEnsemble3D(covMatrix, N)
+
     
     # Get Euler angles
     EuAngles = Finrot2EuAngle(FRs::FiniteRotSph)
@@ -20,4 +26,47 @@ function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
     return EuAngle2Sph(EAx, EAy, EAz)
 
     #return mapslices(v -> FiniteRotCart(v), [xa ya za], dims=(2))
+end
+
+
+function CheckCovariance(covMatrix)
+
+    switch = true
+
+    eig_va, _ = eigen(covMatrix)
+
+    # Check imaginary part is non-existent
+    if sum(imag(eig_va)) == 0.0
+
+        chk = sum(eig_va)/sum(abs.(eig_va))
+
+        if chk < 1
+            
+            negIdx = findall(x -> x < 0, eig_va)
+
+            if length(negIdx) == 3
+                throw("Error in eigen values. No positive values found.")
+
+            else
+                rel = abs.(eig_va[negIdx]) / maximum(eig_va)
+                
+                if length(findall(x -> x > 0.05, rel)) != 0
+                    switch = false
+                end
+
+            end
+        end
+    else
+        switch = false
+    end
+
+    return switch
+end
+
+function ReplaceCovariaceEigs(covMatrix)
+
+    eig_va, _ = eigen(covMatrix)
+    ave_va = mean(filter(x -> x > 0, eig_va))
+
+    return [ave_va 0 0; 0 ave_va 0; 0 0 ave_va]
 end

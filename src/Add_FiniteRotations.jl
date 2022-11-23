@@ -12,6 +12,14 @@ function Add_FiniteRotations(FRm1::FiniteRotMatrix, FRm2::FiniteRotMatrix)
     return FRs
 end
 
+function Add_FiniteRotations(FRm1::Matrix{FiniteRotMatrix}, FRm2::Matrix{FiniteRotMatrix})
+
+    # Spherical vector in [degrees], covariace in [degrees^2]
+    FRs = Finrot2Sph(FiniteRotMatrix(FRm2.Values * FRm1.Values))
+
+    return FRs
+end
+
 
 """
 Add two finite rotations in cartesian coordinates [degrees]

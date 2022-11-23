@@ -1,5 +1,22 @@
-using PlateKinematics: FiniteRotSph, FiniteRotCart, Add_FiniteRotations
+using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix, Add_FiniteRotations
 using PlateKinematics: ChangeAngle, ChangeTime
+using PlateKinematics.FiniteRotationsTransformations: Finrot2Array3D
+
+function Interpolate_FiniteRotation(FRm1Array::Matrix{FiniteRotMatrix}, FRm2Array::Matrix{FiniteRotSph}, t1::Number, t2::Number, time::Number)
+    
+    iMTX1 = Invert_RotationMatrix(Finrot2Array3D(FRm1Array))
+    MTX2 = Finrot2Array3D(FRm2Array)
+    mMTX = Multiply_RotationMatrices(MTX2, iMTX1)
+
+    cf = (time-t1) / (t2-t1)
+
+    mFRs = Finrot2Sph(mMTX)
+
+    #iFRm1Array = Invert_RotationMatrix(FRm1Array)
+
+    FRmp = [ FiniteRotMatrix(FRm2Array[i].Values * iFRm1Array[i].Values) for i in eachindex(iFRm1Array) ]
+
+end
 
 function Interpolate_FiniteRotation(FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Number, Nsize = 1e5)
     
@@ -24,6 +41,22 @@ function Interpolate_FiniteRotation(FRs1::FiniteRotSph, FRs2::FiniteRotSph, time
 
     elseif time < t2 && t1 < time 
         delta = (t2-time)/(t2-t1)
+
+        # If a covariance is found, build ensemble
+        if !CovIsZero(FRs1.Covariance) || !CovIsZero(FRs2.Covariance)
+            FRs1_ = BuildEnsemble3D(FRs1, Nsize)
+            FRs2_ = BuildEnsemble3D(FRs2, Nsize)
+            
+        else
+            FRs1_ = [FRs1]
+            FRs2_ = [FRs2]
+        end 
+
+
+        FRm1 = Finrot2Matrix(FRs1_)
+        FRm2 = Finrot2Matrix(FRs2_)
+
+        Interpolate_FiniteRotation(FRm1, FRm2, t1, t2, time)
 
         # Calculate stage pole t2 ROT t1
         SPs = Add_FiniteRotations(ChangeAngle(FRs2, -FRs2.Angle), FRs1, Nsize)

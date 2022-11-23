@@ -6,5 +6,5 @@ filePath = joinpath(pwd(), raw"test\FR_exampleFile.txt")
 FRsArray = FileToFiniteRotation(filePath)
 
 # Interpolate
-timesInterp = [3.0, 0.78, 8.86, 12.99, 17.28, 24.73, 28.28, 33.54, 40.1, 47.91]
+timesInterp = [0.78, 8.86, 12.99, 17.28, 24.73, 28.28, 33.54, 40.1, 47.91]
 Interpolate_FiniteRotation(FRsArray, timesInterp, 1e3)
