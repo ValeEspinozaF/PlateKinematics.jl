@@ -35,6 +35,8 @@ FiniteRotSph(lon, lat, angle, time) = FiniteRotSph(lon, lat, angle, time, Covari
 FiniteRotSph(lon, lat, angle, covariance::Covariance) = FiniteRotSph(lon, lat, angle, nothing, covariance)
 FiniteRotSph(lon, lat, angle, array::Union{Matrix, Vector}) = FiniteRotSph(lon, lat, angle, nothing, Covariance(array))
 FiniteRotSph(lon, lat, angle, time, array::Union{Matrix, Vector}) = FiniteRotSph(lon, lat, angle, time, Covariance(array))
+FiniteRotSph(array::Union{Matrix, Vector}) = FiniteRotSph(array[1], array[2], array[3], nothing, Covariance())
+FiniteRotSph(array::Union{Matrix, Vector}, time) = FiniteRotSph(array[1], array[2], array[3], time, Covariance())
 
 # Cartesian finite rotations 
 FiniteRotCart(x, y, z) = FiniteRotCart(x, y, z, nothing, Covariance())

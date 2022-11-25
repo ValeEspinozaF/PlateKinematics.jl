@@ -1,30 +1,59 @@
-using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix, Add_FiniteRotations
+using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix
 using PlateKinematics: ChangeAngle, ChangeTime
-using PlateKinematics.FiniteRotationsTransformations: Finrot2Array3D
+using PlateKinematics: Add_FiniteRotations, Invert_RotationMatrix, Multiply_RotationMatrices
+using PlateKinematics.FiniteRotationsTransformations: Finrot2Sph, Finrot2Array3D
 
-function Interpolate_FiniteRotation(FRm1Array::Matrix{FiniteRotMatrix}, FRm2Array::Matrix{FiniteRotSph}, t1::Number, t2::Number, time::Number)
-    
-    iMTX1 = Invert_RotationMatrix(Finrot2Array3D(FRm1Array))
-    MTX2 = Finrot2Array3D(FRm2Array)
-    mMTX = Multiply_RotationMatrices(MTX2, iMTX1)
+"""
+Interpolates a finite rotation matrix between a matrix for a given
+time and present day time. """
+function Interpolate_FiniteRotation(MTX::Array{Float64, 3}, t1::Number, time::Number)
 
-    cf = (time-t1) / (t2-t1)
+    if  time >= t1 
+        throw("Interpolation time is not between given t1 and t2.")
+    end
 
-    mFRs = Finrot2Sph(mMTX)
+    delta = time / t1
 
-    #iFRm1Array = Invert_RotationMatrix(FRm1Array)
-
-    FRmp = [ FiniteRotMatrix(FRm2Array[i].Values * iFRm1Array[i].Values) for i in eachindex(iFRm1Array) ]
-
+    mFRs = Finrot2Sph(MTX)
+    xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
+    return map(FRs -> ChangeTime(FRs, time), xFRs)
 end
 
+"""
+Interpolates two finite rotations matrices at an intermediate time. """
+function Interpolate_FiniteRotation(MTX1::Array{Float64, 3}, MTX2::Array{Float64, 3}, t1::Number, t2::Number, time::Number)
+    
+    if  time >= t2 || t1 >= time 
+        throw("Interpolation time is not between given t1 and t2.")
+    end
+
+    # Calculate stage pole t2 ROT t1
+    delta = (time-t1) / (t2-t1)
+
+    iMTX1 = Invert_RotationMatrix(MTX1)
+    mMTX = Multiply_RotationMatrices(MTX2, iMTX1)
+    mFRs = Finrot2Sph(mMTX)
+    xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
+
+    # Calculate finite rotation 0 ROT time, return MTX array
+    intMTX = Multiply_RotationMatrices(Finrot2Array3D(xFRs), MTX1)
+    return map(FRs -> ChangeTime(FRs, time), Finrot2Sph(intMTX))
+end
+
+"""
+Interpolates a finite rotation between two finite rotations in spherical format. """
 function Interpolate_FiniteRotation(FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Number, Nsize = 1e5)
     
+    if FRs2.Time < FRs1.Time
+        throw("Error. Age for rotation FRs2 is expected to be older or equal than FRs1.")
+    end
+
     t1 = FRs1.Time
     t2 = FRs2.Time
 
     if time > t2
-        return nothing #or an error?
+        println("Given interpolation time ($time) is older than time oldest rotation supplied (FRs2 time = $(FRs2.Time)).")
+        return nothing
 
     elseif time == t1
         return FRs1
@@ -32,53 +61,30 @@ function Interpolate_FiniteRotation(FRs1::FiniteRotSph, FRs2::FiniteRotSph, time
     elseif time == t2
         return FRs2
     
-    elseif time < t1
-        delta = (t1 - time) / t1
-        FRs_ = Add_FiniteRotations(FRs1, ChangeAngle(FRs1, FRs1.Angle * (-delta)), Nsize)
-
-        FRs = ChangeTime(FRs_, time)
-        return FRs
-
-    elseif time < t2 && t1 < time 
-        delta = (t2-time)/(t2-t1)
-
-        # If a covariance is found, build ensemble
-        if !CovIsZero(FRs1.Covariance) || !CovIsZero(FRs2.Covariance)
-            FRs1_ = BuildEnsemble3D(FRs1, Nsize)
-            FRs2_ = BuildEnsemble3D(FRs2, Nsize)
+    else
+        # Build ensemble if covariances are given
+        if !CovIsZero(FRs1.Covariance) && !CovIsZero(FRs2.Covariance)
+            MTX1 = BuildEnsemble3D(FRs1, Nsize)
+            MTX2 = BuildEnsemble3D(FRs2, Nsize)
             
         else
-            FRs1_ = [FRs1]
-            FRs2_ = [FRs2]
+            MTX1 = Finrot2Matrix(FRs1).Values
+            MTX2 = Finrot2Matrix(FRs2).Values
+
         end 
 
+        if time < t1
+            return Interpolate_FiniteRotation(MTX1, t1, time)
 
-        FRm1 = Finrot2Matrix(FRs1_)
-        FRm2 = Finrot2Matrix(FRs2_)
-
-        Interpolate_FiniteRotation(FRm1, FRm2, t1, t2, time)
-
-        # Calculate stage pole t2 ROT t1
-        SPs = Add_FiniteRotations(ChangeAngle(FRs2, -FRs2.Angle), FRs1, Nsize)
-        FRs_ = Add_FiniteRotations(FRs2, ChangeAngle(SPs, SPs.Angle * delta))
-
-        FRs = ChangeTime(FRs_, time)
-        return FRs
+        elseif time < t2 && t1 < time 
+            return Interpolate_FiniteRotation(MTX1, MTX2, t1, t2, time)
+            
+        end
     end
 end
 
-
-function Interpolate_FiniteRotation(FRc1::FiniteRotCart, FRc2::FiniteRotCart, time::Number, Nsize = 1e5)
-
-    FRs1 = Finrot2Sph(FRc1)
-    FRs2 = Finrot2Sph(FRc2)
-
-    FRc = Interpolate_FiniteRotation(FRs1, FRs2, time, Nsize)
-
-    return FiniteRotCart(FRc)
-end
-
-
+"""
+Interpolates a list finite rotations from an array of finite rotations in spherical format. """
 function Interpolate_FiniteRotation(FRsArray, times::Union{Matrix, Vector}, Nsize = 1e5) #::Array{FiniteRotSph}
 
     if typeof(FRsArray) == Matrix{FiniteRotSph}
@@ -92,14 +98,17 @@ function Interpolate_FiniteRotation(FRsArray, times::Union{Matrix, Vector}, Nsiz
 
     for time in times
         
+        # Find index of inmmediatly oldest rotation
         idx = findfirst(x -> x >= time, FRtimes) 
+
+        # If index is not found (time is older than oldest rotation), continue
         index = idx === nothing ? continue : idx
 
-        # t <= t1
+        # t <= t1  --- time is between youngest rotation and present time
         if index == 1
             FRs = Interpolate_FiniteRotation(FRsArray[index], FRsArray[index], time, Nsize)
 
-        # t <= tn
+        # t <= tn  --- time is between oldest rotation and present time
         else
             FRs = Interpolate_FiniteRotation(FRsArray[index-1], FRsArray[index], time, Nsize)
         end

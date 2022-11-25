@@ -17,14 +17,13 @@ end
 
 """
 Transforms cartesian xyz vector coordinates into spherical coordinates. 
-X,Y,Z may be Numbers, 1xn Matrices or Vectors.
 
 Output element(s) format is as follows:
 [1] longitude (deg East) of the pole.
 [2] latitude (deg North) of the pole.
 [3] magnitude (vector units of measurement)
 """
-function cart2sph(x, y, z)
+function cart2sph(x::Union{Number, Matrix, Vector}, y::Union{Number, Matrix, Vector}, z::Union{Number, Matrix, Vector})
 
 	if typeof(x) != typeof(y) || typeof(y) != typeof(z)
 		error("X,Y,Z input types are not the same. Output may have unexpected shape.")
@@ -61,8 +60,8 @@ function sph2cart(lon_deg::Union{Number, Matrix, Vector}, lat_deg::Union{Number,
 	lon_rad = ToRadians(lon_deg)
 	lat_rad = ToRadians(lat_deg)
 
-	x = mag .* cos.(lon_rad) * cos.(lat_rad)
-	y = mag .* cos.(lat_rad) * sin.(lon_rad)
+	x = mag .* cos.(lon_rad) .* cos.(lat_rad)
+	y = mag .* cos.(lat_rad) .* sin.(lon_rad)
 	z = mag .* sin.(lat_rad)
 
 	return x, y, z

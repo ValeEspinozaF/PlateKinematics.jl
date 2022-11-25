@@ -1,6 +1,6 @@
 using PlateKinematics: CorrelatedEnsemble3D
 using PlateKinematics: Covariance, CovToMatrix, FiniteRotSph
-using PlateKinematics.FiniteRotationsTransformations: Finrot2EuAngle, EuAngle2Sph
+using PlateKinematics.FiniteRotationsTransformations: Finrot2EuAngle, EuAngle2Array3D
 
 function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
 
@@ -14,7 +14,6 @@ function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
 
     xc, yc, zc = CorrelatedEnsemble3D(covMatrix, N)
 
-    
     # Get Euler angles
     EuAngles = Finrot2EuAngle(FRs::FiniteRotSph)
 
@@ -23,9 +22,7 @@ function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
     EAy = EuAngles.Y .+ yc
     EAz = EuAngles.Z .+ zc
 
-    return EuAngle2Sph(EAx, EAy, EAz)
-
-    #return mapslices(v -> FiniteRotCart(v), [xa ya za], dims=(2))
+    return EuAngle2Array3D(EAx, EAy, EAz)
 end
 
 
@@ -70,3 +67,7 @@ function ReplaceCovariaceEigs(covMatrix)
 
     return [ave_va 0 0; 0 ave_va 0; 0 0 ave_va]
 end
+
+using Statistics, LinearAlgebra
+FRs = FiniteRotSph(65.37, -68.68, 10.3, 12.29, Covariance(0.0001344, 5.678e-5, 5.151e-5, 0.0001857, 7.154e-5, 0.0003873))
+BuildEnsemble3D(FRs, 1e2)

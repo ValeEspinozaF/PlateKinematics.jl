@@ -4,7 +4,7 @@ using PlateKinematics: ToRadians, ToDegrees, sph2cart, cart2sph
 using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix, EulerAngles
 
 
-export Finrot2Rad, Finrot2Deg, Finrot2Cart, Finrot2Sph, Finrot2Matrix, Finrot2Array3D
+export Finrot2Rad, Finrot2Deg, Finrot2Cart, Finrot2Sph, Finrot2Matrix, Finrot2Array3D, EuAngle2Array3D
 
 
 """
@@ -82,20 +82,20 @@ function Finrot2Matrix(FRsArray::Matrix{FiniteRotSph})
     b = 1 .- cos.(a)
     c = sin.(a)
 
-    FRm = Array{Float64}(undef, 3, 3, length(FRsArray))
+    MTX = Array{Float64}(undef, 3, 3, length(FRsArray))
 
     # Rotation matrix in [radians]
-    FRm[1,1,:] .= cos.(a) .+ x.^2 .* b
-    FRm[1,2,:] .= x .* y .* b .- z .* c
-    FRm[1,3,:] .= x .* z .* b .+ y .* c
-    FRm[2,1,:] .= y .* x .* b .+ z .* c
-    FRm[2,2,:] .= cos.(a) .+ y.^2 .* b
-    FRm[2,3,:] .= y .* z .* b .- x .* c
-    FRm[3,1,:] .= z .* x .* b .- y .* c
-    FRm[3,2,:] .= z .* y .* b .+ x .* c
-    FRm[3,3,:] .= cos.(a) .+ z.^2 .* b
+    MTX[1,1,:] .= cos.(a) .+ x.^2 .* b
+    MTX[1,2,:] .= x .* y .* b .- z .* c
+    MTX[1,3,:] .= x .* z .* b .+ y .* c
+    MTX[2,1,:] .= y .* x .* b .+ z .* c
+    MTX[2,2,:] .= cos.(a) .+ y.^2 .* b
+    MTX[2,3,:] .= y .* z .* b .- x .* c
+    MTX[3,1,:] .= z .* x .* b .- y .* c
+    MTX[3,2,:] .= z .* y .* b .+ x .* c
+    MTX[3,3,:] .= cos.(a) .+ z.^2 .* b
  
-    return [Finrot2Sph(FiniteRotMatrix(m)) for m in eachslice(FRm, dims=3)]; end
+    return mapslices(mtx -> FiniteRotMatrix(mtx), MTX, dims=(1,2)); end
 
 """
 Converts a finite rotation in Cartesian coordinates [degrees] 
@@ -134,21 +134,12 @@ function Finrot2Sph(FRm::FiniteRotMatrix)
     # Turn to spherical coordinates, pole in [deg]
     lon, lat, mag = cart2sph(x, y, z)
 
-    # Magnitude in [radians]
+    # Magnitude in [degrees]
     t = M[1,1] + M[2,2] + M[3,3]
     mag = ToDegrees( atan(mag, t-1) )
     
     return FiniteRotSph(lon, lat, mag); end
 
-
-function Finrot2Sph(FRmArray::Matrix{FiniteRotMatrix})
-
-    Finrot2Sph(Finrot2Array3D(FRmArray))
-
-
-    return map(FRm -> Finrot2Sph(FRm), FRmArray)
-
-end
 
 function Finrot2Sph(MTX::Array{Float64, 3})
 
@@ -160,19 +151,14 @@ function Finrot2Sph(MTX::Array{Float64, 3})
     y = MTX[1,3,:] - MTX[3,1,:]
     z = MTX[2,1,:] - MTX[1,2,:]
 
-    r = [x.^2 + y.^2 + z.^2].^0.5
+    # Turn to spherical coordinates, pole in [deg]
+    lon, lat, mag = cart2sph(x, y, z)
+
+    # Magnitude in [degrees]
     t = MTX[1,1,:] + MTX[2,2,:] + MTX[3,3,:]
-    #ang = atan2(r, t-1)
-        
-    #= [th,ph,a] = cart2sph(x,y,z);
-    FR = [th ph ang].*(180/pi);
+    mag = ToDegrees( atan.(mag, t .- 1) )
 
-    FRs = reshape(FR,3,[])';
-
-
-    return map(FRm -> Finrot2Sph(FRm), FRmArray) =#
-
-end
+    return mapslices(v -> FiniteRotSph(v), [lon lat mag], dims=(2)); end
 
 """
 Converts a rotation matrix [radians], to the associated finite 
@@ -216,23 +202,55 @@ function EuAngle2Sph(EA::EulerAngles)
 
     return Finrot2Sph(FiniteRotMatrix(MTX)); end
 
-function EuAngle2Sph(EAx::Union{Matrix, Vector}, EAy::Union{Matrix, Vector}, EAz::Union{Matrix, Vector})
+function EuAngle2Array3D(EAx::Union{Matrix, Vector}, EAy::Union{Matrix, Vector}, EAz::Union{Matrix, Vector})
 
     MTX = Array{Float64}(undef, 3, 3, length(EAx))
 
-    MTX[1,1,:] .= cos.(EAz) .* cos.(EAy)
-    MTX[1,2,:] .= cos.(EAz) .* sin.(EAy) .* sin.(EAx) - sin.(EAz) .* cos.(EAx)
-    MTX[1,3,:] .= cos.(EAz) .* sin.(EAy) .* cos.(EAx) + sin.(EAz) .* sin.(EAx)
-    MTX[2,1,:] .= sin.(EAz) .* cos.(EAy) 
-    MTX[2,2,:] .= sin.(EAz) .* sin.(EAy) .* sin.(EAx) + cos.(EAz) .* cos.(EAx)
-    MTX[2,3,:] .= sin.(EAz) .* sin.(EAy) .* cos.(EAx) - cos.(EAz) .* sin.(EAx)
-    MTX[3,1,:] .= -1 * sin.(EAy) 
-    MTX[3,2,:] .= cos.(EAy) .* sin.(EAx) 
-    MTX[3,3,:] .= cos.(EAy) .* cos.(EAx) 
+    cosX = cos.(EAx)
+    sinX = sin.(EAx)
+    cosY = cos.(EAy)
+    sinY = sin.(EAy)
+    cosZ = cos.(EAz)
+    sinZ = sin.(EAz)
+
+    MTX[1,1,:] .= cosZ .* cosY
+    MTX[1,2,:] .= cosZ .* sinY .* sinX - sinZ .* cosX
+    MTX[1,3,:] .= cosZ .* sinY .* cosX + sinZ .* sinX
+    MTX[2,1,:] .= sinZ .* cosY 
+    MTX[2,2,:] .= sinZ .* sinY .* sinX + cosZ .* cosX
+    MTX[2,3,:] .= sinZ .* sinY .* cosX - cosZ .* sinX
+    MTX[3,1,:] .= -1 * sinY 
+    MTX[3,2,:] .= cosY .* sinX 
+    MTX[3,3,:] .= cosY .* cosX 
  
-    return [Finrot2Sph(FiniteRotMatrix(m)) for m in eachslice(MTX, dims=3)]; end
-    
+    return MTX; end
+"""
+Converts a finite rotation [degrees] into a 3D array
+of rotation matrices."""
 function Finrot2Array3D(FRmArray::Matrix{FiniteRotMatrix})
     MTXarray = [FRm.Values for FRm in FRmArray]
     return reshape(reduce(hcat, MTXarray), 3, 3, :); end
+
+function Finrot2Array3D(FRsArray::Matrix{FiniteRotSph})
+
+    x, y, z = sph2cart([FRs.Lon for FRs in FRsArray], [FRs.Lat for FRs in FRsArray], 1)
+    
+    a = ToRadians([FRs.Angle for FRs in FRsArray]);
+    b = 1 .- cos.(a)
+    c = sin.(a)
+
+    MTX = Array{Float64}(undef, 3, 3, length(FRsArray))
+
+    # Rotation matrix in [radians]
+    MTX[1,1,:] .= cos.(a) .+ x.^2 .* b
+    MTX[1,2,:] .= x .* y .* b .- z .* c
+    MTX[1,3,:] .= x .* z .* b .+ y .* c
+    MTX[2,1,:] .= y .* x .* b .+ z .* c
+    MTX[2,2,:] .= cos.(a) .+ y.^2 .* b
+    MTX[2,3,:] .= y .* z .* b .- x .* c
+    MTX[3,1,:] .= z .* x .* b .- y .* c
+    MTX[3,2,:] .= z .* y .* b .+ x .* c
+    MTX[3,3,:] .= cos.(a) .+ z.^2 .* b
+ 
+    return MTX; end
 end
