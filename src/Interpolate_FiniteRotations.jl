@@ -1,7 +1,6 @@
 using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix
-using PlateKinematics: ChangeAngle, ChangeTime
 using PlateKinematics: Add_FiniteRotations, Invert_RotationMatrix, Multiply_RotationMatrices
-using PlateKinematics.FiniteRotationsTransformations: Finrot2Sph, Finrot2Array3D
+using PlateKinematics.FiniteRotationsTransformations: Finrot2Sph, Finrot2Array3D, ChangeAngle, ChangeTime
 
 """
 Interpolates a finite rotation matrix between a matrix for a given
@@ -42,15 +41,16 @@ end
 
 """
 Interpolates a finite rotation between two finite rotations in spherical format. """
-function Interpolate_FiniteRotation(FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Number, Nsize = 1e5)
+function Interpolate_FiniteRotation(FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Number, Nsize = 1e5::Number)
     
-    if FRs2.Time < FRs1.Time
-        throw("Error. Age for rotation FRs2 is expected to be older or equal than FRs1.")
-    end
-
     t1 = FRs1.Time
     t2 = FRs2.Time
 
+    if t2 < t1
+        throw("Error. Age for rotation FRs2 is expected to be older or equal than FRs1.")
+    end
+
+    
     if time > t2
         println("Given interpolation time ($time) is older than time oldest rotation supplied (FRs2 time = $(FRs2.Time)).")
         return nothing
@@ -66,26 +66,69 @@ function Interpolate_FiniteRotation(FRs1::FiniteRotSph, FRs2::FiniteRotSph, time
         if !CovIsZero(FRs1.Covariance) && !CovIsZero(FRs2.Covariance)
             MTX1 = BuildEnsemble3D(FRs1, Nsize)
             MTX2 = BuildEnsemble3D(FRs2, Nsize)
-            
         else
-            MTX1 = Finrot2Matrix(FRs1).Values
-            MTX2 = Finrot2Matrix(FRs2).Values
-
+            MTX1 = Finrot2Array3D(FRs1)
+            MTX2 = Finrot2Array3D(FRs2)
         end 
 
         if time < t1
-            return Interpolate_FiniteRotation(MTX1, t1, time)
+            inFR = Interpolate_FiniteRotation(MTX1, t1, time)
 
         elseif time < t2 && t1 < time 
-            return Interpolate_FiniteRotation(MTX1, MTX2, t1, t2, time)
+            inFR = Interpolate_FiniteRotation(MTX1, MTX2, t1, t2, time)
             
         end
+
+        if size(inFR)[1] !== 1           # !!! Need to check with no covariance FR 
+            return Ensemble2Vector(inFR)
+        else
+            return inFR
+        end
+    end
+end
+
+
+"""
+Interpolates a finite rotation between two finite rotations in spherical format. """
+function Interpolate_FiniteRotation(FRs1::Array{FiniteRotSph}, FRs2::Array{FiniteRotSph}, time::Number)
+    
+    t1 = FRs1[1].Time
+    t2 = FRs2[2].Time
+
+    if t2 < t1
+        throw("Error. Age for rotation FRs2 array is expected to be older or equal than FRs1 array.")
+    end
+    
+
+    if time > t2
+        println("Given interpolation time ($time) is older than time oldest rotation supplied (FRs2 time = $(FRs2.Time)).")
+        return nothing
+
+    elseif time == t1
+        return FRs1
+    
+    elseif time == t2
+        return FRs2
+    
+    else
+        MTX1 = Finrot2Array3D(FRs1)
+        MTX2 = Finrot2Array3D(FRs2) 
+
+        if time < t1
+            inFR = Interpolate_FiniteRotation(MTX1, t1, time)
+
+        elseif time < t2 && t1 < time 
+            inFR = Interpolate_FiniteRotation(MTX1, MTX2, t1, t2, time)
+            
+        end
+
+        return inFR
     end
 end
 
 """
 Interpolates a list finite rotations from an array of finite rotations in spherical format. """
-function Interpolate_FiniteRotation(FRsArray, times::Union{Matrix, Vector}, Nsize = 1e5) #::Array{FiniteRotSph}
+function Interpolate_FiniteRotation(FRsArray::Array{FiniteRotSph}, times::Union{Matrix, Vector}, Nsize = 1e5::Number)
 
     if typeof(FRsArray) == Matrix{FiniteRotSph}
         FRsArray = vec(FRsArray)

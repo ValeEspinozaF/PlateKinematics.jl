@@ -1,10 +1,25 @@
 module FiniteRotationsTransformations
+#!!!! Include time when transforming
 
 using PlateKinematics: ToRadians, ToDegrees, sph2cart, cart2sph
 using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix, EulerAngles
 
 
-export Finrot2Rad, Finrot2Deg, Finrot2Cart, Finrot2Sph, Finrot2Matrix, Finrot2Array3D, EuAngle2Array3D
+export Finrot2Rad, Finrot2Deg, Finrot2Cart, Finrot2Sph, Finrot2Matrix, Finrot2EuAngle, Finrot2Array3D, EuAngle2Array3D
+
+function ChangeLon(FRs::FiniteRotSph, newLon)
+    return FiniteRotSph(newLon, FRs.Lat, FRs.Angle, FRs.Time, FRs.Covariance); end
+
+function ChangeLat(FRs::FiniteRotSph, newLat)
+    return FiniteRotSph(FRs.Lon, newLat, FRs.Angle, FRs.Time, FRs.Covariance); end
+
+function ChangeAngle(FRs::FiniteRotSph, newAngle)
+    return FiniteRotSph(FRs.Lon, FRs.Lat, newAngle, FRs.Time, FRs.Covariance); end
+
+function ChangeTime(FRs::FiniteRotSph, newTime)
+    return FiniteRotSph(FRs.Lon, FRs.Lat, FRs.Angle, newTime, FRs.Covariance); end
+function ChangeCovariance(FRs::FiniteRotSph, newCovariance)
+    return FiniteRotSph(FRs.Lon, FRs.Lat, FRs.Angle, FRs.Time, newCovariance); end
 
 
 """
@@ -41,7 +56,7 @@ Converts a finite rotation from spherical coordinates [degrees]
 to cartesian coordinates [degrees]."""
 function Finrot2Cart(FRs::FiniteRotSph)
     x, y, z = sph2cart(FRs.Lon, FRs.Lat, FRs.Angle)
-    return FiniteRotCart(x, y, z, FRs.Covariance); end
+    return FiniteRotCart(x, y, z, FRs.Time, FRs.Covariance); end
 
 function Finrot2Cart(FRsArray::Matrix{FiniteRotSph})
     return map(FRs -> Finrot2Cart(FRs), FRsArray); end
@@ -231,11 +246,36 @@ function Finrot2Array3D(FRmArray::Matrix{FiniteRotMatrix})
     MTXarray = [FRm.Values for FRm in FRmArray]
     return reshape(reduce(hcat, MTXarray), 3, 3, :); end
 
+
+function Finrot2Array3D(FRs::FiniteRotSph)
+
+    x, y, z = sph2cart(FRs.Lon, FRs.Lat, 1)
+    
+    a = ToRadians(FRs.Angle)
+    b = 1 - cos(a)
+    c = sin(a)
+
+    MTX = Array{Float64}(undef, 3, 3, 1)
+
+    # Rotation matrix in [radians]
+    MTX[1,1,1] = cos(a) + x^2 * b
+    MTX[1,2,1] = x * y * b - z * c
+    MTX[1,3,1] = x * z * b + y * c
+    MTX[2,1,1] = y * x * b + z * c
+    MTX[2,2,1] = cos(a) + y^2 * b
+    MTX[2,3,1] = y * z * b - x * c
+    MTX[3,1,1] = z * x * b - y * c
+    MTX[3,2,1] = z * y * b + x * c
+    MTX[3,3,1] = cos(a) + z^2 * b
+    
+    return MTX; end
+
+
 function Finrot2Array3D(FRsArray::Matrix{FiniteRotSph})
 
     x, y, z = sph2cart([FRs.Lon for FRs in FRsArray], [FRs.Lat for FRs in FRsArray], 1)
     
-    a = ToRadians([FRs.Angle for FRs in FRsArray]);
+    a = ToRadians([FRs.Angle for FRs in FRsArray])
     b = 1 .- cos.(a)
     c = sin.(a)
 

@@ -1,5 +1,6 @@
 using PlateKinematics: CorrelatedEnsemble3D
-using PlateKinematics: Covariance, CovToMatrix, FiniteRotSph
+using PlateKinematics: Covariance, CovToMatrix, FiniteRotSph, EulerVectorSph
+using PlateKinematics: cart2sph, sph2cart
 using PlateKinematics.FiniteRotationsTransformations: Finrot2EuAngle, EuAngle2Array3D
 
 function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
@@ -23,6 +24,30 @@ function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
     EAz = EuAngles.Z .+ zc
 
     return EuAngle2Array3D(EAx, EAy, EAz)
+end
+
+
+function BuildEnsemble3D(EVs::EulerVectorSph, Nsize = 1e6)
+
+    N = floor(Int, Nsize)
+
+    covMatrix = CovToMatrix(EVs.Covariance)
+    
+    if !CheckCovariance(covMatrix)
+        covMatrix = ReplaceCovariaceEigs(covMatrix)
+    end
+
+    xc, yc, zc = CorrelatedEnsemble3D(covMatrix, N)
+
+    # Get Euler vector in cartesian coordinates
+    x, y, z = sph2cart(EVs.Lon, EVs.Lat, EVs.AngVelocity)
+
+    # Build ensemble
+    EVx = x .+ xc
+    EVy = y .+ yc
+    EVz = z .+ zc
+
+    return EuAngle2Array3D(EVx, EVy, EVz)
 end
 
 

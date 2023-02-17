@@ -1,7 +1,7 @@
 using PlateKinematics: FiniteRotCart, FiniteRotSph
 
 
-function FileToDictionary(filePath::String, delimiter=' '::Char, comment='#'::Char, header=false)
+function LoadTXT_asDict(filePath::String, delimiter=' '::Char, comment='#'::Char, header=false)  #!!! Change name to LoadTXT2Dict
 
     valuesArray = []
     dict = Dict()
@@ -51,11 +51,10 @@ end
 
 
 
-function FileToFiniteRotation(filePath::String, delimiter=' '::Char, comment='#'::Char)
+function LoadTXT_asFR(filePath::String, delimiter=' '::Char, comment='#'::Char) #!!! Change name to LoadTXT2FR
 
-    dictRot = FileToDictionary(filePath, delimiter, comment, true)
+    dictRot = LoadTXT_asDict(filePath, delimiter, comment, true)
     rows = length(collect(values(dictRot))[1])
-
 
     ageKeys = ["age" "ages" "Age" "Ages" "t" "T" "time" "Time"]
     cartKeys_x = ["x" "X"]
@@ -142,3 +141,20 @@ function FileToFiniteRotation(filePath::String, delimiter=' '::Char, comment='#'
 
     return FRarray
 end
+
+
+function LoadJLS(filePath::String)
+
+    # Open the file in binary mode
+    file = open(filePath, "r")
+
+    # Deserialize the array from the file
+    data = deserialize(file)
+
+    # Close the file
+    close(file)
+
+    return data
+
+end
+

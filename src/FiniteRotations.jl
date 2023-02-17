@@ -35,8 +35,11 @@ FiniteRotSph(lon, lat, angle, time) = FiniteRotSph(lon, lat, angle, time, Covari
 FiniteRotSph(lon, lat, angle, covariance::Covariance) = FiniteRotSph(lon, lat, angle, nothing, covariance)
 FiniteRotSph(lon, lat, angle, array::Union{Matrix, Vector}) = FiniteRotSph(lon, lat, angle, nothing, Covariance(array))
 FiniteRotSph(lon, lat, angle, time, array::Union{Matrix, Vector}) = FiniteRotSph(lon, lat, angle, time, Covariance(array))
-FiniteRotSph(array::Union{Matrix, Vector}) = FiniteRotSph(array[1], array[2], array[3], nothing, Covariance())
-FiniteRotSph(array::Union{Matrix, Vector}, time) = FiniteRotSph(array[1], array[2], array[3], time, Covariance())
+FiniteRotSph(array::Union{Matrix, Vector, Tuple}) = FiniteRotSph(array[1], array[2], array[3], nothing, Covariance())
+FiniteRotSph(array::Union{Matrix, Vector, Tuple}, time) = FiniteRotSph(array[1], array[2], array[3], time, Covariance())
+FiniteRotSph(array::Union{Matrix, Vector, Tuple}, time, covariance::Covariance) = FiniteRotSph(array[1], array[2], array[3], time, covariance)
+Base.getindex(x::FiniteRotSph, i::Int) = getfield(x, i)
+
 
 # Cartesian finite rotations 
 FiniteRotCart(x, y, z) = FiniteRotCart(x, y, z, nothing, Covariance())
@@ -46,24 +49,12 @@ FiniteRotCart(x, y, z, array::Union{Matrix, Vector}) = FiniteRotCart(x, y, z, no
 FiniteRotCart(x, y, z, time, array::Union{Matrix, Vector}) = FiniteRotCart(x, y, z, time, Covariance(array))
 FiniteRotCart(array::Union{Matrix, Vector}) = FiniteRotCart(array[1], array[2], array[3], nothing, Covariance())
 FiniteRotCart(array::Union{Matrix, Vector}, time) = FiniteRotCart(array[1], array[2], array[3], time, Covariance())
+Base.getindex(x::FiniteRotCart, i::Int) = getfield(x, i)
+
 
 # Rotation Matrix
 FiniteRotMatrix(v1::Vector, v2::Vector, v3::Vector) = FiniteRotMatrix(vcat([v1, v2, v3]'...))
 
 
-
-function ChangeLon(FRs::FiniteRotSph, newLon)
-    return FiniteRotSph(newLon, FRs.Lat, FRs.Angle, FRs.Time, FRs.Covariance)
-end
-
-function ChangeLat(FRs::FiniteRotSph, newLat)
-    return FiniteRotSph(FRs.Lon, newLat, FRs.Angle, FRs.Time, FRs.Covariance)
-end
-
-function ChangeAngle(FRs::FiniteRotSph, newAngle)
-    return FiniteRotSph(FRs.Lon, FRs.Lat, newAngle, FRs.Time, FRs.Covariance)
-end
-
-function ChangeTime(FRs::FiniteRotSph, newTime)
-    return FiniteRotSph(FRs.Lon, FRs.Lat, FRs.Angle, newTime, FRs.Covariance)
-end
+# Euler angles
+Base.getindex(x::EulerAngles, i::Int) = getfield(x, i)
