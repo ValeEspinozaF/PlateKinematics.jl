@@ -42,7 +42,7 @@ function Ensemble2Vector(ENSs::Matrix{T})  where {T<:FiniteRotSph}
 end
 
 
-function Ensemble2Vector(ENSc::Matrix{FiniteRotCart})
+function Ensemble2Vector(ENSc::Matrix{T}) where {T<:FiniteRotCart}
 
     # Calculate mean vector and its covariance
     return Finrot2Cart(Ensemble2Vector(Finrot2Sph(ENSc)))
@@ -50,7 +50,7 @@ function Ensemble2Vector(ENSc::Matrix{FiniteRotCart})
 end
 
 
-function Ensemble2Vector(ENSs::Matrix{EulerVectorSph}) 
+function Ensemble2Vector(ENSs::Matrix{T}) where {T<:EulerVectorSph}
 
     # Ensemble array components [ensMag]
     XYZ = map(v -> sph2cart(v[1], v[2], v[3]), ENSs)
@@ -69,7 +69,7 @@ function Ensemble2Vector(ENSs::Matrix{EulerVectorSph})
 end
 
 
-function Ensemble2Vector(ENSc::Matrix{EulerVectorCart})
+function Ensemble2Vector(ENSc::Matrix{T}) where {T<:EulerVectorCart}
 
     # Calculate mean vector and its covariance
     x_mean, y_mean, z_mean, cov = Ensemble2Vector(getindex.(ENSc, 1), getindex.(ENSc, 2), getindex.(ENSc, 3))
@@ -81,7 +81,7 @@ function Ensemble2Vector(ENSc::Matrix{EulerVectorCart})
     end
     
     # Mean vector in [ensMag], covariace in [ensMag ^2]
-    return EulerVectorCart(x_mean, y_mean, z_mean, time, cov)
+    return T(x_mean, y_mean, z_mean, time, cov)
     
 end
 

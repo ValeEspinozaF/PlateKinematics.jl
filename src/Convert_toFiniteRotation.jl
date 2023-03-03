@@ -24,18 +24,16 @@ function ToFiniteRotation(EVs::EulerVectorSph, reverseRot=true, Nsize=1e5::Numbe
 
     # Build ensemble if covariances are given
     if !CovIsZero(EVs.Covariance)
-        MTX = BuildEnsemble3D(rEVs, Nsize)
-        nFRs = map(FRs -> ChangeTime(ChangeAngle(FRs, FRs.Angle * FRt), FRt), Finrot2Sph(MTX))
-
-        #
-        #return Ensemble2Vector
+        EVs_array = BuildEnsemble3D(rEVs, Nsize)
+        nFRs = map(ev -> FiniteRotSph(ev.Lon, ev.Lat, ev.AngVelocity * FRt), EVs_array)
+        return ChangeTime(Ensemble2Vector(nFRs), FRt)
     else
         return FiniteRotSph(rEVs.Lon, rEVs.Lat, rEVs.AngVelocity * FRt, FRt)
     end 
 end 
 
 
-function ToFiniteRotation(EVsArray::Matrix{EulerVectorSph}, reverseRot=true, Nsize=1e5::Number)
+#= function ToFiniteRotation(EVsArray::Matrix{EulerVectorSph}, reverseRot=true, Nsize=1e5::Number)
 
     # Reverses sense of rotation (when using reconstruction finite rotations)
     if reverseRot == true
@@ -44,7 +42,7 @@ function ToFiniteRotation(EVsArray::Matrix{EulerVectorSph}, reverseRot=true, Nsi
         rEVs = [EVs]
     end
 
-    # Get sense of rotation 
+    # Get sense of rotation  
     if EVsArray[1].TimeRange[1] == 0 && EVsArray[1].TimeRange[2] != 0
         FRt = EVsArray[1].TimeRange[2]
         EVs = map(EVs -> GetAntipole(EVs), EVsArray)
@@ -57,4 +55,4 @@ function ToFiniteRotation(EVsArray::Matrix{EulerVectorSph}, reverseRot=true, Nsi
     end
 
     return map(ev -> FiniteRotSph(ev.Lon, ev.Lat, ev.AngVelocity * FRt, FRt, ev.Covariance), EVs)
-end 
+end  =#

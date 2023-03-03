@@ -1,6 +1,6 @@
 module EulerVectorTransformations
 
-using PlateKinematics: EulerVectorSph
+using PlateKinematics: EulerVectorSph, EulerVectorCart
 using PlateKinematics: ToRadians, ToDegrees, sph2cart, cart2sph
 
 
@@ -49,7 +49,35 @@ function EuVector2Sph(MTX::Array{Float64, 3})
     return mapslices(v -> EulerVectorSph(v), [lon lat mag], dims=(2))
 end
 
-function EuVector2Array3D(EVs::EulerVectorSph)
+
+function EuVector2Sph(X::Array{Float64}, Y::Array{Float64}, Z::Array{Float64})
+
+    if length(X) != length(Y) || length(Z) != length(Y) || length(X) != length(Z)
+        throw("Error. Input arrays must have the same length.")
+    end
+
+    # Turn to spherical coordinates, pole in [deg]
+    lon, lat, mag = cart2sph(X, Y, Z)
+
+    return mapslices(v -> EulerVectorSph(v), [lon lat mag], dims=(2))
+end
+
+
+function EuVector2Cart(EVs::EulerVectorSph)
+
+    # Turn to spherical coordinates, pole in [deg]
+    x, y, z = sph2cart(EVs.Lon, EVs.Lat, EVs.AngVelocity)
+
+    return EulerVectorCart(x, y, z, EVs.TimeRange, EVs.Covariance)
+end
+
+
+function EuVector2Cart(EVs_array::Array{T}) where {T<:EulerVectorSph}
+
+    return map(EVs -> EulerVectorCart(sph2cart(EVs.Lon, EVs.Lat, EVs.AngVelocity)), EVs_array)
+end
+
+#= function EuVector2Array3D(EVs::EulerVectorSph)
 
     x, y, z = sph2cart(EVs.Lon, EVs.Lat, 1)
     
@@ -71,5 +99,5 @@ function EuVector2Array3D(EVs::EulerVectorSph)
     MTX[3,3,1] = cos(a) + z^2 * b
     
     return MTX; end
-
+ =#
 end

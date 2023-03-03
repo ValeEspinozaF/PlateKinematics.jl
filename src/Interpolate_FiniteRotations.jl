@@ -1,5 +1,5 @@
 using PlateKinematics: FiniteRotSph, FiniteRotCart, FiniteRotMatrix
-using PlateKinematics: Add_FiniteRotations, Invert_RotationMatrix, Multiply_RotationMatrices
+using PlateKinematics: Invert_RotationMatrix, Multiply_RotationMatrices
 using PlateKinematics.FiniteRotationsTransformations: Finrot2Sph, Finrot2Array3D, ChangeAngle, ChangeTime
 
 """
@@ -130,9 +130,8 @@ end
 Interpolates a list finite rotations from an array of finite rotations in spherical format. """
 function Interpolate_FiniteRotation(FRsArray::Array{FiniteRotSph}, times::Union{Matrix, Vector}, Nsize = 1e5::Number)
 
-    if typeof(FRsArray) == Matrix{FiniteRotSph}
-        FRsArray = vec(FRsArray)
-    end
+    # Ensure array is stored as vector
+    FRsArray = vec(FRsArray)
 
     # Available times for interpolation
     FRtimes = [FRs.Time for FRs in FRsArray]

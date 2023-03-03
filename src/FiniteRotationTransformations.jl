@@ -59,7 +59,7 @@ function Finrot2Cart(FRs::FiniteRotSph)
     return FiniteRotCart(x, y, z, FRs.Time, FRs.Covariance); end
 
 function Finrot2Cart(FRsArray::Matrix{FiniteRotSph})
-    return map(FRs -> Finrot2Cart(FRs), FRsArray); end
+    return x; end
 
 
 """

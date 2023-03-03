@@ -1,6 +1,7 @@
 module PlateKinematics
 
 using LinearAlgebra, Statistics
+using DelimitedFiles, Serialization, Printf, DataFrames
 
 # 3D coordinate system transformations
 export cart2sph, sph2cart
@@ -17,6 +18,7 @@ export Finrot2Cart, Finrot2Sph, Finrot2Matrix
 include("Covariances.jl")
 include("FiniteRotations.jl")
 include("EulerVectors.jl")
+include("SurfaceVelocityVector.jl")
 
 # Transformations
 include("CoordinateSystemTransformations.jl")
@@ -35,8 +37,10 @@ include("Multiply_RotationMatrices.jl")
 
 # Main Functions
 include("Interpolate_FiniteRotations.jl")
+include("Concatenate_FiniteRotations.jl")
 include("Convert_toStageEulerVector.jl")
 include("Convert_toFiniteRotation.jl")
+include("SurfaceVelocity.jl")
 
 
 

@@ -9,7 +9,7 @@
 
     @test cov1 == cov2
     @test cov2 == cov3
-    @test PlateKinematics.CovToArray(cov2) == array1
+    @test PlateKinematics.ToArray(cov2) == array1
     @test PlateKinematics.CovToMatrix(cov4) == [1 2 3; 2 4 5; 3 5 6] 
     @test PlateKinematics.CovIsZero(cov2)
     @test !PlateKinematics.CovIsZero(cov4)

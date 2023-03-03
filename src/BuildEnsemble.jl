@@ -2,6 +2,7 @@ using PlateKinematics: CorrelatedEnsemble3D
 using PlateKinematics: Covariance, CovToMatrix, FiniteRotSph, EulerVectorSph
 using PlateKinematics: cart2sph, sph2cart
 using PlateKinematics.FiniteRotationsTransformations: Finrot2EuAngle, EuAngle2Array3D
+using PlateKinematics.EulerVectorTransformations: EuVector2Sph
 
 function BuildEnsemble3D(FRs::FiniteRotSph, Nsize = 1e6)
 
@@ -47,7 +48,7 @@ function BuildEnsemble3D(EVs::EulerVectorSph, Nsize = 1e6)
     EVy = y .+ yc
     EVz = z .+ zc
 
-    return EuAngle2Array3D(EVx, EVy, EVz)
+    return EuVector2Sph(EVx, EVy, EVz)
 end
 
 

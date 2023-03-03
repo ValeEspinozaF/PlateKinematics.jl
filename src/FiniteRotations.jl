@@ -58,3 +58,23 @@ FiniteRotMatrix(v1::Vector, v2::Vector, v3::Vector) = FiniteRotMatrix(vcat([v1, 
 
 # Euler angles
 Base.getindex(x::EulerAngles, i::Int) = getfield(x, i)
+
+
+function ToArray(myStruct::Union{FiniteRotSph, FiniteRotCart})
+    field_names = fieldnames(typeof(myStruct))
+    cov_names = fieldnames(Covariance)
+
+    values = zeros(Number, 10)
+
+    i, j = 1, 0
+    for (i, field_name) in enumerate(field_names)
+        if field_name == :Covariance
+            for (j, cov_name) in enumerate(cov_names)
+                values[j + i - 1] = getfield(myStruct.Covariance, cov_name)
+            end
+        else
+            values[i + j] = getfield(myStruct, field_name)
+        end
+    end
+    return values
+end

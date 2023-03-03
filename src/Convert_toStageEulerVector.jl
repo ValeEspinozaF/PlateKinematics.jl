@@ -5,14 +5,14 @@ using PlateKinematics.FiniteRotationsTransformations: Finrot2Sph, Finrot2Array3D
 
 function ToEulerVector(FRs::FiniteRotSph, reverseRot=true, Nsize=1e5::Number)
 
-    EVts = [FRs.Time 0.0] 
+    EVts = [0.0 FRs.Time] 
 
     # Reverses sense of rotation (when using reconstruction finite rotations)
     if reverseRot == true
         EVts = reverse(EVts)
         rFRs = ChangeAngle(FRs, FRs.Angle * -1)
     else
-        rFRs1 = FRs1
+        rFRs = FRs
     end
 
     # Build ensemble if covariances are given
@@ -22,7 +22,13 @@ function ToEulerVector(FRs::FiniteRotSph, reverseRot=true, Nsize=1e5::Number)
         MTX = Finrot2Array3D(rFRs)
     end 
 
-    return ToEulerVector(MTX, EVts)
+    EVs = ToEulerVector(MTX, EVts)
+
+    if size(EVs)[1] !== 1  
+        return Ensemble2Vector(EVs)
+    else
+        return EVs[1]       # Check this!!!
+    end
 end
 
 
@@ -49,9 +55,37 @@ function ToEulerVector(FRs1::FiniteRotSph, FRs2::FiniteRotSph, reverseRot=true, 
         MTX2 = Finrot2Array3D(rFRs2)
     end 
 
-    return ToEulerVector(MTX1, MTX2, EVts)
+    EVs = ToEulerVector(MTX1, MTX2, EVts)
+
+    if size(EVs)[1] !== 1  
+        return Ensemble2Vector(EVs)
+    else
+        return EVs[1]       # Check this!!!
+    end
 end
 
+function ToEulerVector(FRsArray::Array{T}, reverseRot=true, Nsize=1e5::Number) where {T<:FiniteRotSph}
+
+    N_EV = length(FRsArray)
+
+    # Output array
+    EVs_out = Array{EulerVectorSph}(undef, N_EV)
+
+    for i in 1:N_EV
+
+        if i == 1
+            FRs = FRsArray[i]
+            EVs_out[i] = ToEulerVector(FRs, reverseRot, Nsize)
+        else
+            FRs1 = FRsArray[i - 1]
+            FRs2 = FRsArray[i]
+            EVs_out[i] = ToEulerVector(FRs1, FRs2, reverseRot, Nsize)
+        end
+
+    end
+
+    return EVs_out
+end
 
 function ToEulerVector(MTX1::Array{Float64, 3}, MTX2::Array{Float64, 3}, EVts::Union{Matrix, Vector})
     
