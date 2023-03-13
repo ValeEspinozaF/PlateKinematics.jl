@@ -1,16 +1,11 @@
 @testset "Finite Rotations" begin
 
-    using PlateKinematics.FiniteRotationsTransformations: Finrot2Rad, Finrot2Deg, Finrot2Cart, Finrot2Sph, Finrot2Matrix
+    using PlateKinematics.FiniteRotationsTransformations: Finrot2Cart, Finrot2Sph, Finrot2Matrix
 
     @testset "Numbers" begin
         cov1 = Covariance(1,1,2,2,3,3)
         FRc1 = FiniteRotCart(9/pi,18/pi,9/pi)
         FRs1 = FiniteRotSph(60, 30, 9/pi)
-
-        FRc2 = Finrot2Rad(FRc1)
-        FRs2 = Finrot2Rad(FRs1)
-        FRc3 = Finrot2Deg(FRc2)
-        FRs3 = Finrot2Deg(FRs2)
 
         FRc4 = Finrot2Cart(FRs1)
         FRs4 = Finrot2Sph(FRc4)

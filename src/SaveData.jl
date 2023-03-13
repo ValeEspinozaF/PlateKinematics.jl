@@ -29,7 +29,7 @@ function FRtoTXT(ENS::Union{Matrix, Vector}, filePath::String, format::Array{Str
         format = fill("%.2f", cols)
     else
         if cols != length(format)
-            throw("Format supplied does not match the amount of field in $(typeof(ENS[1]))")
+            error("Format supplied does not match the amount of fields in $(typeof(ENS[1]))")
         end
     end
     
@@ -91,7 +91,7 @@ function EVtoTXT(ENS::Union{Matrix, Vector}, filePath::String, format::Array{Str
         format = fill("%.2f", cols)
     else
         if cols != length(format) + 1
-            throw("Format supplied does not match the amount of field in $(typeof(ENS[1]))")
+            error("Format supplied does not match the amount of field in $(typeof(ENS[1]))")
         end
     end
     

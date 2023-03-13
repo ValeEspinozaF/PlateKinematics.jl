@@ -1,18 +1,13 @@
+"""
+Main module for `PlateKinematics.jl` -- a compilation of tools for easy handling of Plate Kinematics functions with Julia 🌏 📐.
+
+This package provides types, functions and documentation for working with Finite Rotations, Euler Vectors and Surface Velocities. \\
+The knowledge builds from the framework layed down by Allan Cox in his book Plate Tectonics: How It Works.
+"""
 module PlateKinematics
 
 using LinearAlgebra, Statistics
 using DelimitedFiles, Serialization, Printf, DataFrames
-
-# 3D coordinate system transformations
-export cart2sph, sph2cart
-
-# Core kinematic structures
-export Covariance, FiniteRotSph, FiniteRotCart
-
-# Finite rotation units and system transformations
-export Finrot2Rad, Finrot2Deg
-export Finrot2Cart, Finrot2Sph, Finrot2Matrix
-
 
 # Structures
 include("Covariances.jl")
@@ -28,9 +23,8 @@ include("EulerVectorTransformations.jl")
 # Subsidiary functions
 include("LoadData.jl")
 include("SaveData.jl")
-include("CorrelatedEnsemble3D.jl")
-include("Ensemble2Vector.jl")
 include("BuildEnsemble.jl")
+include("AverageEnsemble.jl")
 include("Add_FiniteRotations.jl")
 include("Invert_RotationMatrix.jl")
 include("Multiply_RotationMatrices.jl")

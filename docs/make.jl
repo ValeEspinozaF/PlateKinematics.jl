@@ -1,21 +1,26 @@
-using Documenter
+using Documenter, DocumenterTools
 using PlateKinematics
 
 About = "Introduction" => "index.md"
 
-Types = "Types" => "types.md"
+Types = "Types" => "lib/types.md"
 
-Functions = "Functions" => "functions.md"
-
-
-#= Examples = "Examples" => [
-        "examples/flux.md"
+Functions = "Functions" => [
+    "Main Functions" => "lib/main_functions.md",
+    "Other Functions" => "lib/other_functions.md",
+    "Auxiliary Functions" => "lib/auxiliary_functions.md",
+    "Private Functions" => "lib/private_functions.md",
     ]
 
-License = "License" => "license.md" =#
+Examples = "Examples" => [
+    "Conacatenate Finite Rotations" => "examples/mf_concatenate.md",
+    "Convert to Euler Vector" => "examples/mf_to_euler.md",
+    ]
+
+#License = "License" => "license.md"
 
 format = Documenter.HTML(
-    collapselevel = 2,
+    collapselevel = 3,
     prettyurls = get(ENV, "CI", nothing) == "true",
     assets = ["assets/logo.ico"],
     )
@@ -24,12 +29,12 @@ PAGES = [
     About,
     Types,
     Functions,
-    #Examples,
+    Examples,
     #License
     ]
 
 makedocs(
-    #modules = [PlateKinematics],
+    modules = [PlateKinematics],
     sitename = "PlateKinematics.jl",
     authors = "Valentina Espinoza",
     format = format,

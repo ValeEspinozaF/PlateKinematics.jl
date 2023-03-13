@@ -98,9 +98,9 @@ function Dict_toStruct(dict)
     is_EV = isEV_velocity && isEV_time
 
     if !is_EV && !is_FR
-        throw("Incompatible key names for neither Finite Rotation and Euler Vector.") 
+        error("Incompatible key names for neither Finite Rotation and Euler Vector.") 
     elseif is_EV && is_FR
-        throw("Compatible key names for both Finite Rotation and Euler Vector.") 
+        error("Compatible key names for both Finite Rotation and Euler Vector.") 
     end
 
 
@@ -109,9 +109,9 @@ function Dict_toStruct(dict)
     isSph = any([haskey(dict, key) for key in sphKeys_lon])
 
     if !isCart && !isSph
-        throw("Incompatible key names for neither spherical nor cartesian coordinates.") 
+        error("Incompatible key names for neither spherical nor cartesian coordinates.") 
     elseif isCart && isSph
-        throw("Compatible key names for both spherical nor cartesian coordinates. Supply only one.") 
+        error("Compatible key names for both spherical nor cartesian coordinates. Supply only one.") 
     end
 
 

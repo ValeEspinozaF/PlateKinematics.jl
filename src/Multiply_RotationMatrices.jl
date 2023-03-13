@@ -1,22 +1,11 @@
-using PlateKinematics: FiniteRotMatrix
-using PlateKinematics.FiniteRotationsTransformations: Finrot2Array3D
-
-
-function Invert_RotationMatrix(FRmArray1::Matrix{FiniteRotMatrix}, FRmArray2::Matrix{FiniteRotMatrix})
-    mMTX3D = Multiply_RotationMatrices(Finrot2Array3D(FRmArray1), Finrot2Array3D(FRmArray2))
-    
-    return [FiniteRotMatrix(MTX) for MTX in eachslice(mMTX3D, dims=3)]
-end
-
-
 function Multiply_RotationMatrices(MTX1::Array{Float64, 3}, MTX2::Array{Float64, 3})
 
     if size(MTX1)[1:2] != (3,3) || size(MTX2)[1:2] != (3,3)
-        throw("Error. Input 3D arrays must be of size (3, 3, n).")
+        error("Input 3D arrays must be of size (3, 3, n).")
     end
 
     if size(MTX1) != size(MTX2) 
-        throw("Error. Input arrays dont have the same length.")
+        error("Input arrays dont have the same length.")
     end
 
     mMTX = Array{Float64}(undef, 3, 3, size(MTX1)[3])

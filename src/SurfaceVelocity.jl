@@ -1,28 +1,26 @@
 using Statistics, LinearAlgebra
-using PlateKinematics: EulerVectorSph, EulerVectorCart, Covariance, SurfaceVelocityVector, Stat
-using PlateKinematics: CovIsZero, BuildEnsemble3D, ToRadians, ToDegrees
 
+#= """ Simplified, faster version. - Does not use the ellipsoid and gives an azimuth between -90 and 270. 
 
-"""
 Calculate the surface velocity components for a given point on Earth. """
 function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Number, pntLat::Number, Nsize = 1e5::Number)
 
-    OUT_UNIT = 1e-6     # unit of measurement to mm/yr
+    OUT_UNIT = 1e-7     # unit of measurement to cm/yr
     Re = 6371e6         # Earth's radius
 
     
     # Build ensemble if covariances are given
     if CovIsZero(EVs.Covariance)
-        EVs_array = [EVs]
+        EvsArray = [EVs]
     else
-        EVs_array = BuildEnsemble3D(EVs, Nsize)
+        EvsArray = BuildEnsemble3D(EVs, Nsize)
     end 
 
     
     # Euler pole coorinates in radians
-    lon_rad = ToRadians(getindex.(EVs_array, 1))
-    lat_rad = ToRadians(getindex.(EVs_array, 2))
-    mag_rad = ToRadians(getindex.(EVs_array, 3))
+    lon_rad = ToRadians(getindex.(EvsArray, 1))
+    lat_rad = ToRadians(getindex.(EvsArray, 2))
+    mag_rad = ToRadians(getindex.(EvsArray, 3))
 
 
     # Location point in radians 
@@ -52,7 +50,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Number, pntLat::
 
 
     # Return SurfaceVelocityVector
-    if size(EVs_array)[1] !== 1
+    if size(EvsArray)[1] !== 1
         return SurfaceVelocityVector(
             pntLon, pntLat, 
             Stat(meanEast, stdEast), 
@@ -63,4 +61,242 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Number, pntLat::
     else
         return SurfaceVelocityVector(pntLon, pntLat, mean(eastVel), mean(northVel))
     end
+end =#
+
+
+"""
+    Calculate_SurfaceVelocity(
+        EVs::EulerVectorSph, pntLon::Number, pntLat::Number, Nsize = 1e5::Number)
+
+    Calculate_SurfaceVelocity(
+        EVsArray::Array{T}, pntLon::Number, pntLat::Number, 
+        Nsize = 1e5::Number) where {T<:EulerVectorSph}
+
+    Calculate_SurfaceVelocity(
+        EVs::EulerVectorSph, arrayLon::Array{T}, arrayLat::Array{T}, 
+        Nsize = 1e5::T) where {T<:Number}
+
+Calculate the Surface Velocity components for a given point on Earth, subject to the motion
+described by an Euler Vector `EVs`. Location(s) are given through parameters `pntLon` 
+and `pntLat`, which represent spherical coordinates in degrees-East and degrees-North, 
+respectively. 
+"""
+function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Number, pntLat::Number, Nsize = 1e5::Number)
+    
+    # Build ensemble if covariances are given
+    if CovIsZero(EVs.Covariance)
+        EvsArray = [EVs]
+    else
+        EvsArray = BuildEnsemble3D(EVs, Nsize)
+    end 
+
+
+    # Calculate surface velocity components
+    eastVel, northVel, totalVel, azimuth = Calculate_SurfaceVelocity(EVsArray, pntLon, pntLat, Nsize)
+
+
+    # Surface velocity statistics
+    meanEast = mean(eastVel)
+    meanNorth = mean(northVel)
+    meanTotal = mean(totalVel)
+    meanAzim = mean(azimuth)
+
+    stdEast = std(eastVel)
+    stdNorth = std(northVel)
+    stdTotal = std(totalVel)
+    stdAzimuth = std(azimuth)
+
+
+    # Return SurfaceVelocityVector
+    if size(EvsArray)[1] !== 1
+
+        return SurfaceVelocityVector(
+            pntLon, pntLat, 
+            Stat(meanEast, stdEast), 
+            Stat(meanNorth, stdNorth), 
+            Stat(meanTotal, stdTotal), 
+            Stat(meanAzim, stdAzimuth)
+            )
+    else
+        return SurfaceVelocityVector(
+            pntLon, pntLat, 
+            meanEast, 
+            meanNorth,
+            meanTotal,
+            meanAzim
+            )
+    end
+end
+
+
+function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Array{T}, pntLat::Array{T}, Nsize = 1e5::T) where {T<:Number}
+
+    
+    # Build ensemble if covariances are given
+    if CovIsZero(EVs.Covariance)
+        EvsArray = [EVs]
+    else
+        EvsArray = BuildEnsemble3D(EVs, Nsize)
+    end 
+
+
+    # Surface velocity
+    SV_array = Array{SurfaceVelocityVector}(undef, length(pntLon))
+
+
+    for (i, (pntLon, pntLat)) in enumerate(zip(pntLon, pntLat))
+
+        # Calculate surface velocity components
+        eastVel, northVel, totalVel, azimuth = Calculate_SurfaceVelocity(EVsArray, pntLon, pntLat, Nsize)
+
+
+        # Surface velocity statistics
+        meanEast = mean(eastVel)
+        meanNorth = mean(northVel)
+        meanTotal = mean(totalVel)
+        meanAzim = mean(azimuth)
+
+        stdEast = std(eastVel)
+        stdNorth = std(northVel)
+        stdTotal = std(totalVel)
+        stdAzimuth = std(azimuth)
+
+
+        # Return SurfaceVelocityVector
+        if size(EvsArray)[1] !== 1
+
+            SV_array[i] = SurfaceVelocityVector(
+                pntLon, pntLat, 
+                Stat(meanEast, stdEast), 
+                Stat(meanNorth, stdNorth), 
+                Stat(meanTotal, stdTotal), 
+                Stat(meanAzim, stdAzimuth)
+                )
+
+        else
+            SV_array[i] = SurfaceVelocityVector(
+                pntLon, pntLat, 
+                meanEast, 
+                meanNorth,
+                meanTotal,
+                meanAzim
+                )
+        end
+    end
+
+    return SV_array
+end
+
+
+function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Number, pntLat::Number, Nsize = 1e5::Number) where {T<:EulerVectorSph}
+
+    # Point coordinates to Cartesian (WGS-84 ellipsoid)
+    x, y, z = GeographicalCoords_toCartesian(pntLon, pntLat)
+
+    # Euler vector to Cartesian components
+    wx, wy, wz = sph2cart(
+        getindex.(EVsArray, 1),
+        getindex.(EVsArray, 2),
+        getindex.(EVsArray, 3),
+        )
+    
+    # Surface velocity
+    SVcArray = Array{Number}(undef, floor(Int, Nsize), 3)
+
+    SVcArray[:, 1] = (wy .* z) .- (wz .* y)
+    SVcArray[:, 2] = (wz .* x) .- (wx .* z)
+    SVcArray[:, 3] = (wx .* y) .- (wy .* x)
+
+
+    # [m/Myr] to [cm/yr]
+    SVcArray = SVcArray .* (1e2/1e6)
+
+
+    # East/North components [cm/yr]
+    eastVel, northVel = CartesianVelocity_toEN(pntLon, pntLat, SVcArray)
+
+
+    # Total surface velocity in cm/yr
+    totalVel = ( eastVel.^2 .+ northVel.^2 ) .^ 0.5
+
+
+    # Velocity vector azimuth (clockwise from North)
+    AT = ToDegrees(atan.(northVel, eastVel))
+    azimuth = Array{Number}(undef, floor(Int, Nsize))
+
+    r = findall(eastVel .> 0)
+    azimuth[r] .= 90 .- sign.(northVel[r]) .* abs.(AT[r])
+
+    r = findall(eastVel .<= 0)
+    azimuth[r] .= -90 .+ sign.(northVel[r]) .* abs.(AT[r])
+    
+    # Return surface velocity components
+    return [eastVel, northVel, totalVel, azimuth]
+end
+
+
+"""
+    GeographicalCoords_toCartesian(pntLon::Number, pntLat::Number, Ht=0::Number)
+
+Converts local geographical coordinates (ellipsoidal) into Cartesian. """
+function GeographicalCoords_toCartesian(pntLon::Number, pntLat::Number, Ht=0::Number)
+
+    # pntLon and pntLat are geographical coordinates in degrees.
+    # Ht is the height abode the ellipsoid in meters.
+    # Output x, y, z are in meters.
+
+    # Semimajor axis axis and flattening for WGS-84
+    a = 6378137.0000
+    f = 1.0 / 298.257223563
+
+    # Semiminor axis (should be 6356752.3142)
+    b = a * (1-f)
+    
+    # Eccentricity
+    ecc = 2*f - f^2
+
+    # Degrees to radians
+    lon_rad = ToRadians(pntLon)
+    lat_rad = ToRadians(pntLat)
+
+    # Radius of curvature in prime vertical
+    N = a ./ sqrt( 1 .- ( sin.(lat_rad) ).^2 .* ecc )
+
+    # Cartesian coordinates
+    x = cos.(lat_rad) .* cos.(lon_rad) .* (N .+ Ht)
+    y = cos.(lat_rad) .* sin.(lon_rad) .* (N .+ Ht)
+    z = sin.(lat_rad) .* ( N .* (b^2 / a^2) .+ Ht )
+
+    return [x, y, z]
+end
+
+
+"""
+    CartesianVelocity_toEN(pntLon::Number, pntLat::Number, SVcArray::Array)
+
+Converts a set of velocities from Cartesian to East/North (EN) components. """
+function CartesianVelocity_toEN(pntLon::Number, pntLat::Number, SVcArray::Array)
+
+    lon_rad = ToRadians(pntLon)
+    lat_rad = ToRadians(pntLat)
+
+    vX = SVcArray[:, 1]
+    vY = SVcArray[:, 2]
+    vZ = SVcArray[:, 3]
+
+    R11 = -sin(lat_rad) * cos(lon_rad)
+    R12 = -sin(lat_rad) * sin(lon_rad)
+    R13 =  cos(lat_rad)
+    R21 = -sin(lon_rad)
+    R22 =  cos(lon_rad)
+    R23 =  0.0
+    R31 =  cos(lat_rad) * cos(lon_rad)
+    R32 =  cos(lat_rad) * sin(lon_rad)
+    R33 =  sin(lat_rad)
+
+    vN = (R11 .* vX) .+ (R12 .* vY) .+ (R13 .* vZ)
+    vE = (R21 .* vX) .+ (R22 .* vY) .+ (R23 .* vZ)
+
+    return vE, vN
+
 end
