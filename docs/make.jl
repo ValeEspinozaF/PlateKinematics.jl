@@ -21,8 +21,10 @@ Examples = "Examples" => [
 
 format = Documenter.HTML(
     collapselevel = 3,
-    prettyurls = get(ENV, "CI", nothing) == "true",
+    #prettyurls = get(ENV, "CI", nothing) == "true",
+    prettyurls = CI,
     assets = ["assets/logo.ico"],
+    canonical = "https://valeespinozaf.github.io/PlateKinematics.jl/"
     )
 
 PAGES = [
@@ -43,13 +45,24 @@ makedocs(
     pages = PAGES
 )
 
+Examples = "Examples" => [
+    "GITHUB_REPOSITORY" => "ValeEspinozaF/PlateKinematics.jl",
+    "GITHUB_EVENT_NAME" => "push",
+    "GITHUB_REF" => "stable",
+    "GITHUB_TOKEN" => 
+    ]
+
+
 # THROWS Warning: Documenter could not auto-detect the building environment Skipping deployment.
 #deploydocs(repo = "github.com/ValeEspinozaF/PlateKinematics.jl")
-
-#= deploydocs(
-    devbranch = "master",
-    repo   = "https://github.com/ValeEspinozaF/PlateKinematics.jl",
-    deps   = Deps.pip("mkdocs", "pygments", "python-markdown-math"),
-    make   = () -> run(`mkdocs build`),
-    target = "site"
-    ) =#
+withenv("GITHUB_REPOSITORY" => "ValeEspinozaF/PlateKinematics.jl") do
+    deploydocs(
+        devbranch = "stable",
+        repo   = "github.com/ValeEspinozaF/PlateKinematics.jl.git",
+        #deps   = Deps.pip("mkdocs", "pygments", "python-markdown-math"),
+        #make   = () -> run(`mkdocs build`),
+        target = "build",
+        push_preview = true,
+        #forcepush = true,
+        )
+end
