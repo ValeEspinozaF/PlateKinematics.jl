@@ -183,6 +183,40 @@ function ToArray(myStruct::Union{FiniteRotSph, FiniteRotCart})
     return values
 end
 
+function IsEqual(FRs1::FiniteRotSph, FRs2::FiniteRotSph, tolerance=1.0e-10::Float64, testCov=true::Bool)
+    sameLon = abs( FRs1.Lon - FRs2.Lon ) <= tolerance
+    sameLat = abs( FRs1.Lat - FRs2.Lat ) <= tolerance
+    sameAngle = abs( FRs1.Angle - FRs2.Angle ) <= tolerance
+
+    if isnothing(FRs1.Time) && isnothing(FRs2.Time)
+        sameTime = true
+    else
+        sameTime = abs( FRs1.Time - FRs2.Time ) <= tolerance
+    end
+
+    sameCov = false
+    if testCov == true
+        cov1 = FRs1.Covariance
+        cov2 = FRs2.Covariance
+
+        if CovIsZero(cov1) && CovIsZero(cov2)
+            sameCov = true
+
+        else
+            sameC11 = abs( cov1.C11 - cov2.C11 ) <= tolerance
+            sameC12 = abs( cov1.C12 - cov2.C12 ) <= tolerance
+            sameC13 = abs( cov1.C13 - cov2.C13 ) <= tolerance
+            sameC22 = abs( cov1.C22 - cov2.C22 ) <= tolerance
+            sameC23 = abs( cov1.C23 - cov2.C23 ) <= tolerance
+            sameC33 = abs( cov1.C33 - cov2.C33 ) <= tolerance
+            sameCov = all([sameC11, sameC12, sameC13, sameC22, sameC23, sameC33])
+        end
+
+        return all([sameLon, sameLat, sameAngle, sameTime, sameCov])
+    else
+        return all([sameLon, sameLat, sameAngle, sameTime])
+    end
+end
 
 """
     CovToMatrix(FR::Union{FiniteRotSph, FiniteRotCart})
