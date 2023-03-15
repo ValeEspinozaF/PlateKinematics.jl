@@ -59,4 +59,4 @@ if you could mention PlateKinematics.jl and cite our paper:
 
 
 [PlateKinematics.jl]: https://github.com/ValeEspinozaF/PlateKinematics.jl
-[documentation]: https://fourierflows.github.io/GeophysicalFlowsDocumentation/dev/
+[documentation]: https://valeespinozaf.github.io/PlateKinematics.jl/dev/
