@@ -110,8 +110,8 @@ function ToEulerVector(FRs1Array::Array{T}, FRs2Array::Array{T}, reverseRot=fals
         rFRs1 = map(FRs1 -> ChangeAngle(FRs1, FRs1.Angle * -1), FRs1Array)
         rFRs2 = map(FRs2 -> ChangeAngle(FRs2, FRs2.Angle * -1), FRs2Array)
     else
-        rFRs1 = FRs1
-        rFRs2 = FRs2
+        rFRs1 = FRs1Array
+        rFRs2 = FRs2Array
     end
 
     MTX1 = ToRotationMatrix(rFRs1)
@@ -126,8 +126,10 @@ function ToEulerVector(MTX1::Array{T, 3}, MTX2::Array{T, 3}, timeRange::Array{T}
     dTime = abs(timeRange[2] - timeRange[1])
 
     iMTX1 = Invert_RotationMatrix(MTX1)
-    MTXs = Multiply_RotationMatrices(iMTX1, MTX2)
-    return map(EVs -> ChangeTimeRange(ChangeAngVel(EVs, EVs.AngVelocity / dTime), timeRange), ToEVs(MTXs))
+    MTX = Multiply_RotationMatrices(iMTX1, MTX2)
+
+    EVsArray = ToEVs(MTX, timeRange)
+    return map(EVs -> ChangeAngVel(EVs, EVs.AngVelocity / dTime), EVsArray)
 
 end
 
@@ -137,7 +139,8 @@ function ToEulerVector(MTX::Array{T, 3}, timeRange::Array{T}) where {T<:Number}
     # Time spanned
     dTime = abs(timeRange[2] - timeRange[1])
 
-    return map(EVs -> ChangeTimeRange(ChangeAngVel(EVs, EVs.AngVelocity / dTime), timeRange), ToEVs(MTX))
+    EVsArray = ToEVs(MTX, timeRange)
+    return map(EVs -> ChangeAngVel(EVs, EVs.AngVelocity / dTime), EVsArray)
 
 end
 

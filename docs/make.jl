@@ -13,7 +13,7 @@ Functions = "Functions" => [
     ]
 
 Examples = "Examples" => [
-    "Conacatenate Finite Rotations" => "examples/mf_concatenate.md",
+    "Concatenate Finite Rotations" => "examples/mf_concatenate.md",
     "Convert to Euler Vector" => "examples/mf_to_euler.md",
     ]
 
@@ -45,3 +45,11 @@ makedocs(
 
 # THROWS Warning: Documenter could not auto-detect the building environment Skipping deployment.
 #deploydocs(repo = "github.com/ValeEspinozaF/PlateKinematics.jl")
+
+#= deploydocs(
+    devbranch = "master",
+    repo   = "https://github.com/ValeEspinozaF/PlateKinematics.jl",
+    deps   = Deps.pip("mkdocs", "pygments", "python-markdown-math"),
+    make   = () -> run(`mkdocs build`),
+    target = "site"
+    ) =#

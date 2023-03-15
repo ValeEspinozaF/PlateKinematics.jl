@@ -1,10 +1,18 @@
 """
-    Add_FiniteRotations(FRs1::FiniteRotSph, FRs2::FiniteRotSph, Nsize=1e5::Number)
-    Add_FiniteRotations(FRs1::Array{T}, FRs2::Array{T}) where {T<:FiniteRotSph}
+    Add_FiniteRotations(
+        FRs1::FiniteRotSph, FRs2::FiniteRotSph, 
+        Nsize=1e5::Number, time=nothing::Union{Nothing, Number})
+
+    Add_FiniteRotations(
+        FRs1::Array{T}, FRs2::Array{T},
+        time=nothing::Union{Nothing, Number}) where {T<:FiniteRotSph}
 
 Return the sumation of two Finite Rotations in Spherical coordinates. 
+A specific output `:Time` field may be passed through the argument `time`.
 """
-function Add_FiniteRotations(FRs1::FiniteRotSph, FRs2::FiniteRotSph, Nsize=1e5::Number)
+function Add_FiniteRotations(
+    FRs1::FiniteRotSph, FRs2::FiniteRotSph, 
+    Nsize=1e5::Number, time=nothing::Union{Nothing, Number})
     
     # Build ensemble if covariances are given
     if !CovIsZero(FRs1.Covariance) || !CovIsZero(FRs2.Covariance)
@@ -21,19 +29,21 @@ function Add_FiniteRotations(FRs1::FiniteRotSph, FRs2::FiniteRotSph, Nsize=1e5::
     addFRs = ToFRs(mMTX)
 
     if size(addFRs)[1] !== 1
-        return AverageEnsemble(addFRs)
+        return AverageEnsemble(addFRs, time)
     else
         return addFRs[1]
     end
 end
 
 
-function Add_FiniteRotations(FRs1::Array{T}, FRs2::Array{T}) where {T<:FiniteRotSph}
+function Add_FiniteRotations(
+    FRs1::Array{T}, FRs2::Array{T}, 
+    time=nothing::Union{Nothing, Number}) where {T<:FiniteRotSph}
     
     MTX1 = ToRotationMatrix(FRs1)
     MTX2 = ToRotationMatrix(FRs2)
 
     mMTX = Multiply_RotationMatrices(MTX2, MTX1)
-    return ToFRs(mMTX)
+    return ToFRs(mMTX, time)
 
 end

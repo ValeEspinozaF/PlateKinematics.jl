@@ -17,12 +17,21 @@ To install, use Julia's built-in package manager (accessed by pressing `]` in th
 to add the package and also to instantiate/build all the required dependencies.
 
 ```@julia
+julia> using Pkg
+julia> Pkg.add(url="https://https://github.com/ValeEspinozaF/PlateKinematics.jl")
+```
+
+## Examples
+
+Some usage examples may be found under `examples/`. These examples are further explained in the package's [documentation]. 
+
+<!--
 julia> ]
 (v1.7) pkg> add PlateKinematics
 (v1.7) pkg> instantiate
-```
 
-<!-- examples
+
+ examples
 ## Examples
 
 Some usage examples may be found under `examples/`. These examples are best explained in the package's [documentation]. 

@@ -3,33 +3,43 @@ using PlateKinematics: ChangeTime
 
 
 """
-    Concatenate_FiniteRotations(FRsArray::Array{T}, Nsize = 1e5::Number) where {T<:FiniteRotSph}
+    Concatenate_FiniteRotations(
+        FRsArray::Array{T}, Nsize = 1e5::Number, 
+        time=nothing::Union{Nothing, Number}) where {T<:FiniteRotSph}
 
-Concatenate all the Finite Rotations in the given array `FRsArray`. Ensure the list is given !!!
+    Concatenate_FiniteRotations(
+        FRsArrays::Array{T}, time=nothing::Union{Nothing, Number}) where {T<:Array{FiniteRotSph}}
 
+Concatenate all the Finite Rotations in the given array `FRsArray`. A specific output `:Time` 
+field may be passed through the argument `time`. Ensure the list is given in order towards 
+the fixed reference frame (see Examples - Concatenate Finite Rotations).
 """
-function Concatenate_FiniteRotations(FRsArray::Array{T}, Nsize = 1e5::Number) where {T<:FiniteRotSph}
+function Concatenate_FiniteRotations(FRsArray::Array{T}, Nsize = 1e5::Number, time=nothing::Union{Nothing, Number}) where {T<:FiniteRotSph}
 
     # Ensure array is stored as vector
     FRsArray = vec(FRsArray)
 
-    # Check if all finite rotations share same :Time parameter value.
-    FRtimes = [FRs.Time for FRs in FRsArray]
-    if !all(time == FRtimes[1] for time in FRtimes)
-        error(
-            "Ages in given array are not the same for every finite rotation ($FRtimes). " *
-            "Consider using the Add_FiniteRotations function for simple summation of two Finite Rotations."
-            )
+    if isnothing(time)
+
+        # Check if all finite rotations share same :Time parameter value.
+        FRtimes = [FRs.Time for FRs in FRsArray]
+        if !all(t == FRtimes[1] for t in FRtimes)
+            println(
+                "Warning! Ages in given array are not the same for every finite rotation ($FRtimes). " *
+                "Consider using the Add_FiniteRotations function for simple summation of two Finite Rotations."
+                )
+        else
+            time == FRtimes[1]
+        end
     end
- 
+
     # Concatenate finite rotations (in inverse order)
     i = lastindex(FRsArray)
     FRs2 = FRsArray[i]
 
     while i >= 2
-        println(a[i])
         FRs1 = FRsArray[i - 1]
-        FRs2 = Add_FiniteRotations(FRs1, FRs2, Nsize)
+        FRs2 = Add_FiniteRotations(FRs1, FRs2, Nsize, time)
         i -= 1
     end
      
@@ -38,6 +48,40 @@ function Concatenate_FiniteRotations(FRsArray::Array{T}, Nsize = 1e5::Number) wh
     return FRs_out
 end
 
+
+function Concatenate_FiniteRotations(FRsArrays::Array{T}, time=nothing::Union{Nothing, Number}) where {T<:Array{FiniteRotSph}}
+
+    # Ensure array is stored as vector
+    #FRsArray = vec(FRsArray)
+
+    if isnothing(time)
+
+        # Check if all finite rotations share same :Time parameter value.
+        FRtimes = [FRsArray[1].Time for FRsArray in FRsArrays]
+        if !all(t == FRtimes[1] for t in FRtimes)
+            println(
+                "Warning! Ages in given array are not the same for every finite rotation ($FRtimes). " *
+                "Consider using the Add_FiniteRotations function for simple summation of two Finite Rotations."
+                )
+        else
+            time == FRtimes[1]
+        end
+    end
+ 
+    # Concatenate finite rotations (in inverse order)
+    i = lastindex(FRsArrays)
+    FRs2 = FRsArrays[i]
+
+    while i >= 2
+        FRs1 = FRsArrays[i - 1]
+        FRs2 = Add_FiniteRotations(FRs1, FRs2, time)
+        i -= 1
+    end
+     
+    FRs_out = FRs2
+
+    return FRs_out
+end
 
 """
     Concatenate_FiniteRotations(

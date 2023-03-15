@@ -55,29 +55,11 @@ function ToFRs(FRc::FiniteRotCart)
     return FiniteRotSph(lon_deg, lat_deg, mag, FRc.Time, FRc.Covariance)
 end
 
+
 function ToFRs(FRcArray::Array{FiniteRotCart})
     return map(FRc -> ToFRs(FRc), FRcArray)
 end
 
-function ToFRs(MTX::Array{T, 3}) where {T<:Number}
-
-    if size(MTX)[1:2] != (3,3)
-        error("Input 3D array must be of size (3, 3, n).")
-    end
-
-    x = MTX[3,2,:] - MTX[2,3,:]
-    y = MTX[1,3,:] - MTX[3,1,:]
-    z = MTX[2,1,:] - MTX[1,2,:]
-
-    # Turn to spherical coordinates, pole in [deg]
-    lon, lat, mag = cart2sph(x, y, z)
-
-    # Magnitude in [degrees]
-    t = MTX[1,1,:] + MTX[2,2,:] + MTX[3,3,:]
-    mag = ToDegrees( atan.(mag, t .- 1) )
-
-    return mapslices(v -> FiniteRotSph(v), [lon lat mag], dims=(2))
-end
 
 function ToFRs(EA::EulerAngles)
 
@@ -116,6 +98,31 @@ function ToFRs(EA::Array{EulerAngles})
     return ToFRs(MTX)
 end
 
+"""
+    ToFRs(MTX::Array{T, 3}, time=nothing::Union{Nothing, Number}) where {T<:Number}
+
+Convert an array of Rotation Matrices `MTX` to an array of Finite Rotations (`::FiniteRotSph`), 
+expressed in degrees. The :Time field may be passed with the argument `time`.
+"""
+function ToFRs(MTX::Array{T, 3}, time=nothing::Union{Nothing, Number}) where {T<:Number}
+
+    if size(MTX)[1:2] != (3,3)
+        error("Input 3D array must be of size (3, 3, n).")
+    end
+
+    x = MTX[3,2,:] - MTX[2,3,:]
+    y = MTX[1,3,:] - MTX[3,1,:]
+    z = MTX[2,1,:] - MTX[1,2,:]
+
+    # Turn to spherical coordinates, pole in [deg]
+    lon, lat, mag = cart2sph(x, y, z)
+
+    # Magnitude in [degrees]
+    t = MTX[1,1,:] + MTX[2,2,:] + MTX[3,3,:]
+    mag = ToDegrees( atan.(mag, t .- 1) )
+
+    return mapslices(v -> FiniteRotSph(v, time), [lon lat mag], dims=(2))
+end
 
 
 """

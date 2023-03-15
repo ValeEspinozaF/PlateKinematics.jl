@@ -39,6 +39,9 @@ Concatenate two or more finite rotations into a plate circuit that links two pla
 ```@docs
 Concatenate_FiniteRotations
 ```
+Note that concatenation is nothing more than a summation of every two Finite Rotations
+in a particular order. Knowing this, one may also use the [`Add_FiniteRotations`](@ref)
+function.
 
 ### Finite Rotations to Euler Vector
 ```@docs

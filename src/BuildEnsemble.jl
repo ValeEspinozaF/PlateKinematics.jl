@@ -55,7 +55,7 @@ function BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1e6::Number)
     EVy = y .+ yc
     EVz = z .+ zc
 
-    return ToEVs(EVx, EVy, EVz)
+    return ToEVs(EVx, EVy, EVz, EVs.TimeRange)
 end
 
 

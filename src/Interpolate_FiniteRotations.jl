@@ -2,7 +2,8 @@
     Interpolate_FiniteRotation(FRs1::FiniteRotSph, time::Number, Nsize = 1e5::Number)
     Interpolate_FiniteRotation(FRs1::Array{FiniteRotSph}, time::Number)
 
-Interpolate a Finite Fotation for a given `time` between a Finite Rotation `FRs` and present-day. """
+Interpolate a Finite Fotation for a given `time` between a Finite Rotation `FRs` and present-day.
+"""
 function Interpolate_FiniteRotation(FRs::FiniteRotSph, time::Number, Nsize = 1e5::Number)
     
     if time > FRs.Time
@@ -59,7 +60,9 @@ end
     Interpolate_FiniteRotation(
         FRs1::Array{FiniteRotSph}, FRs2::Array{FiniteRotSph}, time::Number)
 
-Interpolate a Finite Rotation for a given `time` between two total Finite Rotations, a younger `FRs1` and an older one `FRs2`."""
+Interpolate a Finite Rotation for a given `time` between two total Finite Rotations, 
+a younger `FRs1` and an older one `FRs2`.
+"""
 function Interpolate_FiniteRotation(
     FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Number, Nsize = 1e5::Number) 
     
@@ -145,7 +148,8 @@ end
     Interpolate_FiniteRotation(
         FRsList::Array{FiniteRotSph}, times::Array{Number}, Nsize = 1e5::Number)
 
-Interpolate a list `times` from a list of total Finite Rotations `FRsList`. """
+Interpolate a list `times` from a list of total Finite Rotations `FRsList`.
+"""
 function Interpolate_FiniteRotation(
     FRsList::Array{FiniteRotSph}, times::Array{Number}, Nsize = 1e5::Number)
 
@@ -181,36 +185,65 @@ function Interpolate_FiniteRotation(
 end
 
 
+"""
+    Interpolate_FiniteRotation(MTX::Array{Float64, 3}, t1::Number, time::Number)
+
+Interpolate a Finite Fotation for a given `time` between a Rotation Matrix `MTX`
+and present-day. `t1` is the age of the Rotation Matrix. `MTX` may be a sampled 
+ensembles from [`BuildEnsemble3D`](@ref).
+"""
 function Interpolate_FiniteRotation(MTX::Array{Float64, 3}, t1::Number, time::Number)
 
-    if  time >= t1 
+    if  time > t1 
         error("Interpolation time is not between given t1 and t2.")
+
+    elseif time == t1
+        return ToFRs(MTX)
+
+    else
+        delta = time / t1
+
+        mFRs = ToFRs(MTX)
+        xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
+        return map(FRs -> ChangeTime(FRs, time), xFRs)
+        
     end
-
-    delta = time / t1
-
-    mFRs = ToFRs(MTX)
-    xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
-    return map(FRs -> ChangeTime(FRs, time), xFRs)
 end
 
 
+"""
+    Interpolate_FiniteRotation(
+        MTX1::Array{Float64, 3}, MTX2::Array{Float64, 3}, 
+        t1::Number, t2::Number, time::Number)
+
+Interpolate a Finite Rotation for a given `time` between two total Rotation Matrices,
+a younger `MTX1` and an older one `MTX2`. Rotation Matrices ages are `t1` and `t2` 
+respectively. `MTX1` and `MTX2` may be a sampled ensembles from [`BuildEnsemble3D`](@ref).
+"""
 function Interpolate_FiniteRotation(
     MTX1::Array{Float64, 3}, MTX2::Array{Float64, 3}, t1::Number, t2::Number, time::Number)
     
-    if  time >= t2 || t1 >= time 
+    if  time > t2 || t1 > time 
         error("Interpolation time is not between given t1 and t2.")
+
+    elseif time == t1
+        return ToFRs(MTX1)
+
+    elseif time == t2
+        return ToFRs(MTX2)
+    
+    else
+        # Calculate stage pole t2 ROT t1
+        delta = (time-t1) / (t2-t1)
+
+        iMTX1 = Invert_RotationMatrix(MTX1)
+        mMTX = Multiply_RotationMatrices(MTX2, iMTX1)
+        mFRs = ToFRs(mMTX)
+        xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
+
+        # Calculate finite rotation 0 ROT time, return MTX array
+        intMTX = Multiply_RotationMatrices(ToRotationMatrix(xFRs), MTX1)
+        return map(FRs -> ChangeTime(FRs, time), ToFRs(intMTX))
+        
     end
-
-    # Calculate stage pole t2 ROT t1
-    delta = (time-t1) / (t2-t1)
-
-    iMTX1 = Invert_RotationMatrix(MTX1)
-    mMTX = Multiply_RotationMatrices(MTX2, iMTX1)
-    mFRs = ToFRs(mMTX)
-    xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
-
-    # Calculate finite rotation 0 ROT time, return MTX array
-    intMTX = Multiply_RotationMatrices(ToRotationMatrix(xFRs), MTX1)
-    return map(FRs -> ChangeTime(FRs, time), ToFRs(intMTX))
 end
