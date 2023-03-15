@@ -21,6 +21,7 @@ Examples = "Examples" => [
 #License = "License" => "license.md"
 
 format = Documenter.HTML(
+    edit_link = "stable",
     collapselevel = 3,
     prettyurls = get(ENV, "CI", nothing) == "true",
     assets = ["assets/logo.ico"],
@@ -51,6 +52,7 @@ makedocs(
 withenv("GITHUB_REPOSITORY" => "ValeEspinozaF/PlateKinematics.jl") do
     deploydocs(
         devbranch = "stable",
+        branch = "gh-pages",
         repo   = "github.com/ValeEspinozaF/PlateKinematics.jl.git",
         #deps   = Deps.pip("mkdocs", "pygments", "python-markdown-math"),
         #make   = () -> run(`mkdocs build`),
