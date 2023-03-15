@@ -1,3 +1,4 @@
+import Pkg; Pkg.add("Documenter")
 using Documenter, DocumenterTools
 using PlateKinematics
 
@@ -44,13 +45,6 @@ makedocs(
     #checkdocs = :exports,
     pages = PAGES
 )
-
-Examples = "Examples" => [
-    "GITHUB_REPOSITORY" => "ValeEspinozaF/PlateKinematics.jl",
-    "GITHUB_EVENT_NAME" => "push",
-    "GITHUB_REF" => "stable",
-    "GITHUB_TOKEN" => 
-    ]
 
 
 # THROWS Warning: Documenter could not auto-detect the building environment Skipping deployment.
