@@ -23,7 +23,7 @@ Examples = "Examples" => [
 format = Documenter.HTML(
     edit_link = "stable",
     collapselevel = 3,
-    prettyurls = get(ENV, "CI", nothing) == "true",
+    #prettyurls = get(ENV, "CI", nothing) == "true",
     assets = ["assets/logo.ico"],
     canonical = "https://valeespinozaf.github.io/PlateKinematics.jl/"
     )
