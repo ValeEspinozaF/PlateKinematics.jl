@@ -1,4 +1,4 @@
-import Pkg; Pkg.add("Documenter")
+#import Pkg; Pkg.add("Documenter")
 using Documenter, DocumenterTools
 using PlateKinematics
 
@@ -22,8 +22,7 @@ Examples = "Examples" => [
 
 format = Documenter.HTML(
     collapselevel = 3,
-    #prettyurls = get(ENV, "CI", nothing) == "true",
-    prettyurls = CI,
+    prettyurls = get(ENV, "CI", nothing) == "true",
     assets = ["assets/logo.ico"],
     canonical = "https://valeespinozaf.github.io/PlateKinematics.jl/"
     )
