@@ -10,6 +10,9 @@ This obstacle can be circunvented by using a plate circuit that links both plate
 
 This examples is taken from the book [Plate Tectonics: How it works] from Allan Cox, and provides on how to calculate the relative motion between plates that do not share a divergent boundary. All the other plate-pairs mentioned do share a common spreading center, which allows researcher to estimate opening rates of the ocean floor from the magnetic lineations parallel to the ridge.
 
+```@raw html
+<img src="assets/plate_circuit.png" alt="Plate circuit example" width="230" height="180">
+```
 ![alt text](assets/plate_circuit.png)
 
 Plate circuit example. Modified from [Plate Tectonics: How it works].
