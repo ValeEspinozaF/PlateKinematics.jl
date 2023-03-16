@@ -4,6 +4,8 @@ CurrentModule = PlateKinematics
 
 # Main Functions
 
+**PlateKinematics.jl** includes functions to aid in the step between [Finite Rotations](@ref) to [Euler Vectors](@ref) to [Surface Velocity](@ref). These steps usually involve interpolation and concatenation of Finite Rotations. All functions allow the user to work with (i) sampled ensembles of a Finite Rotations, (ii) an average Finite Rotation from which an ensemble is drawn, or (iii) a single Finite Rotation to which no [Covariance](@ref) has been given. The same principle applies to functions involving Euler Vectors. In many functions you will notice the optional parameter `Nsize`, which aims at providing control to the user on the size of the sampled ensemble of Finite Rotations/Euler Vector, shall a [Covariance](@ref) be provided.
+
 ## Contents
 
 ```@contents

@@ -190,7 +190,7 @@ end
 
 Interpolate a Finite Fotation for a given `time` between a Rotation Matrix `MTX`
 and present-day. `t1` is the age of the Rotation Matrix. `MTX` may be a sampled 
-ensembles from [`BuildEnsemble3D`](@ref).
+ensemble from [`BuildEnsemble3D`](@ref).
 """
 function Interpolate_FiniteRotation(MTX::Array{Float64, 3}, t1::Number, time::Number)
 
@@ -217,8 +217,8 @@ end
         t1::Number, t2::Number, time::Number)
 
 Interpolate a Finite Rotation for a given `time` between two total Rotation Matrices,
-a younger `MTX1` and an older one `MTX2`. Rotation Matrices ages are `t1` and `t2` 
-respectively. `MTX1` and `MTX2` may be a sampled ensembles from [`BuildEnsemble3D`](@ref).
+a younger `MTX1` and an older one `MTX2`. Rotation Matrices ages are `t1` and `t2`, 
+respectively. `MTX1` and `MTX2` may be sampled ensembles from [`BuildEnsemble3D`](@ref).
 """
 function Interpolate_FiniteRotation(
     MTX1::Array{Float64, 3}, MTX2::Array{Float64, 3}, t1::Number, t2::Number, time::Number)

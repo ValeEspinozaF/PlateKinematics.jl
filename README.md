@@ -21,21 +21,16 @@ julia> using Pkg
 julia> Pkg.add(url="https://https://github.com/ValeEspinozaF/PlateKinematics.jl")
 ```
 
-## Examples
-
-Some usage examples may be found under `examples/`. These examples are further explained in the package's [documentation]. 
-
 <!--
 julia> ]
 (v1.7) pkg> add PlateKinematics
 (v1.7) pkg> instantiate
+ -->
 
-
- examples
 ## Examples
 
-Some usage examples may be found under `examples/`. These examples are best explained in the package's [documentation]. 
- -->
+Some usage examples may be found under `examples/`. These examples are further explained in the package's [documentation]. 
+
 
 <!-- reach out
 ## Getting help

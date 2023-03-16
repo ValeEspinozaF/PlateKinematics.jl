@@ -4,6 +4,8 @@ using PlateKinematics
 
 About = "Introduction" => "index.md"
 
+Theory = "Theory" => "theory.md"
+
 Types = "Types" => "lib/types.md"
 
 Functions = "Functions" => [
@@ -30,6 +32,7 @@ format = Documenter.HTML(
 
 PAGES = [
     About,
+    Theory,
     Types,
     Functions,
     Examples,
@@ -47,8 +50,6 @@ makedocs(
 )
 
 
-# THROWS Warning: Documenter could not auto-detect the building environment Skipping deployment.
-#deploydocs(repo = "github.com/ValeEspinozaF/PlateKinematics.jl")
 withenv("GITHUB_REPOSITORY" => "ValeEspinozaF/PlateKinematics.jl") do
     deploydocs(
         devbranch = "stable",
