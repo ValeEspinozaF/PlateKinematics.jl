@@ -47,7 +47,7 @@ struct EulerVectorSph
     "Latitude of the Euler pole in degrees-North."
         Lat::Number
     "Angular velocity in degrees/Myr."
-        AngVelocity::Number
+        AngVelocity::Float64
     "Initial to final age of rotation."
         TimeRange::Union{Matrix, Nothing}
     "[`Covariance`](@ref) in radians²/Myr²."
@@ -62,9 +62,9 @@ Euler vector in Cartesian coordinates, expressed in degrees/Myr.
 
 Fields
 ------
-* `X::Number`: X-coordinate in degrees/Myr
-* `Y::Number`: Y-coordinate in degrees/Myr
-* `Z::Number`: Z-coordinate in degrees/Myr
+* `X::Float64`: X-coordinate in degrees/Myr
+* `Y::Float64`: Y-coordinate in degrees/Myr
+* `Z::Float64`: Z-coordinate in degrees/Myr
 * `TimeRange::Union{Matrix, Nothing}`: Initial to final age of rotation
 * `Covariance::Covariance`: [`Covariance`](@ref) in radians²/Myr²
 
@@ -74,11 +74,11 @@ Same outer Constructor Methods as [`EulerVectorSph`](@ref).
 """
 struct EulerVectorCart
     "X-coordinate in degrees/Myr."
-        X::Number
+        X::Float64
     "Y-coordinate in degrees/Myr."
-        Y::Number
+        Y::Float64
     "Z-coordinate in degrees/Myr."
-        Z::Number
+        Z::Float64
     "Initial to final age of rotation."
         TimeRange::Union{Matrix, Nothing}
     "[`Covariance`](@ref) in radians²/Myr²."
@@ -99,7 +99,7 @@ EulerVectorSph(array::Array, timeRange, covariance::Covariance) = EulerVectorSph
 EulerVectorSph(array::Array, timeRange, covariance::Array) = EulerVectorSph(array[1], array[2], array[3], timeRange, Covariance(covariance))
 Base.getindex(x::EulerVectorSph, i::Int) = getfield(x, i)
 
-function EulerVectorSph(lon::Number, lat::Number, angVelocity::Number, array::Array)
+function EulerVectorSph(lon::N, lat::N, angVelocity::N, array::Array{N}) where {N<:Float64}
     if length(array) == 2
         return EulerVectorSph(lon, lat, angVelocity, array, Covariance())
     else
@@ -120,7 +120,7 @@ EulerVectorCart(array::Array, timeRange, covariance::Covariance) = EulerVectorCa
 EulerVectorCart(array::Array, timeRange, covariance::Array) = EulerVectorCart(array[1], array[2], array[3], timeRange, Covariance(covariance))
 Base.getindex(x::EulerVectorCart, i::Int) = getfield(x, i)
 
-function EulerVectorCart(x::Number, y::Number, z::Number, array::Array)
+function EulerVectorCart(x::N, y::N, z::N, array::Array{N}) where {N<:Float64}
     if length(array) == 2
         return EulerVectorCart(x, y, z, array, Covariance())
     else

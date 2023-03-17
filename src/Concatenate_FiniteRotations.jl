@@ -4,17 +4,19 @@ using PlateKinematics: ChangeTime
 
 """
     Concatenate_FiniteRotations(
-        FRsList::Array{T}, Nsize = 1e5::Number, 
-        time=nothing::Union{Nothing, Number}) where {T<:FiniteRotSph}
+        FRsList::Array{T}, Nsize=100000::Int64, 
+        time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotSph}
 
     Concatenate_FiniteRotations(
-        FRsList::Array{T}, time=nothing::Union{Nothing, Number}) where {T<:Array{FiniteRotSph}}
+        FRsList::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:Array{FiniteRotSph}}
 
 Concatenate all the Finite Rotations in the given array `FRsList`. A specific output `:Time` 
 field may be passed through the argument `time`. Ensure the list is given in order towards 
 the fixed reference frame (see Examples - Concatenate Finite Rotations).
 """
-function Concatenate_FiniteRotations(FRsList::Array{T}, Nsize = 1e5::Number, time=nothing::Union{Nothing, Number}) where {T<:FiniteRotSph}
+function Concatenate_FiniteRotations(
+    FRsList::Array{T}, Nsize=100000::Int64, 
+    time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotSph}
 
     # Ensure array is stored as vector
     FRsList = vec(FRsList)
@@ -49,7 +51,8 @@ function Concatenate_FiniteRotations(FRsList::Array{T}, Nsize = 1e5::Number, tim
 end
 
 
-function Concatenate_FiniteRotations(FRsList::Array{T}, time=nothing::Union{Nothing, Number}) where {T<:Array{FiniteRotSph}}
+function Concatenate_FiniteRotations(
+    FRsList::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:Array{FiniteRotSph}}
 
     # Ensure array is stored as vector
     #FRsArray = vec(FRsArray)
@@ -86,14 +89,14 @@ end
 """
     Concatenate_FiniteRotations(
         FRs1List::Array{T}, FRs2List::Array{T}, 
-        Nsize = 1e5::Number, times = []::Array) where {T<:FiniteRotSph}
+        Nsize=100000::Int64, times=[]]::Array{N}) where {T<:FiniteRotSph, N<:Float64}
 
 Given two lists of Finite Rotations (`FRs1List` and `FRs2List`), concatenate the poles for 
 available common ages. Specific ages may be passed through the argument `times`.
 """
 function Concatenate_FiniteRotations(
     FRs1List::Array{T}, FRs2List::Array{T}, 
-    Nsize = 1e5::Number, times = []::Array) where {T<:FiniteRotSph}
+    Nsize=100000::Int64, times=[]::Array{N}) where {T<:FiniteRotSph, N<:Float64}
 
     # Ensure arrays are stored as vectors
     FRs1List = vec(FRs1List)
@@ -119,7 +122,9 @@ function Concatenate_FiniteRotations(
 end
 
 
-function Find_commonAges(FRs1Array::Array{T}, FRs2Array::Array{T}, times=[]::Array) where {T<:FiniteRotSph}
+function Find_commonAges(
+    FRs1Array::Array{T}, FRs2Array::Array{T}, 
+    times=[]::Array{N}) where {T<:FiniteRotSph, N<:Float64}
 
     # Available times for interpolation
     FR1times = [FRs.Time for FRs in FRs1Array]

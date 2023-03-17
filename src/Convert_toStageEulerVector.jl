@@ -1,12 +1,12 @@
 """
-    ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=1e5::Number)
+    ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::Int64)
     ToEulerVector(FRsArray::Array{FiniteRotSph}, reverseRot=false::Bool)
 
 Return a stage Euler Vector describing the motion between a total Finite Rotation `FRs`
 and present-day. The output time-orientation may the inverted by setting the `reverseRot` 
 parameter to `true`.
 """
-function ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=1e5::Number)
+function ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::Int64)
 
     timeRange = [0.0 FRs.Time] 
 
@@ -59,7 +59,7 @@ end
 """
     ToEulerVector(
         FRs1::FiniteRotSph, FRs2::FiniteRotSph, 
-        reverseRot=false::Bool, Nsize=1e5::Number)
+        reverseRot=false::Bool, Nsize=100000::Int64)
     ToEulerVector(
         FRs1Array::Array{T}, FRs2Array::Array{T}, 
         reverseRot=false::Bool) where {T<:FiniteRotSph}
@@ -68,7 +68,8 @@ Return a stage Euler Vector describing the motion between two total Finite Rotat
 (`FRs1` and `FRs2`). The output time-orientation may the inverted by setting the 
 `reverseRot` parameter to `true`.
 """
-function ToEulerVector(FRs1::FiniteRotSph, FRs2::FiniteRotSph, reverseRot=false::Bool, Nsize=1e5::Number)
+function ToEulerVector(
+    FRs1::FiniteRotSph, FRs2::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::Int64)
 
     timeRange = [FRs1.Time FRs2.Time] 
 
@@ -100,7 +101,8 @@ function ToEulerVector(FRs1::FiniteRotSph, FRs2::FiniteRotSph, reverseRot=false:
     end
 end
 
-function ToEulerVector(FRs1Array::Array{T}, FRs2Array::Array{T}, reverseRot=false::Bool) where {T<:FiniteRotSph}
+function ToEulerVector(
+    FRs1Array::Array{T}, FRs2Array::Array{T}, reverseRot=false::Bool) where {T<:FiniteRotSph}
 
     timeRange = [FRs1Array[1].Time FRs2Array[2].Time] 
 
@@ -120,7 +122,8 @@ function ToEulerVector(FRs1Array::Array{T}, FRs2Array::Array{T}, reverseRot=fals
 end
 
 
-function ToEulerVector(MTX1::Array{T, 3}, MTX2::Array{T, 3}, timeRange::Array{T}) where {T<:Number}
+function ToEulerVector(
+    MTX1::Array{N, 3}, MTX2::Array{N, 3}, timeRange::Array{N}) where {N<:Float64}
     
     # Time spanned
     dTime = abs(timeRange[2] - timeRange[1])
@@ -134,7 +137,7 @@ function ToEulerVector(MTX1::Array{T, 3}, MTX2::Array{T, 3}, timeRange::Array{T}
 end
 
 
-function ToEulerVector(MTX::Array{T, 3}, timeRange::Array{T}) where {T<:Number}
+function ToEulerVector(MTX::Array{N, 3}, timeRange::Array{N}) where {N<:Float64}
     
     # Time spanned
     dTime = abs(timeRange[2] - timeRange[1])
@@ -147,12 +150,13 @@ end
 
 """
     ToEulerVectorList(
-        FRsArray::Array{T}, reverseRot=false::Bool, Nsize=1e5::Number) where {T<:FiniteRotSph}
+        FRsArray::Array{T}, reverseRot=false::Bool, Nsize=100000::Int64) where {T<:FiniteRotSph}
 
 Return a list of Euler Vectors describing the motion for a list of total Finite Rotations `FRsArray`.
 The output time-orientation may the inverted by setting the `reverseRot` parameter to `true`.
 """
-function ToEulerVectorList(FRsArray::Array{T}, reverseRot=false::Bool, Nsize=1e5::Number) where {T<:FiniteRotSph}
+function ToEulerVectorList(
+    FRsArray::Array{T}, reverseRot=false::Bool, Nsize=100000::Int64) where {T<:FiniteRotSph}
 
     N_EV = length(FRsArray)
 

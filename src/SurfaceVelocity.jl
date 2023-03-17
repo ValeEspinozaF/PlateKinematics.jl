@@ -3,7 +3,7 @@ using Statistics, LinearAlgebra
 #= """ Simplified, faster version. - Does not use the ellipsoid and gives an azimuth between -90 and 270. 
 
 Calculate the surface velocity components for a given point on Earth. """
-function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Number, pntLat::Number, Nsize = 1e5::Number)
+function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat::Float64, Nsize=100000::Int64)
 
     OUT_UNIT = 1e-7     # unit of measurement to cm/yr
     Re = 6371e6         # Earth's radius
@@ -66,22 +66,22 @@ end =#
 
 """
     Calculate_SurfaceVelocity(
-        EVs::EulerVectorSph, pntLon::Number, pntLat::Number, Nsize = 1e5::Number)
+        EVs::EulerVectorSph, pntLon::Float64, pntLat::Float64, Nsize=100000::Int64)
 
     Calculate_SurfaceVelocity(
-        EVsArray::Array{T}, pntLon::Number, pntLat::Number, 
-        Nsize = 1e5::Number) where {T<:EulerVectorSph}
+        EVsArray::Array{T}, pntLon::Float64, pntLat::Float64, 
+        Nsize=100000::Int64) where {T<:EulerVectorSph}
 
     Calculate_SurfaceVelocity(
-        EVs::EulerVectorSph, arrayLon::Array{T}, arrayLat::Array{T}, 
-        Nsize = 1e5::T) where {T<:Number}
+        EVs::EulerVectorSph, arrayLon::Array{N}, arrayLat::Array{N}, 
+        Nsize=100000::Int64) where {N<:Float64}
 
 Calculate the Surface Velocity components for a given point on Earth, subject to the motion
 described by an Euler Vector `EVs`. Location(s) are given through parameters `pntLon` 
 and `pntLat`, which represent spherical coordinates in degrees-East and degrees-North, 
 respectively. 
 """
-function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Number, pntLat::Number, Nsize = 1e5::Number)
+function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat::Float64, Nsize=100000::Int64)
     
     # Build ensemble if covariances are given
     if CovIsZero(EVs.Covariance)
@@ -129,7 +129,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Number, pntLat::
 end
 
 
-function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Array{T}, pntLat::Array{T}, Nsize = 1e5::T) where {T<:Number}
+function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Array{N}, pntLat::Array{N}, Nsize=100000::Int64) where {N<:Float64}
 
     
     # Build ensemble if covariances are given
@@ -188,7 +188,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Array{T}, pntLat
 end
 
 
-function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Number, pntLat::Number, Nsize = 1e5::Number) where {T<:EulerVectorSph}
+function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Float64, pntLat::Float64, Nsize=100000::Int64) where {T<:EulerVectorSph}
 
     # Point coordinates to Cartesian (WGS-84 ellipsoid)
     x, y, z = GeographicalCoords_toCartesian(pntLon, pntLat)
@@ -201,7 +201,7 @@ function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Number, pntLat::N
         )
     
     # Surface velocity
-    SVcArray = Array{Number}(undef, floor(Int, Nsize), 3)
+    SVcArray = Array{Float64}(undef, floor(Int, Nsize), 3)
 
     SVcArray[:, 1] = (wy .* z) .- (wz .* y)
     SVcArray[:, 2] = (wz .* x) .- (wx .* z)
@@ -222,7 +222,7 @@ function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Number, pntLat::N
 
     # Velocity vector azimuth (clockwise from North)
     AT = ToDegrees(atan.(northVel, eastVel))
-    azimuth = Array{Number}(undef, floor(Int, Nsize))
+    azimuth = Array{Float64}(undef, floor(Int, Nsize))
 
     r = findall(eastVel .> 0)
     azimuth[r] .= 90 .- sign.(northVel[r]) .* abs.(AT[r])
@@ -236,10 +236,10 @@ end
 
 
 """
-    GeographicalCoords_toCartesian(pntLon::Number, pntLat::Number, Ht=0::Number)
+    GeographicalCoords_toCartesian(pntLon::Float64, pntLat::Float64, Ht=0.0::Float64)
 
 Converts local geographical coordinates (ellipsoidal) into Cartesian. """
-function GeographicalCoords_toCartesian(pntLon::Number, pntLat::Number, Ht=0::Number)
+function GeographicalCoords_toCartesian(pntLon::Float64, pntLat::Float64, Ht=0.0::Float64)
 
     # pntLon and pntLat are geographical coordinates in degrees.
     # Ht is the height abode the ellipsoid in meters.
@@ -272,10 +272,10 @@ end
 
 
 """
-    CartesianVelocity_toEN(pntLon::Number, pntLat::Number, SVcArray::Array)
+    CartesianVelocity_toEN(pntLon::N, pntLat::N, SVcArray::Array{N, 2}) where {N<:Float64}
 
 Converts a set of velocities from Cartesian to East/North (EN) components. """
-function CartesianVelocity_toEN(pntLon::Number, pntLat::Number, SVcArray::Array)
+function CartesianVelocity_toEN(pntLon::N, pntLat::N, SVcArray::Array{N, 2}) where {N<:Float64}
 
     lon_rad = ToRadians(pntLon)
     lat_rad = ToRadians(pntLat)

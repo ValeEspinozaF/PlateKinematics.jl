@@ -20,12 +20,12 @@ PlateKinematics.Covariance(1, 2, 3, 4, 5, 6)
 ```
 """
 struct Covariance
-    C11::Number
-    C12::Number
-    C13::Number
-    C22::Number
-    C23::Number
-    C33::Number
+    C11::Float64
+    C12::Float64
+    C13::Float64
+    C22::Float64
+    C23::Float64
+    C33::Float64
 end
 
 Covariance() = Covariance(0,0,0,0,0,0)
