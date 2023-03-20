@@ -16,6 +16,7 @@ Functions = "Functions" => [
     ]
 
 Examples = "Examples" => [
+    "Interpolate Finite Rotations" => "examples/mf_interpolate.md",
     "Concatenate Finite Rotations" => "examples/mf_concatenate.md",
     "Convert to Euler Vector" => "examples/mf_to_euler.md",
     ]

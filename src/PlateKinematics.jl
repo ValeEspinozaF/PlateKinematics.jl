@@ -10,10 +10,13 @@ using LinearAlgebra, Statistics
 using DelimitedFiles, Serialization, Printf, DataFrames
 
 # Structures
-include("Covariances.jl")
-include("FiniteRotations.jl")
-include("EulerVectors.jl")
-include("SurfaceVelocityVector.jl")
+include("types/Covariances.jl")
+include("types/FiniteRotations.jl")
+include("types/EulerVectors.jl")
+include("types/SurfaceVelocityVector.jl")
+
+# Methods
+include("methods/FiniteRotations_methods.jl")
 
 # Transformations
 include("CoordinateSystemTransformations.jl")

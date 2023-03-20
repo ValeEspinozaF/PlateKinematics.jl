@@ -111,6 +111,7 @@ function ToEulerVector(
         timeRange = reverse(timeRange)
         rFRs1 = map(FRs1 -> ChangeAngle(FRs1, FRs1.Angle * -1), FRs1Array)
         rFRs2 = map(FRs2 -> ChangeAngle(FRs2, FRs2.Angle * -1), FRs2Array)
+
     else
         rFRs1 = FRs1Array
         rFRs2 = FRs2Array
@@ -121,30 +122,69 @@ function ToEulerVector(
     return ToEulerVector(MTX1, MTX2, timeRange)
 end
 
+function ToEulerVector2(
+    FRs1Array::Array{T}, FRs2Array::Array{T}, reverseRot=false::Bool) where {T<:FiniteRotSph}
+
+    timeRange = [FRs1Array[1].Time FRs2Array[2].Time] 
+
+    MTX1 = ToRotationMatrix(FRs1Array)
+    MTX2 = ToRotationMatrix(FRs2Array)
+
+    # Reverses sense of rotation (when using reconstruction finite rotations)
+    if reverseRot == true
+        timeRange = reverse(timeRange)
+        rMTX1 = ToRotationMatrix(FRs1Array)
+        rMTX2 = ToRotationMatrix(FRs2Array)
+
+        return ToEulerVector(rMTX1, rMTX2, timeRange)
+
+    else
+        #rFRs1 = FRs1Array
+        #rFRs2 = FRs2Array
+        return ToEulerVector(MTX1, MTX2, timeRange)
+
+    end
+end
+
 
 function ToEulerVector(
     MTX1::Array{N, 3}, MTX2::Array{N, 3}, timeRange::Array{N}) where {N<:Float64}
-    
-    # Time spanned
-    dTime = abs(timeRange[2] - timeRange[1])
+
+    if size(MTX1)[1:2] != (3,3) || size(MTX2)[1:2] != (3,3)
+        error("Input 3D array must be of size (3, 3, n).")
+    end
+
+    if size(MTX1) != size(MTX2) 
+        error("Input arrays dont have the same length (MTX1: $(size(MTX1)), MTX2: $(size(MTX2))).")
+    end
 
     iMTX1 = Invert_RotationMatrix(MTX1)
     MTX = Multiply_RotationMatrices(iMTX1, MTX2)
 
-    EVsArray = ToEVs(MTX, timeRange)
-    return map(EVs -> ChangeAngVel(EVs, EVs.AngVelocity / dTime), EVsArray)
-
+    return ToEulerVector(MTX, timeRange)
 end
 
 
 function ToEulerVector(MTX::Array{N, 3}, timeRange::Array{N}) where {N<:Float64}
     
+    if size(MTX)[1:2] != (3,3)
+        error("Input 3D array must be of size (3, 3, n).")
+    end
+
     # Time spanned
     dTime = abs(timeRange[2] - timeRange[1])
 
-    EVsArray = ToEVs(MTX, timeRange)
-    return map(EVs -> ChangeAngVel(EVs, EVs.AngVelocity / dTime), EVsArray)
+    # Turn to spherical coordinates, pole in [deg]
+    x = MTX[3,2,:] - MTX[2,3,:]
+    y = MTX[1,3,:] - MTX[3,1,:]
+    z = MTX[2,1,:] - MTX[1,2,:]
+    lon, lat, mag = cart2sph(x, y, z)
 
+    # Magnitude in [degrees/Myr]
+    t = MTX[1,1,:] + MTX[2,2,:] + MTX[3,3,:]
+    vel = ToDegrees( atan.(mag, t .- 1) ) ./ dTime
+
+    return mapslices(v -> EulerVectorSph(v, timeRange), [lon lat vel], dims=(2))
 end
 
 

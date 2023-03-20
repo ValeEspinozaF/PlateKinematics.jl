@@ -109,7 +109,7 @@ end
 Convert an array of Rotation Matrices `MTX` to an array of Finite Rotations (`::FiniteRotSph`), 
 expressed in degrees. The :Time field may be passed with the argument `time`.
 """
-function ToFRs(MTX::Array{N, 3}, time=nothing::Union{Nothing, N}) where {N<:Number}
+function ToFRs(MTX::Array{N, 3}, time=nothing::Union{Nothing, N}) where {N<:Float64}
 
     if size(MTX)[1:2] != (3,3)
         error("Input 3D array must be of size (3, 3, n).")

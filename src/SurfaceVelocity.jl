@@ -1,4 +1,6 @@
 using Statistics, LinearAlgebra
+using PlateKinematics
+using PlateKinematics: EulerVectorSph, CovIsZero, BuildEnsemble3D, SurfaceVelocityVector, sph2cart, ToDegrees, ToRadians
 
 #= """ Simplified, faster version. - Does not use the ellipsoid and gives an azimuth between -90 and 270. 
 
@@ -11,16 +13,16 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
     
     # Build ensemble if covariances are given
     if CovIsZero(EVs.Covariance)
-        EvsArray = [EVs]
+        EVsArray = [EVs]
     else
-        EvsArray = BuildEnsemble3D(EVs, Nsize)
+        EVsArray = BuildEnsemble3D(EVs, Nsize)
     end 
 
     
     # Euler pole coorinates in radians
-    lon_rad = ToRadians(getindex.(EvsArray, 1))
-    lat_rad = ToRadians(getindex.(EvsArray, 2))
-    mag_rad = ToRadians(getindex.(EvsArray, 3))
+    lon_rad = ToRadians(getindex.(EVsArray, 1))
+    lat_rad = ToRadians(getindex.(EVsArray, 2))
+    mag_rad = ToRadians(getindex.(EVsArray, 3))
 
 
     # Location point in radians 
@@ -50,7 +52,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
 
 
     # Return SurfaceVelocityVector
-    if size(EvsArray)[1] !== 1
+    if size(EVsArray)[1] !== 1
         return SurfaceVelocityVector(
             pntLon, pntLat, 
             Stat(meanEast, stdEast), 
@@ -69,8 +71,7 @@ end =#
         EVs::EulerVectorSph, pntLon::Float64, pntLat::Float64, Nsize=100000::Int64)
 
     Calculate_SurfaceVelocity(
-        EVsArray::Array{T}, pntLon::Float64, pntLat::Float64, 
-        Nsize=100000::Int64) where {T<:EulerVectorSph}
+        EVsArray::Array{T}, pntLon::Float64, pntLat::Float64) where {T<:EulerVectorSph}
 
     Calculate_SurfaceVelocity(
         EVs::EulerVectorSph, arrayLon::Array{N}, arrayLat::Array{N}, 
@@ -85,14 +86,14 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
     
     # Build ensemble if covariances are given
     if CovIsZero(EVs.Covariance)
-        EvsArray = [EVs]
+        EVsArray = [EVs]
     else
-        EvsArray = BuildEnsemble3D(EVs, Nsize)
+        EVsArray = BuildEnsemble3D(EVs, Nsize)
     end 
 
 
     # Calculate surface velocity components
-    eastVel, northVel, totalVel, azimuth = Calculate_SurfaceVelocity(EVsArray, pntLon, pntLat, Nsize)
+    eastVel, northVel, totalVel, azimuth = Calculate_SurfaceVelocity(EVsArray, pntLon, pntLat)
 
 
     # Surface velocity statistics
@@ -108,7 +109,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
 
 
     # Return SurfaceVelocityVector
-    if size(EvsArray)[1] !== 1
+    if size(EVsArray)[1] !== 1
 
         return SurfaceVelocityVector(
             pntLon, pntLat, 
@@ -129,14 +130,16 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
 end
 
 
-function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Array{N}, pntLat::Array{N}, Nsize=100000::Int64) where {N<:Float64}
+function Calculate_SurfaceVelocity(
+    EVs::EulerVectorSph, pntLon::Array{N}, pntLat::Array{N}, 
+    Nsize=100000::Int64) where {N<:Float64}
 
     
     # Build ensemble if covariances are given
     if CovIsZero(EVs.Covariance)
-        EvsArray = [EVs]
+        EVsArray = [EVs]
     else
-        EvsArray = BuildEnsemble3D(EVs, Nsize)
+        EVsArray = BuildEnsemble3D(EVs, Nsize)
     end 
 
 
@@ -147,7 +150,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Array{N}, pntLat
     for (i, (pntLon, pntLat)) in enumerate(zip(pntLon, pntLat))
 
         # Calculate surface velocity components
-        eastVel, northVel, totalVel, azimuth = Calculate_SurfaceVelocity(EVsArray, pntLon, pntLat, Nsize)
+        eastVel, northVel, totalVel, azimuth = Calculate_SurfaceVelocity(EVsArray, pntLon, pntLat)
 
 
         # Surface velocity statistics
@@ -163,7 +166,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Array{N}, pntLat
 
 
         # Return SurfaceVelocityVector
-        if size(EvsArray)[1] !== 1
+        if size(EVsArray)[1] !== 1
 
             SV_array[i] = SurfaceVelocityVector(
                 pntLon, pntLat, 
@@ -188,7 +191,9 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Array{N}, pntLat
 end
 
 
-function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Float64, pntLat::Float64, Nsize=100000::Int64) where {T<:EulerVectorSph}
+function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Float64, pntLat::Float64) where {T<:EulerVectorSph}
+
+    Nsize = length(EVsArray)
 
     # Point coordinates to Cartesian (WGS-84 ellipsoid)
     x, y, z = GeographicalCoords_toCartesian(pntLon, pntLat)
@@ -199,9 +204,13 @@ function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Float64, pntLat::
         getindex.(EVsArray, 2),
         getindex.(EVsArray, 3),
         )
-    
+
+    wx = ToRadians(wx)
+    wy = ToRadians(wy)
+    wz = ToRadians(wz)
+
     # Surface velocity
-    SVcArray = Array{Float64}(undef, floor(Int, Nsize), 3)
+    SVcArray = Array{Float64}(undef, Nsize, 3)
 
     SVcArray[:, 1] = (wy .* z) .- (wz .* y)
     SVcArray[:, 2] = (wz .* x) .- (wx .* z)
@@ -221,8 +230,8 @@ function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Float64, pntLat::
 
 
     # Velocity vector azimuth (clockwise from North)
-    AT = ToDegrees(atan.(northVel, eastVel))
-    azimuth = Array{Float64}(undef, floor(Int, Nsize))
+    AT = ToDegrees(atan.(northVel ./ eastVel))
+    azimuth = Array{Float64}(undef, Nsize)
 
     r = findall(eastVel .> 0)
     azimuth[r] .= 90 .- sign.(northVel[r]) .* abs.(AT[r])
@@ -300,3 +309,8 @@ function CartesianVelocity_toEN(pntLon::N, pntLat::N, SVcArray::Array{N, 2}) whe
     return vE, vN
 
 end
+
+
+EVs = EulerVectorSph(-122.5, -22.41, 0.1247, [1997 2000])
+
+Calculate_SurfaceVelocity(EVs, -48.0, -5.0)

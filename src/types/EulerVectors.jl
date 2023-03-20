@@ -8,9 +8,9 @@ Euler vector in spherical coordinates with the following parameters:
 
 Fields
 ------
-* `Lon::Number`: Longitude of the Euler pole in degrees-East
-* `Lat::Number`: Latitude of the Euler pole in degrees-North
-* `AngVelocity::Number`: Angular velocity in degrees/Myr
+* `Lon::Float64`: Longitude of the Euler pole in degrees-East
+* `Lat::Float64`: Latitude of the Euler pole in degrees-North
+* `AngVelocity::Float64`: Angular velocity in degrees/Myr
 * `TimeRange::Union{Matrix, Nothing}`: Initial to final age of rotation
 * `Covariance::Covariance`: [`Covariance`](@ref) in radians²/Myr²
 
@@ -43,9 +43,9 @@ PlateKinematics.EulerVectorSph(1, 2, 3, [1.5 2.5], PlateKinematics.Covariance(1,
 """
 struct EulerVectorSph
     "Longitude of the Euler pole in degrees-East."
-        Lon::Number
+        Lon::Float64
     "Latitude of the Euler pole in degrees-North."
-        Lat::Number
+        Lat::Float64
     "Angular velocity in degrees/Myr."
         AngVelocity::Float64
     "Initial to final age of rotation."
@@ -136,7 +136,7 @@ Convert an Euler Vector Covariance structure [radians²/Myr²] to a 3x3 symmetri
 function CovToMatrix(EVs::Union{EulerVectorSph, EulerVectorCart})
     
     cov = EVs.Covariance
-    covMatrix = Array{Number}(undef, 3, 3)
+    covMatrix = Array{Float64}(undef, 3, 3)
     
     covMatrix[1, :] .= [cov.C11, cov.C12, cov.C13] * (180/pi)^2
     covMatrix[2, :] .= [cov.C12, cov.C22, cov.C23] * (180/pi)^2

@@ -198,14 +198,13 @@ function Interpolate_FiniteRotation(MTX::Array{N, 3}, t1::N, time::N) where {N<:
         error("Interpolation time is not between given t1 and t2.")
 
     elseif time == t1
-        return ToFRs(MTX)
+        return ToFRs(MTX, t1)
 
     else
         delta = time / t1
 
-        mFRs = ToFRs(MTX)
-        xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
-        return map(FRs -> ChangeTime(FRs, time), xFRs)
+        mFRs = ToFRs(MTX, time)
+        return map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
         
     end
 end
@@ -226,10 +225,10 @@ function Interpolate_FiniteRotation(
         error("Interpolation time is not between given t1 and t2.")
 
     elseif time == t1
-        return ToFRs(MTX1)
+        return ToFRs(MTX1, t1)
 
     elseif time == t2
-        return ToFRs(MTX2)
+        return ToFRs(MTX2, t2)
     
     else
         # Calculate stage pole t2 ROT t1
@@ -242,7 +241,7 @@ function Interpolate_FiniteRotation(
 
         # Calculate finite rotation 0 ROT time, return MTX array
         intMTX = Multiply_RotationMatrices(ToRotationMatrix(xFRs), MTX1)
-        return map(FRs -> ChangeTime(FRs, time), ToFRs(intMTX))
+        return ToFRs(intMTX, time)
         
     end
 end
