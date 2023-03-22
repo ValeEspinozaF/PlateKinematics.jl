@@ -27,28 +27,3 @@ struct Covariance
     C23::Float64
     C33::Float64
 end
-
-Covariance() = Covariance(0,0,0,0,0,0)
-Covariance(a::Array) = Covariance(a[1], a[2], a[3], a[4], a[5], a[6])
-
-
-"""
-    ToArray(cov::Covariance)
-
-Convert a Covariance structure to a 1x6 Matrix. 
-"""
-function ToArray(cov::Covariance)
-    return [cov.C11 cov.C12 cov.C13 cov.C22 cov.C23 cov.C33]; end
-
-
-"""
-    CovIsZero(cov::Covariance)
-
-Check whether all Covariance elements are zero. 
-"""
-function CovIsZero(cov::Covariance)
-    if any(x -> x != 0, ToArray(cov))
-        return false
-    end
-    return true
-end

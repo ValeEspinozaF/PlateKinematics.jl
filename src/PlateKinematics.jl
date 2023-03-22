@@ -10,13 +10,16 @@ using LinearAlgebra, Statistics
 using DelimitedFiles, Serialization, Printf, DataFrames
 
 # Structures
-include("types/Covariances.jl")
-include("types/FiniteRotations.jl")
-include("types/EulerVectors.jl")
-include("types/SurfaceVelocityVector.jl")
+include("types/Covariance_types.jl")
+include("types/FiniteRotation_types.jl")
+include("types/EulerVector_types.jl")
+include("types/SurfaceVelocity_types.jl")
 
 # Methods
+include("methods/Covariance_methods.jl")
 include("methods/FiniteRotations_methods.jl")
+include("methods/EulerVector_methods.jl")
+include("methods/SurfaceVelocity_methods.jl")
 
 # Transformations
 include("CoordinateSystemTransformations.jl")
@@ -37,7 +40,7 @@ include("Interpolate_FiniteRotations.jl")
 include("Concatenate_FiniteRotations.jl")
 include("Convert_toStageEulerVector.jl")
 include("Convert_toFiniteRotation.jl")
-include("SurfaceVelocity.jl")
+include("Calculate_SurfaceVelocity.jl")
 
 
 

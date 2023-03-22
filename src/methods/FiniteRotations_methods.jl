@@ -1,4 +1,4 @@
-# --- Aditional outer structure methods ---
+# --- Outer structure methods ---
 
 # Spherical finite rotations 
 FiniteRotSph(lon, lat, angle) = FiniteRotSph(lon, lat, angle, nothing, Covariance())
@@ -46,67 +46,17 @@ end
 
 
 
+# --- Other type-specific functions ---
+
 """
-    ToArray(myStruct::Union{FiniteRotSph, FiniteRotCart})
+    IsEqual(
+        x::Union{FiniteRotSph, FiniteRotCart, EulerAngles}, 
+        y::Union{FiniteRotSph, FiniteRotCart, EulerAngles}, 
+        sig=6::Int64)
 
-Convert a Finite Rotations structure into a Vector.
+Compares two variables to determine if they are equal 
+given an amount of significant digits `sig`. 
 """
-function ToArray(FR::Union{FiniteRotSph, FiniteRotCart})
-    field_names = fieldnames(typeof(FR))
-    cov_names = fieldnames(Covariance)
-
-    values = zeros(Float64, 10)
-
-    i, j = 1, 0
-    for (i, field_name) in enumerate(field_names)
-        if field_name == :Covariance
-            for (j, cov_name) in enumerate(cov_names)
-                values[j + i - 1] = getfield(FR.Covariance, cov_name)
-            end
-        else
-            values[i + j] = getfield(FR, field_name)
-        end
-    end
-    return values
-end
-
-
-#= function IsEqual(FRs1::FiniteRotSph, FRs2::FiniteRotSph, tolerance=1.0e-10::Float64, testCov=true::Bool)
-    sameLon = abs( FRs1.Lon - FRs2.Lon ) <= tolerance
-    sameLat = abs( FRs1.Lat - FRs2.Lat ) <= tolerance
-    sameAngle = abs( FRs1.Angle - FRs2.Angle ) <= tolerance
-
-    if isnothing(FRs1.Time) && isnothing(FRs2.Time)
-        sameTime = true
-    else
-        sameTime = abs( FRs1.Time - FRs2.Time ) <= tolerance
-    end
-
-    sameCov = false
-    if testCov == true
-        cov1 = FRs1.Covariance
-        cov2 = FRs2.Covariance
-
-        if CovIsZero(cov1) && CovIsZero(cov2)
-            sameCov = true
-
-        else
-            sameC11 = abs( cov1.C11 - cov2.C11 ) <= tolerance
-            sameC12 = abs( cov1.C12 - cov2.C12 ) <= tolerance
-            sameC13 = abs( cov1.C13 - cov2.C13 ) <= tolerance
-            sameC22 = abs( cov1.C22 - cov2.C22 ) <= tolerance
-            sameC23 = abs( cov1.C23 - cov2.C23 ) <= tolerance
-            sameC33 = abs( cov1.C33 - cov2.C33 ) <= tolerance
-            sameCov = all([sameC11, sameC12, sameC13, sameC22, sameC23, sameC33])
-        end
-
-        return all([sameLon, sameLat, sameAngle, sameTime, sameCov])
-    else
-        return all([sameLon, sameLat, sameAngle, sameTime])
-    end
-end =#
-
-
 function IsEqual(
     x::Union{FiniteRotSph, FiniteRotCart, EulerAngles}, 
     y::Union{FiniteRotSph, FiniteRotCart, EulerAngles}, 
@@ -132,6 +82,7 @@ function IsEqual(
             for fieldname_cov in fieldnames(Covariance)
                 field_x = getfield(x.Covariance, fieldname_cov)
                 field_y = getfield(y.Covariance, fieldname_cov)
+                tol = 10.0^(-sig) * max(abs(field_x), abs(field_y))
 
                 if !(isapprox(field_x, field_y, atol=tol))
                     return false
@@ -149,21 +100,4 @@ function IsEqual(
         end
     end
     return true
-end
-
-"""
-    CovToMatrix(FR::Union{FiniteRotSph, FiniteRotCart})
-    
-Converts a Finite Rotations Covariance structure [radians^2] to a 3x3 symmetric Matrix [radians^2]. 
-"""
-function CovToMatrix(FR::Union{FiniteRotSph, FiniteRotCart})
-        
-    cov = FR.Covariance
-    covMatrix = Array{Float64}(undef, 3, 3)
-    
-    covMatrix[1, :] .= cov.C11, cov.C12, cov.C13
-    covMatrix[2, :] .= cov.C12, cov.C22, cov.C23
-    covMatrix[3, :] .= cov.C13, cov.C23, cov.C33
-    
-    return covMatrix
 end
