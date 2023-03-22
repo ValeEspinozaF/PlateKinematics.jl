@@ -1,9 +1,9 @@
 """
-    BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1e6::Number)
+    BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1000000::Int64)
     
 Draws `Nsize` Rotation Matrix samples from the covariance of a given Finite Rotation `FRs`.
 """
-function BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1e6::Number)
+function BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1000000::Int64)
 
     if CovIsZero(FRs.Covariance)
         error("Provided Finite rotations must include a valid covariance.")
@@ -29,11 +29,11 @@ function BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1e6::Number)
 end
 
 """
-    BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1e6::Number)
+    BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1000000::Int64)
 
 Draws `Nsize` Euler Vector samples from the covariance of a given Euler Vector `EVs`.
 """
-function BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1e6::Number)
+function BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1000000::Int64)
 
     if CovIsZero(EVs.Covariance)
         error("Provided Euler Vector must include a valid covariance.")
@@ -55,20 +55,20 @@ function BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1e6::Number)
     EVy = y .+ yc
     EVz = z .+ zc
 
-    return ToEVs(EVx, EVy, EVz)
+    return ToEVs(EVx, EVy, EVz, EVs.TimeRange)
 end
 
 
 """
-    CorrelatedEnsemble3D(matrix::Array{Number, 2}, Nsize::Number)
+    CorrelatedEnsemble3D(matrix::Array{N, 2}, Nsize::Int64) where {N<:Float64}
 
 Generates a series of samples [x y z] based on a covariance matrix.
 """
-function CorrelatedEnsemble3D(matrix::Array{Number, 2}, Nsize::Number)
+function CorrelatedEnsemble3D(matrix::Array{N, 2}, Nsize::Int64) where {N<:Float64}
 
     eig_va, eig_ve = eigen(matrix)
     
-    data = eig_va .^ 0.5 .* randn(3, floor(Int, Nsize))
+    data = eig_va .^ 0.5 .* randn(3, Nsize)
     ndata = [eig_ve * row for row in eachslice(data, dims=2)]
 
     return [getindex.(ndata,1), getindex.(ndata,2), getindex.(ndata,3)]
@@ -76,11 +76,11 @@ end
 
 
 """
-    CheckCovariance(covMatrix::Array{Number, 2})
+    CheckCovariance(covMatrix::Array{N, 2}) where {N<:Float64}
 
 Check whether the covariance matrix yields any negative or imaginary eigenvalue.
 """
-function CheckCovariance(covMatrix::Array{Number, 2})
+function CheckCovariance(covMatrix::Array{N, 2}) where {N<:Float64}
 
     switch = true
 
@@ -116,13 +116,13 @@ end
 
 
 """
-    ReplaceCovariaceEigs(covMatrix::Array{Number, 2})
+    ReplaceCovariaceEigs(covMatrix::Array{N, 2}) where {N<:Float64}
 
 Checks if a covariance-matrix has negative or imaginary eigenvalues, and replace 
 the diagonal elements (variances) with an average of the positive eigenvalues,
 while the other elements (covariances) are replaced by zeros.
 """
-function ReplaceCovariaceEigs(covMatrix::Array{Number, 2})
+function ReplaceCovariaceEigs(covMatrix::Array{N, 2}) where {N<:Float64}
 
     eig_va, _ = eigen(covMatrix)
     ave_va = mean(filter(x -> x > 0, eig_va))

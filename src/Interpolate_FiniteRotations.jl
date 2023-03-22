@@ -1,9 +1,10 @@
 """
-    Interpolate_FiniteRotation(FRs1::FiniteRotSph, time::Number, Nsize = 1e5::Number)
-    Interpolate_FiniteRotation(FRs1::Array{FiniteRotSph}, time::Number)
+    Interpolate_FiniteRotation(FRs1::FiniteRotSph, time::Float64, Nsize=100000::Int64)
+    Interpolate_FiniteRotation(FRs1::Array{T}, time::Float64) where {T<:FiniteRotSph}
 
-Interpolate a Finite Fotation for a given `time` between a Finite Rotation `FRs` and present-day. """
-function Interpolate_FiniteRotation(FRs::FiniteRotSph, time::Number, Nsize = 1e5::Number)
+Interpolate a Finite Fotation for a given `time` between a Finite Rotation `FRs` and present-day.
+"""
+function Interpolate_FiniteRotation(FRs::FiniteRotSph, time::Float64, Nsize=100000::Int64)
     
     if time > FRs.Time
         error("Time of interpolation ($time) is expected to be younger or equal to that of FRs ($(FRs.Time)).")
@@ -30,7 +31,7 @@ function Interpolate_FiniteRotation(FRs::FiniteRotSph, time::Number, Nsize = 1e5
 end
 
 
-function Interpolate_FiniteRotation(FRs::Array{FiniteRotSph}, time::Number)
+function Interpolate_FiniteRotation(FRs::Array{T}, time::Float64) where {T<:FiniteRotSph}
     
     if time > FRs[1].Time
         error("Time of interpolation ($time) is expected to be younger or equal to that of FRs ($(FRs1Array[1].Time)).")
@@ -54,14 +55,16 @@ end
 
 """
     Interpolate_FiniteRotation(
-        FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Number, Nsize = 1e5::Number)
+        FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Float64, Nsize=100000::Int64)
 
     Interpolate_FiniteRotation(
-        FRs1::Array{FiniteRotSph}, FRs2::Array{FiniteRotSph}, time::Number)
+        FRs1::Array{T}, FRs2::Array{T}, time::Float64) where {T<:FiniteRotSph}
 
-Interpolate a Finite Rotation for a given `time` between two total Finite Rotations, a younger `FRs1` and an older one `FRs2`."""
+Interpolate a Finite Rotation for a given `time` between two total Finite Rotations, 
+a younger `FRs1` and an older one `FRs2`.
+"""
 function Interpolate_FiniteRotation(
-    FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Number, Nsize = 1e5::Number) 
+    FRs1::FiniteRotSph, FRs2::FiniteRotSph, time::Float64, Nsize=100000::Int64) 
     
     t1 = FRs1.Time
     t2 = FRs2.Time
@@ -106,7 +109,7 @@ end
 
 
 function Interpolate_FiniteRotation(
-    FRs1Array::Array{T}, FRs2Array::Array{T}, time::Number) where {T<:FiniteRotSph}
+    FRs1Array::Array{T}, FRs2Array::Array{T}, time::Float64) where {T<:FiniteRotSph}
     
     t1 = FRs1Array[1].Time
     t2 = FRs2Array[1].Time
@@ -143,11 +146,12 @@ end
 
 """
     Interpolate_FiniteRotation(
-        FRsList::Array{FiniteRotSph}, times::Array{Number}, Nsize = 1e5::Number)
+        FRsList::Array{T}, times::Array{N}, Nsize=100000::Int64) where {T<:FiniteRotSph, N<:Float64}
 
-Interpolate a list `times` from a list of total Finite Rotations `FRsList`. """
+Interpolate a list `times` from a list of total Finite Rotations `FRsList`.
+"""
 function Interpolate_FiniteRotation(
-    FRsList::Array{FiniteRotSph}, times::Array{Number}, Nsize = 1e5::Number)
+    FRsList::Array{T}, times::Array{N}, Nsize=100000::Int64) where {T<:FiniteRotSph, N<:Float64}
 
     # Ensure array is stored as vector
     FRsList = vec(FRsList)
@@ -181,36 +185,63 @@ function Interpolate_FiniteRotation(
 end
 
 
-function Interpolate_FiniteRotation(MTX::Array{Float64, 3}, t1::Number, time::Number)
+"""
+    Interpolate_FiniteRotation(MTX::Array{N, 3}, t1::N, time::N) where {N<:Float64}
 
-    if  time >= t1 
+Interpolate a Finite Fotation for a given `time` between a Rotation Matrix `MTX`
+and present-day. `t1` is the age of the Rotation Matrix. `MTX` may be a sampled 
+ensemble from [`BuildEnsemble3D`](@ref).
+"""
+function Interpolate_FiniteRotation(MTX::Array{N, 3}, t1::N, time::N) where {N<:Float64}
+
+    if  time > t1 
         error("Interpolation time is not between given t1 and t2.")
+
+    elseif time == t1
+        return ToFRs(MTX, t1)
+
+    else
+        delta = time / t1
+
+        mFRs = ToFRs(MTX, time)
+        return map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
+        
     end
-
-    delta = time / t1
-
-    mFRs = ToFRs(MTX)
-    xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
-    return map(FRs -> ChangeTime(FRs, time), xFRs)
 end
 
 
+"""
+Interpolate_FiniteRotation(
+    MTX1::Array{N, 3}, MTX2::Array{N, 3}, t1::N, t2::N, time::N) where {N<:Float64}
+
+Interpolate a Finite Rotation for a given `time` between two total Rotation Matrices,
+a younger `MTX1` and an older one `MTX2`. Rotation Matrices ages are `t1` and `t2`, 
+respectively. `MTX1` and `MTX2` may be sampled ensembles from [`BuildEnsemble3D`](@ref).
+"""
 function Interpolate_FiniteRotation(
-    MTX1::Array{Float64, 3}, MTX2::Array{Float64, 3}, t1::Number, t2::Number, time::Number)
+    MTX1::Array{N, 3}, MTX2::Array{N, 3}, t1::N, t2::N, time::N) where {N<:Float64}
     
-    if  time >= t2 || t1 >= time 
+    if  time > t2 || t1 > time 
         error("Interpolation time is not between given t1 and t2.")
+
+    elseif time == t1
+        return ToFRs(MTX1, t1)
+
+    elseif time == t2
+        return ToFRs(MTX2, t2)
+    
+    else
+        # Calculate stage pole t2 ROT t1
+        delta = (time-t1) / (t2-t1)
+
+        iMTX1 = Invert_RotationMatrix(MTX1)
+        mMTX = Multiply_RotationMatrices(MTX2, iMTX1)
+        mFRs = ToFRs(mMTX)
+        xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
+
+        # Calculate finite rotation 0 ROT time, return MTX array
+        intMTX = Multiply_RotationMatrices(ToRotationMatrix(xFRs), MTX1)
+        return ToFRs(intMTX, time)
+        
     end
-
-    # Calculate stage pole t2 ROT t1
-    delta = (time-t1) / (t2-t1)
-
-    iMTX1 = Invert_RotationMatrix(MTX1)
-    mMTX = Multiply_RotationMatrices(MTX2, iMTX1)
-    mFRs = ToFRs(mMTX)
-    xFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * delta), mFRs)
-
-    # Calculate finite rotation 0 ROT time, return MTX array
-    intMTX = Multiply_RotationMatrices(ToRotationMatrix(xFRs), MTX1)
-    return map(FRs -> ChangeTime(FRs, time), ToFRs(intMTX))
 end

@@ -1,10 +1,13 @@
 """
-    AverageEnsemble(FRsArray::Array{T}) where {T<:FiniteRotSph}
-    AverageEnsemble(FRcArray::Array{T}) where {T<:FiniteRotCart}
+    AverageEnsemble(FRsArray::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotSph}
+    AverageEnsemble(FRcArray::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotCart}
 
-Return the average Finite Rotation from a given ensemble.
+Return the average Finite Rotation from a given ensemble. A specific output `:Time` 
+field may be passed through the argument `time`. The output type ([`FiniteRotSph`](@ref) 
+or [`FiniteRotCart`](@ref)) will mirror the input array type.
 """
-function AverageEnsemble(FRsArray::Array{T}) where {T<:FiniteRotSph}
+function AverageEnsemble(
+    FRsArray::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotSph}
 
     N = length(FRsArray);
 
@@ -19,10 +22,9 @@ function AverageEnsemble(FRsArray::Array{T}) where {T<:FiniteRotSph}
     y_mean = mean(y)
     z_mean = mean(z)
     
-    # If time/timerange has been assigned, use it
-    time = nothing
-    if FRsArray[1][4] !== nothing
-        time = FRsArray[1][4]
+    # Use passed time argument if not nothing, otherwise use FRsArray[1].Time
+    if isnothing(time)
+        time = FRsArray[1].Time
     end
 
     # Calculates the covariance matrix
@@ -44,48 +46,50 @@ function AverageEnsemble(FRsArray::Array{T}) where {T<:FiniteRotSph}
 end
 
 
-function AverageEnsemble(FRcArray::Array{T}) where {T<:FiniteRotCart}
+function AverageEnsemble(
+    FRcArray::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotCart}
 
     # Calculate mean vector and its covariance
-    return ToFRc(AverageEnsemble(ToFRs(FRcArray)))
+    return ToFRc(AverageEnsemble(ToFRs(FRcArray), time))
     
 end
 
 
 """
-    AverageEnsemble(EVsArray::Array{T}) where {T<:EulerVectorSph}
-    AverageEnsemble(EVcArray::Array{T}) where {T<:EulerVectorCart}
+    AverageEnsemble(EVsArray::Array{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorSph}
+    AverageEnsemble(EVcArray::Array{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorCart}
 
-Return the average Euler Vector from a given ensemble.
+Return the average Euler Vector from a given ensemble. A specific output `:TimeRange` 
+field may be passed through the argument `timeRange`. The output type ([`EulerVectorSph`](@ref) 
+or [`EulerVectorCart`](@ref)) will mirror the input array type.
 """
-function AverageEnsemble(EVsArray::Matrix{T}) where {T<:EulerVectorSph}
+function AverageEnsemble(
+    EVsArray::Matrix{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorSph} #!!! Why matrix
 
-    # Ensemble array components [ensMag]
+    # Ensemble array components [degrees/Myr]
     XYZ = map(v -> sph2cart(v[1], v[2], v[3]), EVsArray)
 
     # Calculate mean vector and its covariance
     x_mean, y_mean, z_mean, cov = AverageVector(getindex.(XYZ, 1), getindex.(XYZ, 2), getindex.(XYZ,3))
-    
-    # If time/timerange has been assigned, use it
-    time = nothing
-    if EVsArray[1][4] !== nothing
-        time = EVsArray[1][4]
+
+    # Use passed timeRange argument if not nothing, otherwise use EVsArray[1].Time
+    if isnothing(timeRange)
+        time = EVsArray[1].TimeRange
     end
     
-    # Mean pole in degrees, magnitude in [ensMag], covariace in [ensMag ^2]
+    # Mean pole in degrees, magnitude in [degrees/Myr], covariace in [radians²/Myr²]
     return T(cart2sph(x_mean, y_mean, z_mean), time, Covariance(cov))
 end
 
 
-function AverageEnsemble(EVcArray::Matrix{T}) where {T<:EulerVectorCart}
+function AverageEnsemble(EVcArray::Matrix{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorCart}
 
     # Calculate mean vector and its covariance
     x_mean, y_mean, z_mean, cov = AverageVector(getindex.(EVcArray, 1), getindex.(EVcArray, 2), getindex.(EVcArray, 3))
     
-    # If time range has been assigned, use it
-    time = nothing
-    if EVcArray[1][4] !== nothing
-        time = EVcArray[1][4]
+    # Use passed timeRange argument if not nothing, otherwise use EVsArray[1].Time
+    if isnothing(timeRange)
+        time = EVsArray[1].TimeRange
     end
     
     # Mean vector in [ensMag], covariace in [ensMag ^2]

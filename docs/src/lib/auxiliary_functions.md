@@ -8,7 +8,7 @@ CurrentModule = PlateKinematics
 
 ```@contents
 Pages = ["auxiliary_functions.md"]
-Depth = 2
+Depth = 3
 ```
 
 ## Index
@@ -18,10 +18,6 @@ Pages = ["auxiliary_functions.md"]
 ```
 
 ## Auxiliary Functions
-
-```@contents
-Pages = ["auxiliary_functions.md"]
-```
 
 ### Add Finite Rotations
 ```@docs

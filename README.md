@@ -17,16 +17,20 @@ To install, use Julia's built-in package manager (accessed by pressing `]` in th
 to add the package and also to instantiate/build all the required dependencies.
 
 ```@julia
+julia> using Pkg
+julia> Pkg.add(url="https://https://github.com/ValeEspinozaF/PlateKinematics.jl")
+```
+
+<!--
 julia> ]
 (v1.7) pkg> add PlateKinematics
 (v1.7) pkg> instantiate
-```
+ -->
 
-<!-- examples
 ## Examples
 
-Some usage examples may be found under `examples/`. These examples are best explained in the package's [documentation]. 
- -->
+Some usage examples may be found under `examples/`. These examples are further explained in the package's [documentation]. 
+
 
 <!-- reach out
 ## Getting help
@@ -50,4 +54,4 @@ if you could mention PlateKinematics.jl and cite our paper:
 
 
 [PlateKinematics.jl]: https://github.com/ValeEspinozaF/PlateKinematics.jl
-[documentation]: https://fourierflows.github.io/GeophysicalFlowsDocumentation/dev/
+[documentation]: https://valeespinozaf.github.io/PlateKinematics.jl/dev/

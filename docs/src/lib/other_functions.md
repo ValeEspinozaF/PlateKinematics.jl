@@ -8,7 +8,7 @@ CurrentModule = PlateKinematics
 
 ```@contents
 Pages = ["other_functions.md"]
-Depth = 2
+Depth = 3
 ```
 
 ## Index

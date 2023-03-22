@@ -1,32 +1,32 @@
 """
-	ToDegrees(radValue::Union{Number, Array})
+	ToDegrees(radValue::Union{Float64, Array})
 
 Convert angles from radians to degrees.
 """
-function ToDegrees(radValue::Union{Number, Array})
+function ToDegrees(radValue::Union{Float64, Array})
 	degValue = radValue * (180/pi)
 	return degValue
 end
 
 """
-	ToRadians(degValue::Union{Number, Array})
+	ToRadians(degValue::Union{Float64, Array})
 
 Convert angles from degrees to radians.
 """
-function ToRadians(degValue::Union{Number, Array})
+function ToRadians(degValue::Union{Float64, Array})
 	radValue = degValue * (pi/180)
 	return radValue
 end
 
 
 """
-	cart2sph(x::Number, y::Number, z::Number)
-	cart2sph(x::Array{T}, y::Array{T}, z::Array{T}) where {T<:Number}
+	cart2sph(x::Float64, y::Float64, z::Float64)
+	cart2sph(x::Array{N}, y::Array{N}, z::Array{N}) where {N<:Float64}
 
 Transform Cartesian coordinates into Spherical coordinates. 
 Both input and outputs are expressed in degrees.
 """
-function cart2sph(x::Number, y::Number, z::Number)
+function cart2sph(x::Float64, y::Float64, z::Float64)
 
 	lon_deg = ToDegrees(atan( y, x ))
 	lat_deg = ToDegrees(atan( z, (x^2 + y^2)^0.5 ))
@@ -35,7 +35,7 @@ function cart2sph(x::Number, y::Number, z::Number)
 	return [lon_deg, lat_deg, om]
 end
 
-function cart2sph(x::Array{T}, y::Array{T}, z::Array{T}) where {T<:Number}
+function cart2sph(x::Array{N}, y::Array{N}, z::Array{N}) where {N<:Float64}
 
 	if typeof(x) == typeof(y) == typeof(z)
 
@@ -52,14 +52,14 @@ end
 
 
 """
-	sph2cart(lon_deg::Number, lat_deg::Number, mag=1::Number)
-	sph2cart(lon_deg::Array{T}, lat_deg::Array{T}, mag::Array{T}) where {T<:Number}
-	sph2cart(lon_deg::Array{T}, lat_deg::Array{T}) where {T<:Number}
+	sph2cart(lon_deg::Float64, lat_deg::Float64, mag=1::Float64)
+	sph2cart(lon_deg::Array{N}, lat_deg::Array{N}, mag::Array{N}) where {N<:Float64}
+	sph2cart(lon_deg::Array{N}, lat_deg::Array{N}) where {N<:Float64}
 
 Transform Spherical coordinate(s) into Cartesian coordinate(s). 
 Both input and outputs are expressed in degrees. 
 """
-function sph2cart(lon_deg::Number, lat_deg::Number, mag=1::Number)
+function sph2cart(lon_deg::Float64, lat_deg::Float64, mag=1.0::Float64)
 
 	lon_rad = ToRadians(lon_deg)
 	lat_rad = ToRadians(lat_deg)
@@ -72,7 +72,7 @@ function sph2cart(lon_deg::Number, lat_deg::Number, mag=1::Number)
 end
 
 
-function sph2cart(lon_deg::Array{T}, lat_deg::Array{T}, mag::Array{T}) where {T<:Number}
+function sph2cart(lon_deg::Array{N}, lat_deg::Array{N}, mag::Array{N}) where {N<:Float64}
 
 	if typeof(lon_deg) == typeof(lat_deg) == typeof(mag)
 
@@ -91,7 +91,7 @@ function sph2cart(lon_deg::Array{T}, lat_deg::Array{T}, mag::Array{T}) where {T<
 end
 
 
-function sph2cart(lon_deg::Array{T}, lat_deg::Array{T}) where {T<:Number}
+function sph2cart(lon_deg::Array{N}, lat_deg::Array{N}) where {N<:Float64}
 
 	if typeof(lon_deg) == typeof(lat_deg)
 

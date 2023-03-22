@@ -1,13 +1,13 @@
-function ChangeLon(EVs::EulerVectorSph, newLon)
+function ChangeLon(EVs::EulerVectorSph, newLon::Float64)
     return EulerVectorSph(newLon, EVs.Lat, EVs.AngVelocity, EVs.TimeRange, EVs.Covariance); end
 
-function ChangeLat(EVs::EulerVectorSph, newLat)
+function ChangeLat(EVs::EulerVectorSph, newLat::Float64)
     return EulerVectorSph(EVs.Lon, newLat, EVs.AngVelocity, EVs.TimeRange, EVs.Covariance); end
 
-function ChangeAngVel(EVs::EulerVectorSph, newAngVelocity)
+function ChangeAngVel(EVs::EulerVectorSph, newAngVelocity::Float64)
     return EulerVectorSph(EVs.Lon, EVs.Lat, newAngVelocity, EVs.TimeRange, EVs.Covariance); end
 
-function ChangeTimeRange(EVs::EulerVectorSph, newTimeRange)
+function ChangeTimeRange(EVs::EulerVectorSph, newTimeRange::Union{Nothing, Matrix{N}}) where {N<:Float64}
     return EulerVectorSph(EVs.Lon, EVs.Lat, EVs.AngVelocity, newTimeRange, EVs.Covariance); end
 
 function GetAntipole(EVs::EulerVectorSph)
@@ -25,8 +25,9 @@ end
 """
     ToEVs(EVc::EulerVectorCart)
     ToEVs(EVcArray::Array{T}) where {T<:EulerVectorSph}
-    ToEVs(MTX::Array{Number, 3})
-    ToEVs(X::Array{T, 1}, Y::Array{T, 1}, Z::Array{T, 1}) where {T<:Number}
+    ToEVs(
+        X::Array{N, 1}, Y::Array{N, 1}, Z::Array{N, 1}, 
+        timeRange=nothing::Union{Nothing, Matrix{N}}) where {N<:Float64}
 
 Return an Euler Vector in Spherical coordinates (`::EulerVectorSph`), with 
 magnitude expressed in degrees/Myr.
@@ -40,37 +41,20 @@ function ToEVs(EVcArray::Array{T}) where {T<:EulerVectorCart}
     return map(EVc -> ToEVs(EVc), EVcArray)
 end
 
-function ToEVs(MTX::Array{Number, 3})
 
-    if size(MTX)[1:2] != (3,3)
-        error("Input 3D array must be of size (3, 3, n).")
-    end
-
-    x = MTX[3,2,:] - MTX[2,3,:]
-    y = MTX[1,3,:] - MTX[3,1,:]
-    z = MTX[2,1,:] - MTX[1,2,:]
-
-    # Turn to spherical coordinates, pole in [deg]
-    lon, lat, mag = cart2sph(x, y, z)
-
-    # Magnitude in [degrees]
-    t = MTX[1,1,:] + MTX[2,2,:] + MTX[3,3,:]
-    mag = ToDegrees( atan.(mag, t .- 1) )
-
-    return mapslices(v -> EulerVectorSph(v), [lon lat mag], dims=(2))
-end
-
-function ToEVs(X::Array{T, 1}, Y::Array{T, 1}, Z::Array{T, 1}) where {T<:Number}
+function ToEVs(
+    X::Array{N, 1}, Y::Array{N, 1}, Z::Array{N, 1}, 
+    timeRange=nothing::Union{Nothing, Matrix{N}}) where {N<:Float64}
 
     if length(X) == length(Y) == length(Z)
 
         # Turn to spherical coordinates, pole in [deg]
         lon, lat, mag = cart2sph(X, Y, Z)
 
-        return mapslices(v -> EulerVectorSph(v), [lon lat mag], dims=(2))
+        return mapslices(v -> EulerVectorSph(v, timeRange), [lon lat mag], dims=(2))
     
     else
-        error("Input arrays must have the same length.")
+        error("Input arrays do not have the same length (X: $(length(X)), Y: $(length(Y)), Z: $(length(Z))).")
 
     end
 end

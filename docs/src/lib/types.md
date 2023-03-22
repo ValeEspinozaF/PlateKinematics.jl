@@ -6,14 +6,30 @@ CurrentModule = PlateKinematics
 
 This section provides an overview of the types used in [PlateKinematics.jl](https://github.com/ValeEspinozaF/PlateKinematics.jl).
 
-## Covariance
+
+## Contents
+
+```@contents
+Pages = ["types.md"]
+Depth = 3
+```
+
+## Index
+
+```@index
+Pages = ["types.md"]
+```
+
+## Types
+
+### Covariance
 
 ```@docs
 Covariance
 ```
 
 
-## Finite Rotations
+### Finite Rotations
 
 ```@docs
 FiniteRotSph
@@ -22,7 +38,7 @@ EulerAngles
 ```
 
 
-## Euler Vectors
+### Euler Vectors
 
 ```@docs
 EulerVectorSph
@@ -30,7 +46,7 @@ EulerVectorCart
 ```
 
 
-## Surface Velocity
+### Surface Velocity
 
 ```@docs
 Stat
