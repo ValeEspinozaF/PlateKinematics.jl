@@ -7,5 +7,5 @@
     FRs_add = Add_FiniteRotations(FRs1, FRs2)
     FRs_out = FiniteRotSph(-75.94, 78.09, 11.97)
 
-    @test IsEqual(FRs_add, FRs_out, 1e-1)
+    @test IsEqual(FRs_add, FRs_out, 4)
 end

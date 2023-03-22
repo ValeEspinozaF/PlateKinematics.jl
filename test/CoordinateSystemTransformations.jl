@@ -3,8 +3,8 @@
     using PlateKinematics: sph2cart, cart2sph
 
     @testset "Numbers" begin
-        cart1 = sph2cart(60, 30)
-        cart2 = sph2cart(60, 30, 1)
+        cart1 = sph2cart(60.0, 30.0)
+        cart2 = sph2cart(60.0, 30.0, 1.0)
         
         sph2 = cart2sph(cart2[1], cart2[2], cart2[3])
         cart3 = sph2cart(sph2[1], sph2[2], sph2[3])

@@ -82,7 +82,19 @@ function IsEqual(
 
     for fieldname in fieldnames(typeof(x))
 
-        if fieldname == :TimeRange
+        if fieldname == :Covariance
+            for fieldname_cov in fieldnames(Covariance)
+                field_x = getfield(x.Covariance, fieldname_cov)
+                field_y = getfield(y.Covariance, fieldname_cov)
+                rounded_x = round(field_x, sigdigits=sig)
+                rounded_y = round(field_y, sigdigits=sig)
+
+                if rounded_x != rounded_y
+                    return false
+                end
+            end
+
+        elseif fieldname == :TimeRange
             if isnothing(x.TimeRange) && isnothing(y.TimeRange)
                 continue
             elseif isnothing(x.TimeRange) && !isnothing(y.TimeRange)
@@ -93,34 +105,24 @@ function IsEqual(
                 for j in 1:2
                     field_x = x.TimeRange[j]
                     field_y = y.TimeRange[j]
-                    tol = 10.0^(-sig) * max(abs(field_x), abs(field_y))
+                    rounded_x = round(field_x, sigdigits=sig)
+                    rounded_y = round(field_y, sigdigits=sig)
 
-                    if !(isapprox(field_x, field_y, atol=tol))
+                    if rounded_x != rounded_y
                         return false
                     end
                 end
             end
-        end
 
-        if fieldname == :Covariance
-            for fieldname_cov in fieldnames(Covariance)
-                field_x = getfield(x.Covariance, fieldname_cov)
-                field_y = getfield(y.Covariance, fieldname_cov)
-                tol = 10.0^(-sig) * max(abs(field_x), abs(field_y))
+        else
+            field_x = getfield(x, fieldname)
+            field_y = getfield(y, fieldname)
+            rounded_x = round(field_x, sigdigits=sig)
+            rounded_y = round(field_y, sigdigits=sig)
 
-                if !(isapprox(field_x, field_y, atol=tol))
-                    return false
-                end
+            if rounded_x != rounded_y
+                return false
             end
-        end
-
-
-        field_x = getfield(x, fieldname)
-        field_y = getfield(y, fieldname)
-        tol = 10.0^(-sig) * max(abs(field_x), abs(field_y))
-
-        if !(isapprox(field_x, field_y, atol=tol))
-            return false
         end
     end
     return true
