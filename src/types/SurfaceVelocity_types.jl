@@ -12,11 +12,15 @@ Examples:
 ------
 ```julia-repl
 julia> PlateKinematics.Stat(10.0, 20.0)
-PlateKinematics.Stat(10.0, 20.0)
+PlateKinematics.Stat:
+        Mean  : 10.0
+        StDev : 20.0
 
 julia> stat = [10.0 20.0]
 julia> PlateKinematics.Stat(stat)
-PlateKinematics.Stat(10.0, 20.0)
+PlateKinematics.Stat:
+        Mean  : 10.0
+        StDev : 20.0
 ```
 """
 struct Stat
@@ -44,20 +48,40 @@ Examples:
 ------
 ```julia-repl
 julia> PlateKinematics.SurfaceVelocityVector(10.0, 20.0, 4.0)
-PlateKinematics.SurfaceVelocityVector(10.0, 20.0, nothing, nothing, 4.0, nothing)
-
-julia> totalVel = PlateKinematics.Stat(2.5, 2.0);
-julia> PlateKinematics.SurfaceVelocityVector(10.0, 20.0, totalVel)
-PlateKinematics.SurfaceVelocityVector(10.0, 20.0, nothing, nothing, PlateKinematics.Stat(2.5, 2.0), nothing)
+PlateKinematics.SurfaceVelocityVector:
+        Lon      : 10.0
+        Lat      : 20.0
+        EastVel  : nothing
+        NorthVel : nothing
+        TotalVel : 4.0
+        Azimuth  : nothing
 
 julia> PlateKinematics.SurfaceVelocityVector(10, 20, [2.5, 2])
-PlateKinematics.SurfaceVelocityVector(10.0, 20.0, nothing, nothing, PlateKinematics.Stat(2.5, 2.0), nothing)
+PlateKinematics.SurfaceVelocityVector:
+        Lon      : 10.0
+        Lat      : 20.0
+        EastVel  : nothing
+        NorthVel : nothing
+        TotalVel : 2.5 ± 2.0
+        Azimuth  : nothing
 
 julia> PlateKinematics.SurfaceVelocityVector(10.0, 20.0, 4.0, 3.0)
-PlateKinematics.SurfaceVelocityVector(10.0, 20.0, 4.0, 3.0, nothing, nothing)
+PlateKinematics.SurfaceVelocityVector:
+        Lon      : 10.0
+        Lat      : 20.0
+        EastVel  : 4.0
+        NorthVel : 3.0
+        TotalVel : nothing
+        Azimuth  : nothing
 
 julia> PlateKinematics.SurfaceVelocityVector(10.0, 20.0, 4.0, 3.0, 2.0)
-PlateKinematics.SurfaceVelocityVector(10.0, 20.0, 4.0, 3.0, 2.0, nothing)
+PlateKinematics.SurfaceVelocityVector:
+        Lon      : 10.0
+        Lat      : 20.0
+        EastVel  : 4.0
+        NorthVel : 3.0
+        TotalVel : 2.0
+        Azimuth  : nothing
 ```
 """
 struct SurfaceVelocityVector

@@ -25,8 +25,8 @@ Interpolate_FiniteRotation(FRs_37, FRs_42, 40.0)
 
 The output finite rotation will be something in the lines of:
 
-```julia
-FiniteRotSph(
+```REPL
+FiniteRotSph:
         Lon     : -145.35
         Lat     : -10.89
         Angle   : 22.36
@@ -38,7 +38,9 @@ Similarilly, one may interpolate between one finite rotation and present-day, sh
 
 ```julia
 julia> Interpolate_FiniteRotation(FRs_42, 40.0)
-FiniteRotSph(
+```
+```REPL
+FiniteRotSph:
         Lon     : -145.2
         Lat     : -10.3
         Angle   : 22.48

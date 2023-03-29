@@ -22,7 +22,7 @@ function Interpolate_FiniteRotation(FRs::FiniteRotSph, time::Float64, Nsize=1000
 
         inFR = Interpolate_FiniteRotation(MTX, FRs.Time, time)
 
-        if size(inFR)[1] !== 1
+        if size(inFR, 1) !== 1
             return AverageEnsemble(inFR)
         else
             return inFR[1]
@@ -44,7 +44,7 @@ function Interpolate_FiniteRotation(FRs::Array{T}, time::Float64) where {T<:Fini
 
         inFR = Interpolate_FiniteRotation(MTX, FRs[1].Time, time)
 
-        if size(inFR)[1] !== 1
+        if size(inFR, 1) !== 1
             return AverageEnsemble(inFR)
         else
             return inFR[1]
@@ -99,7 +99,7 @@ function Interpolate_FiniteRotation(
             
         end
 
-        if size(inFR)[1] !== 1
+        if size(inFR, 1) !== 1
             return AverageEnsemble(inFR)
         else
             return inFR[1]

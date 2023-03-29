@@ -27,7 +27,7 @@ function ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::
 
     EVs = ToEulerVector(MTX, timeRange)
 
-    if size(EVs)[1] !== 1  
+    if size(EVs, 1) !== 1  
         return AverageEnsemble(EVs)
     else
         return EVs[1]
@@ -94,7 +94,7 @@ function ToEulerVector(
 
     EVs = ToEulerVector(MTX1, MTX2, timeRange)
 
-    if size(EVs)[1] !== 1  
+    if size(EVs, 1) !== 1  
         return AverageEnsemble(EVs)
     else
         return EVs[1]

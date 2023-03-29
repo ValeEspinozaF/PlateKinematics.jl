@@ -40,7 +40,7 @@ function LoadTXT_asDict(filePath::String, delimiter=' '::Char, comment='#'::Char
 
     # Array of vectors to dictionary
     if length(dictKeys) == 0
-        global dictKeys = repeat(["empty"], size(valuesArray)[1])
+        global dictKeys = repeat( ["empty"], size(valuesArray, 1) )
     end
     
     for (j, key) in pairs(dictKeys)

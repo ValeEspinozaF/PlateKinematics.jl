@@ -4,7 +4,7 @@ function FRtoTXT(ENS::Union{Matrix, Vector}, filePath::String, format::Array{Str
 
     #, delimiter=' '::Char, commentChar='#'::Char, comment=""::String)
 
-    Nsize = size(ENS)[1]
+    Nsize = size(ENS ,1)
     structFields = fieldnames(typeof(ENS[1]))
     covFields = (:C11, :C12, :C13, :C22, :C23, :C33)
     lines = Array{String}(undef, Nsize + 1)
@@ -64,7 +64,7 @@ function EVtoTXT(ENS::Union{Matrix, Vector}, filePath::String, format::Array{Str
 
     #, delimiter=' '::Char, commentChar='#'::Char, comment=""::String)
 
-    Nsize = size(ENS)[1]
+    Nsize = size(ENS, 1)
     structFields = fieldnames(typeof(ENS[1]))
     covFields = (:C11, :C12, :C13, :C22, :C23, :C33)
     lines = Array{String}(undef, Nsize + 1)

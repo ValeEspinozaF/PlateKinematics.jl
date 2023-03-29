@@ -52,7 +52,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
 
 
     # Return SurfaceVelocityVector
-    if size(EVsArray)[1] !== 1
+    if size(EVsArray, 1) !== 1
         return SurfaceVelocityVector(
             pntLon, pntLat, 
             Stat(meanEast, stdEast), 
@@ -109,7 +109,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
 
 
     # Return SurfaceVelocityVector
-    if size(EVsArray)[1] !== 1
+    if size(EVsArray, 1) !== 1
 
         return SurfaceVelocityVector(
             pntLon, pntLat, 
@@ -166,7 +166,7 @@ function Calculate_SurfaceVelocity(
 
 
         # Return SurfaceVelocityVector
-        if size(EVsArray)[1] !== 1
+        if size(EVsArray, 1) !== 1
 
             SV_array[i] = SurfaceVelocityVector(
                 pntLon, pntLat, 
