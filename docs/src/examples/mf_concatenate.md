@@ -21,7 +21,11 @@ In terms of Finite Rotations (ROT), one would pose the circuit as:
 
 
 ```math
-sklmdl \text{sklmdl_{rrr}} {}_{EU}FR_{IN} = \frac{4}{3}\pi r^3
+\text{sklmdl_{rrr}} {}_{EU}FR_{IN} = \frac{4}{3}\pi r^3
+```
+
+```@raw html
+FR<sub>EU-IN</sub> = FR<sub>EU/IN</sub>
 ```
 
 Note how subscript are meant to indicate the fixed plate on each relative motion. $${}_{EU}FR_{IN}$$ <sub>EU</sub>ROT<sub>IN</sub> is the finite rotation describing the motion of Eurasia relative to a fixed India plate.
