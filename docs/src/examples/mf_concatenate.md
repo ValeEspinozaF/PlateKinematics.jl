@@ -24,7 +24,20 @@ In terms of Finite Rotations (FR), one would pose the circuit as:
 FR<sub>IN/EU</sub> = FR<sub>IN/AU</sub> + FR<sub>AU/AN</sub> + FR<sub>AN/NB</sub> + FR<sub>NB/NA</sub> + FR<sub>NA/EU</sub>
 ```
 
-Note how subscript are meant to indicate the fixed plate on each relative motion. ```@raw html FR<sub>IN/EU</sub> ``` is the finite rotation describing the motion of India relative to a fixed Eurasia plate.
+
+Note how subscript are meant to indicate the fixed plate on each relative motion.
+```@raw html FR<sub>IN/EU</sub> ``` 
+is the finite rotation describing the motion of India relative to a fixed Eurasia plate.
+
+Note how subscript are meant to indicate the fixed plate on each relative motion.
+```@raw html 
+FR<sub>IN/EU</sub> 
+``` 
+is the finite rotation describing the motion of India relative to a fixed Eurasia plate.
+
+Note how subscript are meant to indicate the fixed plate on each relative motion ```@raw html 
+FR<sub>IN/EU</sub> 
+``` is the finite rotation describing the motion of India relative to a fixed Eurasia plate.
 
 ```@raw html
 <table>
