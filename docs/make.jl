@@ -25,10 +25,10 @@ Examples = "Examples" => [
 #License = "License" => "license.md"
 
 format = Documenter.HTML(
-    edit_link = "stable",
+    edit_link = "main",
     collapselevel = 3,
-    #prettyurls = get(ENV, "CI", nothing) == "true",
-    assets = ["assets/logo.ico"],
+    prettyurls = get(ENV, "CI", nothing) == "true",
+    assets = ["assets/logo.ico", "assets/table.css"],
     canonical = "https://valeespinozaf.github.io/PlateKinematics.jl/",
     sidebar_sitename = false,
     )
@@ -55,13 +55,13 @@ makedocs(
 
 withenv("GITHUB_REPOSITORY" => "ValeEspinozaF/PlateKinematics.jl") do
     deploydocs(
-        devbranch = "stable",
+        #devbranch = "main",
         branch = "gh-pages",
         repo   = "github.com/ValeEspinozaF/PlateKinematics.jl.git",
         #deps   = Deps.pip("mkdocs", "pygments", "python-markdown-math"),
         #make   = () -> run(`mkdocs build`),
         target = "build",
         push_preview = true,
-        #forcepush = true,
+        forcepush = true,
         )
 end

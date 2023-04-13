@@ -46,13 +46,3 @@ function Base.show(io::IO, x::SurfaceVelocityVector)
         end
     end
 end
-
-        if isnothing(field_value)
-            println(io, "\t$field_name_padded : $field_value")
-        elseif typeof(field_value) == Stat
-            println(io, "\t$field_name_padded : $(round(field_value.Mean, digits=2)) ± $(round(field_value.StDev, digits=2))")
-        else
-            println(io, "\t$field_name_padded : $(round(field_value, digits=2))")
-        end
-    end
-end
