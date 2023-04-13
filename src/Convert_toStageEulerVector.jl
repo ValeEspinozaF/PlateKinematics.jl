@@ -167,6 +167,34 @@ function ToEulerVector(FRs1Array::Array{T}, FRs2Array::Array{T};
     end
 end
 
+function ToEulerVector2(
+    FRs1Array::Array{T}, FRs2Array::Array{T}, reverseRot=false::Bool) where {T<:FiniteRotSph}
+
+    timeRange = [FRs1Array[1].Time FRs2Array[2].Time] 
+
+    MTX1 = ToRotationMatrix(FRs1Array)
+    MTX2 = ToRotationMatrix(FRs2Array)
+
+    # Reverses sense of rotation (when using reconstruction finite rotations)
+    if reverseRot == true
+        timeRange = reverse(timeRange)
+        rMTX1 = ToRotationMatrix(FRs1Array)
+        rMTX2 = ToRotationMatrix(FRs2Array)
+
+        return ToEulerVector(rMTX1, rMTX2, timeRange)
+
+    else
+        #rFRs1 = FRs1Array
+        #rFRs2 = FRs2Array
+        return ToEulerVector(MTX1, MTX2, timeRange)
+
+    end
+
+    MTX1 = ToRotationMatrix(rFRs1)
+    MTX2 = ToRotationMatrix(rFRs2)
+    return ToEulerVector(MTX1, MTX2, timeRange)
+end
+
 
 function ToEulerVector(
     MTX1::Array{N, 3}, MTX2::Array{N, 3}, timeRange::Array{N}) where {N<:Float64}

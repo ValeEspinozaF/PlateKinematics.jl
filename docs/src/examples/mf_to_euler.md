@@ -2,7 +2,7 @@
 CurrentModule = PlateKinematics
 ```
 
-## From Finite Rotation to Euler Vector
+# From Finite Rotation to Euler Vector
 
 Here we will go through the process of transforming a [Finite Rotation](@ref), which provides the rotation angle of a [Total Rotation](@ref), to an [Euler Vector](@ref), which provide the rotation rate of a [Stage Rotation](@ref).
 
@@ -23,7 +23,7 @@ The final step is to transform the Finite Rotation to an Euler Vector. This is d
 ```  
 
 
-### From two Finite Rotations (Stage Euler Vector)
+## From two Finite Rotations (Stage Euler Vector)
 
 we start providing an example for the most general case, an Euler Vector obtained from two Finite Rotations. In this particular case, we will seek to obtain the Euler Vector describing the motion of Eurasia relative to North-America between the ages 83 to 53 Ma. The values are taken from Allan Cox' book [Plate Tectonics: How it works](https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212/), Table 7-1:
 
@@ -97,7 +97,7 @@ A more thorough explanation of this can be found in the book [Plate Tectonics: H
 
 
 
-### From one Finite Rotation (total Euler Vector)
+## From one Finite Rotation (total Euler Vector)
 
 The same can be done for a single Finite Rotation, based on the general equation for stage rotations stated above: 
 
