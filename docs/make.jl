@@ -62,6 +62,6 @@ withenv("GITHUB_REPOSITORY" => "ValeEspinozaF/PlateKinematics.jl") do
         #make   = () -> run(`mkdocs build`),
         target = "build",
         push_preview = true,
-        #forcepush = true,
+        forcepush = true,
         )
 end
