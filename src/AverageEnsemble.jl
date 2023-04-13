@@ -69,7 +69,7 @@ function AverageEnsemble(
     # Ensemble array components [degrees/Myr]
     XYZ = map(v -> sph2cart(v[1], v[2], v[3]), EVsArray)
 
-    # Calculate mean vector and its covariance
+    # Calculate mean vector [deg/Myr] and its covariance [deg²/Myr²]
     x_mean, y_mean, z_mean, cov = AverageVector(getindex.(XYZ, 1), getindex.(XYZ, 2), getindex.(XYZ,3))
 
     # Use passed timeRange argument if not nothing, otherwise use EVsArray[1].Time
@@ -77,14 +77,14 @@ function AverageEnsemble(
         time = EVsArray[1].TimeRange
     end
     
-    # Mean pole in degrees, magnitude in [degrees/Myr], covariace in [radians²/Myr²]
-    return T(cart2sph(x_mean, y_mean, z_mean), time, Covariance(cov))
+    # Mean pole in degrees, magnitude in [deg/Myr], covariace in [radians²/Myr²]
+    return T(cart2sph(x_mean, y_mean, z_mean), time, cov * (pi/180)^2)
 end
 
 
 function AverageEnsemble(EVcArray::Matrix{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorCart}
 
-    # Calculate mean vector and its covariance
+    # Calculate mean vector [deg/Myr] and its covariance [deg²/Myr²]
     x_mean, y_mean, z_mean, cov = AverageVector(getindex.(EVcArray, 1), getindex.(EVcArray, 2), getindex.(EVcArray, 3))
     
     # Use passed timeRange argument if not nothing, otherwise use EVsArray[1].Time
@@ -92,39 +92,40 @@ function AverageEnsemble(EVcArray::Matrix{T}, timeRange=nothing::Union{Nothing, 
         time = EVsArray[1].TimeRange
     end
     
-    # Mean vector in [ensMag], covariace in [ensMag ^2]
-    return T(x_mean, y_mean, z_mean, time, cov)
+    # Mean vector in [deg/Myr], covariace in [rad²/Myr²]
+    return T(x_mean, y_mean, z_mean, time, cov * (pi/180)^2)
     
 end
 
 
+"""
+    AverageVector(x::Array, y::Array, z::Array)
+
+Return the average vector from a given ensemble of x, y and z vector coordinates in [units]. 
+The output is the mean vector in [units], and the ensemble covariace in [units²].
+"""
 function AverageVector(x::Array, y::Array, z::Array)
 
     # Ensemble length
     N = length(x)
     
-    # Mean xyz values
+    # Mean vector in [units]
     x_mean = mean(x)
     y_mean = mean(y)
     z_mean = mean(z)
-    
-    # Coordinates in radians
-    x_rad = ToRadians(x)
-    y_rad = ToRadians(y)
-    z_rad = ToRadians(z)
 
     # Set empty covariance ensemble
     covArray = Array{Float64}(undef, 6)
     
-    # Calculate covariance elements [rad^2]
-    covArray[1] = sum(x_rad .* x_rad)/N - sum(x_rad)/N * sum(x_rad)/N
-    covArray[2] = sum(x_rad .* y_rad)/N - sum(x_rad)/N * sum(y_rad)/N
-    covArray[3] = sum(x_rad .* z_rad)/N - sum(x_rad)/N * sum(z_rad)/N
-    covArray[4] = sum(y_rad .* y_rad)/N - sum(y_rad)/N * sum(y_rad)/N
-    covArray[5] = sum(y_rad .* z_rad)/N - sum(y_rad)/N * sum(z_rad)/N
-    covArray[6] = sum(z_rad .* z_rad)/N - sum(z_rad)/N * sum(z_rad)/N
+    # Calculate covariance elements [units²]
+    covArray[1] = sum(x .* x)/N - sum(x)/N * sum(x)/N
+    covArray[2] = sum(x .* y)/N - sum(x)/N * sum(y)/N
+    covArray[3] = sum(x .* z)/N - sum(x)/N * sum(z)/N
+    covArray[4] = sum(y .* y)/N - sum(y)/N * sum(y)/N
+    covArray[5] = sum(y .* z)/N - sum(y)/N * sum(z)/N
+    covArray[6] = sum(z .* z)/N - sum(z)/N * sum(z)/N
 
-    # Mean vector in [ensMag], covariace in [rad^2]
+    # Mean vector in [units], covariace in [units²]
     return [x_mean, y_mean, z_mean, covArray]
      
 end

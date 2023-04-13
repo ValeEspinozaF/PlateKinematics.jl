@@ -61,7 +61,6 @@ function ToFRs(FRc::FiniteRotCart)
 end
 
 
-
 function ToFRs(FRcArray::Array{T}) where {T<:FiniteRotCart}
     return map(FRc -> ToFRs(FRc), FRcArray)
 end

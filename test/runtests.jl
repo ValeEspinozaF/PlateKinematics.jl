@@ -9,4 +9,6 @@ using PlateKinematics
     include("Add_FiniteRotations.jl")
     include("Interpolate_FiniteRotation.jl")
 
+    include("EulerVectorTransformations.jl")
+
 end

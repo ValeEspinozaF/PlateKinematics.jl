@@ -17,14 +17,29 @@ Examples:
 ------
 ```julia-repl
 julia> PlateKinematics.FiniteRotSph(30, 20, 10)
-PlateKinematics.FiniteRotSph(30, 20, 10, nothing, PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+PlateKinematics.FiniteRotSph:
+        Lon        : 30.0
+        Lat        : 20.0
+        Angle      : 10.0
+        Time       : nothing
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
 julia> array = [30, 20, 10];
 julia> PlateKinematics.FiniteRotSph(array)
-PlateKinematics.FiniteRotSph(30, 20, 10, nothing, PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+PlateKinematics.FiniteRotSph:
+        Lon        : 30.0
+        Lat        : 20.0
+        Angle      : 10.0
+        Time       : nothing
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
 julia> PlateKinematics.FiniteRotSph(30, 20, 10, 2)
-PlateKinematics.FiniteRotSph(30, 20, 10, 2, PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+PlateKinematics.FiniteRotSph:
+        Lon        : 30.0
+        Lat        : 20.0
+        Angle      : 10.0
+        Time       : 2.0
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
 julia> array = [1, 2, 3, 4, 5, 6];
 julia> PlateKinematics.FiniteRotSph(30, 20, 10, array)
@@ -32,7 +47,12 @@ PlateKinematics.FiniteRotSph(30, 20, 10, nothing, PlateKinematics.Covariance(1, 
 
 julia> array = [1, 2, 3, 4, 5, 6];
 julia> PlateKinematics.FiniteRotSph(30, 20, 10, 2, array)
-PlateKinematics.FiniteRotSph(30, 20, 10, 2, PlateKinematics.Covariance(1, 2, 3, 4, 5, 6))
+PlateKinematics.FiniteRotSph:
+        Lon        : 30.0
+        Lat        : 20.0
+        Angle      : 10.0
+        Time       : 2.0
+        Covariance : PlateKinematics.Covariance(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
 ```
 """
 struct FiniteRotSph
@@ -67,22 +87,47 @@ Examples:
 ------
 ```julia-repl
 julia> PlateKinematics.FiniteRotCart(1, 2, 3)
-PlateKinematics.FiniteRotCart(1, 2, 3, nothing, PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+PlateKinematics.FiniteRotCart:
+        X          : 1.0
+        Y          : 2.0
+        Z          : 3.0
+        Time       : nothing
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
 julia> array = [30, 20, 10];
 julia> PlateKinematics.FiniteRotCart(array)
-PlateKinematics.FiniteRotCart(30, 20, 10, nothing, PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+PlateKinematics.FiniteRotCart:
+        X          : 30.0
+        Y          : 20.0
+        Z          : 10.0
+        Time       : nothing
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
 julia> PlateKinematics.FiniteRotCart(1, 2, 3, 1.5)
-PlateKinematics.FiniteRotCart(1, 2, 3, 1.5, PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+PlateKinematics.FiniteRotCart:
+        X          : 1.0
+        Y          : 2.0
+        Z          : 3.0
+        Time       : 1.5
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
 julia> array = [1, 2, 3, 4, 5, 6];
 julia> PlateKinematics.FiniteRotCart(30, 20, 10, array)
-PlateKinematics.FiniteRotCart(30, 20, 10, nothing, PlateKinematics.Covariance(1, 2, 3, 4, 5, 6))
+PlateKinematics.FiniteRotCart:
+        X          : 30.0
+        Y          : 20.0
+        Z          : 10.0
+        Time       : nothing
+        Covariance : PlateKinematics.Covariance(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
 
 julia> array = [1, 2, 3, 4, 5, 6];
 julia> PlateKinematics.FiniteRotCart(1, 2, 3, 1.5, array)
-PlateKinematics.FiniteRotCart(1, 2, 3, 1.5, PlateKinematics.Covariance(1, 2, 3, 4, 5, 6))
+PlateKinematics.FiniteRotCart:
+        X          : 1.0
+        Y          : 2.0
+        Z          : 3.0
+        Time       : 1.5
+        Covariance : PlateKinematics.Covariance(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
 ```
 """
 struct FiniteRotCart
@@ -113,11 +158,17 @@ Examples:
 ------
 ```julia-repl
 julia> PlateKinematics.EulerAngles(4, 5, 6)
-PlateKinematics.EulerAngles(4, 5, 6)
+PlateKinematics.EulerAngles:
+        X : 4.0
+        Y : 5.0
+        Z : 6.0
 
 julia> array = [4, 5, 6];
 julia> PlateKinematics.EulerAngles(array)
-PlateKinematics.EulerAngles(4, 5, 6)
+PlateKinematics.EulerAngles:
+        X : 4.0
+        Y : 5.0
+        Z : 6.0
 ```
 """
 struct EulerAngles

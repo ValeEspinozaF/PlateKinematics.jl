@@ -33,13 +33,14 @@ Base.getindex(x::EulerAngles, i::Int) = getfield(x, i)
 
 function Base.show(io::IO, x::Union{FiniteRotSph, FiniteRotCart, EulerAngles})
     max_field_name_length = maximum(length.([string(field) for field in fieldnames(typeof(x))]))
+    println(string(typeof(x)) * ":")
     for field_name in fieldnames(typeof(x))
         field_value = getfield(x, field_name)
         field_name_padded = rpad(field_name, max_field_name_length)
         try
-            println(io, "$field_name_padded : $(round(field_value, digits=2))")
+            println(io, "\t$field_name_padded : $(round(field_value, digits=2))")
         catch
-            println(io, "$field_name_padded : $field_value")
+            println(io, "\t$field_name_padded : $field_value")
         end
     end
 end

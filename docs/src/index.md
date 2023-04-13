@@ -18,4 +18,4 @@ julia> Pkg.add(url="https://https://github.com/ValeEspinozaF/PlateKinematics.jl"
 
 # Citing
 
-Journal of Open Sourse Software perhaps?
+Journal of Open Source Software perhaps?

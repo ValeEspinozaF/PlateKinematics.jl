@@ -19,6 +19,7 @@ Examples = "Examples" => [
     "Interpolate Finite Rotations" => "examples/mf_interpolate.md",
     "Concatenate Finite Rotations" => "examples/mf_concatenate.md",
     "Convert to Euler Vector" => "examples/mf_to_euler.md",
+    "Calculate Surface Velocity" => "examples/mf_surface_velocity.md",
     ]
 
 #License = "License" => "license.md"
@@ -28,7 +29,8 @@ format = Documenter.HTML(
     collapselevel = 3,
     #prettyurls = get(ENV, "CI", nothing) == "true",
     assets = ["assets/logo.ico"],
-    canonical = "https://valeespinozaf.github.io/PlateKinematics.jl/"
+    canonical = "https://valeespinozaf.github.io/PlateKinematics.jl/",
+    sidebar_sitename = false,
     )
 
 PAGES = [

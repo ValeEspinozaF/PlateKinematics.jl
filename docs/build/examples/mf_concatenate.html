@@ -1,2 +1,100 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Concatenate Finite Rotations · PlateKinematics.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/logo.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../index.html"><img src="../assets/logo.png" alt="PlateKinematics.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../index.html">PlateKinematics.jl</a></span></div><form class="docs-search" action="../search.html"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../index.html">Introduction</a></li><li><a class="tocitem" href="../lib/types.html">Types</a></li><li><span class="tocitem">Functions</span><ul><li><a class="tocitem" href="../lib/main_functions.html">Main Functions</a></li><li><a class="tocitem" href="../lib/other_functions.html">Other Functions</a></li><li><a class="tocitem" href="../lib/auxiliary_functions.html">Auxiliary Functions</a></li><li><a class="tocitem" href="../lib/private_functions.html">Private Functions</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href="mf_concatenate.html">Concatenate Finite Rotations</a></li><li><a class="tocitem" href="mf_to_euler.html">Convert to Euler Vector</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href="mf_concatenate.html">Concatenate Finite Rotations</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href="mf_concatenate.html">Concatenate Finite Rotations</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ValeEspinozaF/PlateKinematics.jl/blob/master/docs/src/examples/mf_concatenate.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Concatenate-Finite-Rotations"><a class="docs-heading-anchor" href="#Concatenate-Finite-Rotations">Concatenate Finite Rotations</a><a id="Concatenate-Finite-Rotations-1"></a><a class="docs-heading-anchor-permalink" href="#Concatenate-Finite-Rotations" title="Permalink"></a></h1><p>At time it may be useful to obtain the relative motion between two plates that do not share a divergent margin, or no boundary at all for that matter. The lack of common fracture zones and isochrons produces by a shared spreading center prevents the direct observation of the relative tectonic history between both plates. </p><p>This obstacle can be circunvented by using a plate circuit that links both plates, say India and Eurasia, by a series of well-defined relative plate motion reconstructions. To connect the India plate to the Eurasian one, one may use the total reconstruction poles of Eurasia/North-America, North-America/Nubia, Africa/Antarctica, Antarctica/Australia and Australia/India.</p><p>This examples is taken from the book <a href="https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212">Plate Tectonics: How it works</a> from Allan Cox, and provides on how to calculate the relative motion between plates that do not share a divergent boundary. All the other plate-pairs mentioned do share a common spreading center, which allows researcher to estimate opening rates of the ocean floor from the magnetic lineations parallel to the ridge.</p><p><img src="assets/plate_circuit.png" alt="alt text"/></p><p>Plate circuit example. Modified from <a href="https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212">Plate Tectonics: How it works</a>.</p><p>In terms of Finite Rotations (ROT), one would pose the circuit as:</p><p class="math-container">\[sklmdl \text{sklmdl_{rrr}} {}_{EU}FR_{IN} = \frac{4}{3}\pi r^3\]</p><p>Note how subscript are meant to indicate the fixed plate on each relative motion. <span>${}_{EU}FR_{IN}$</span> &lt;sub&gt;EU&lt;/sub&gt;ROT&lt;sub&gt;IN&lt;/sub&gt; is the finite rotation describing the motion of Eurasia relative to a fixed India plate.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../lib/private_functions.html">« Private Functions</a><a class="docs-footer-nextpage" href="mf_to_euler.html">Convert to Euler Vector »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Wednesday 15 March 2023 12:14">Wednesday 15 March 2023</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Concatenate Finite Rotations · PlateKinematics.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="https://valeespinozaf.github.io/PlateKinematics.jl/examples\\mf_concatenate.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/logo.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../index.html"><img src="../assets/logo.png" alt="PlateKinematics.jl logo"/></a><form class="docs-search" action="../search.html"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../index.html">Introduction</a></li><li><a class="tocitem" href="../theory.html">Theory</a></li><li><a class="tocitem" href="../lib/types.html">Types</a></li><li><span class="tocitem">Functions</span><ul><li><a class="tocitem" href="../lib/main_functions.html">Main Functions</a></li><li><a class="tocitem" href="../lib/other_functions.html">Other Functions</a></li><li><a class="tocitem" href="../lib/auxiliary_functions.html">Auxiliary Functions</a></li><li><a class="tocitem" href="../lib/private_functions.html">Private Functions</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="mf_interpolate.html">Interpolate Finite Rotations</a></li><li class="is-active"><a class="tocitem" href="mf_concatenate.html">Concatenate Finite Rotations</a></li><li><a class="tocitem" href="mf_to_euler.html">Convert to Euler Vector</a></li><li><a class="tocitem" href="mf_surface_velocity.html">Calculate Surface Velocity</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href="mf_concatenate.html">Concatenate Finite Rotations</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href="mf_concatenate.html">Concatenate Finite Rotations</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ValeEspinozaF/PlateKinematics.jl/blob/stable/docs/src/examples/mf_concatenate.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Concatenate-Finite-Rotations"><a class="docs-heading-anchor" href="#Concatenate-Finite-Rotations">Concatenate Finite Rotations</a><a id="Concatenate-Finite-Rotations-1"></a><a class="docs-heading-anchor-permalink" href="#Concatenate-Finite-Rotations" title="Permalink"></a></h1><p>At time it may be useful to obtain the relative motion between two plates that do not share a divergent margin, or no boundary at all for that matter. The lack of common fracture zones and isochrons produces by a shared spreading center prevents the direct observation of the relative tectonic history between both plates. </p><p>This obstacle can be circumvented by using a plate circuit that links both plates, say India and Eurasia, by a series of well-defined relative plate motion reconstructions. To connect the India plate to the Eurasian one, one may use the total reconstruction poles of Eurasia/North-America, North-America/Nubia, Africa/Antarctica, Antarctica/Australia and Australia/India.</p><p>This examples is taken from the book <a href="https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212/">Plate Tectonics: How it works</a> from Allan Cox, and provides on how to calculate the relative motion between plates that do not share a divergent boundary. All the other plate-pairs mentioned do share a common spreading center, which allows researcher to estimate opening rates of the ocean floor from the magnetic lineations parallel to the ridge.</p><img src="assets/plate_circuit.png" alt="Plate circuit example"><p><img src="assets/plate_circuit.png" alt="alt text"/></p><p>Plate circuit example. Modified from <a href="https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212/">Plate Tectonics: How it works</a>.</p><p>In terms of Finite Rotations (FR), one would pose the circuit as:</p>FR<sub>IN/EU</sub> = FR<sub>IN/AU</sub> + FR<sub>AU/AN</sub> + FR<sub>AN/NB</sub> + FR<sub>NB/NA</sub> + FR<sub>NA/EU</sub> <br/><br/><p>In the posed equation, the fixed coordinate system was chosen to be Eurasia. This is also indicated with the subscripts on each individual relative motion, indicating both the moving and the fixed plate. For instance: </p>FR<sub>IN/EU</sub> <br/><p>is the finite rotation describing the motion of India relative to a fixed Eurasia plate.</p><p>The equation is solved by performing each summation one by one, from left to right, adding relative motions from the moving plate towards the fixed reference frame. Following the books example, we want to find the position of India relative to Eurasia at 40 Ma. Total reconstruction poles availables may not include the 40 Ma rotation:</p><table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>t(Ma)</th>
+            <th>Longitude(°E)</th>
+            <th>Latitude(°N)</th>
+            <th>Angle(°)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="border-bottom: 1px solid black;">
+        <tr>
+            <td>AU/IN</td>
+            <td>50.0</td>
+            <td>-</td>
+            <td>-</td>
+            <td>0.0</td>
+        </tr>
+        <tr>
+            <td rowspan=2>AN/AU</td>
+            <td>37.0</td>
+            <td>34.4</td>
+            <td>11.9</td>
+            <td>-20.5</td>
+        </tr>
+        <tr>
+            <td>42.0</td>
+            <td>34.8</td>
+            <td>10.3</td>
+            <td>-23.6</td>
+        </tr>
+        <tr>
+            <td>NB/AN</td>
+            <td>40.0</td>
+            <td>322.8</td>
+            <td>5.8</td>
+            <td>7.2</td>
+        </tr>
+        <tr>
+            <td rowspan=2>NB/NA</td>
+            <td>37.0</td>
+            <td>341.3</td>
+            <td>70.5</td>
+            <td>10.4</td>
+        </tr>
+        <tr>
+            <td>66.0</td>
+            <td>351.4</td>
+            <td>80.8</td>
+            <td>22.5</td>
+        </tr>
+        <tr>
+            <td rowspan=2>NA/EU</td>
+            <td>37.0</td>
+            <td>129.9</td>
+            <td>68.0</td>
+            <td>-7.8</td>
+        </tr>
+        <tr>
+            <td>48.0</td>
+            <td>142.8</td>
+            <td>50.8</td>
+            <td>-9.8</td>
+        </tr>
+        <tr style="border-bottom: 1px solid black;">
+    </tbody>
+</table>
+<br/><p>And indeed, some poles will require interpolation (e.g., AU/AN, NB/NA, NA/EU):</p><pre><code class="language-julia hljs">using PlateKinematics
+using PlateKinematics: FiniteRotSph, Interpolate_FiniteRotation
+
+FRs_AU_AN_37 = FiniteRotSph(34.4, 11.9, -20.5, 37.0);
+FRs_AU_AN_42 = FiniteRotSph(34.8, 10.3, -23.6, 42.0);
+FRs_AU_AN_40 = Interpolate_FiniteRotation(FRs_AU_AN_37, FRs_AU_AN_42, 40.0)</code></pre><pre><code class="language-REPL hljs">FiniteRotSph:
+        Lon        : -145.35
+        Lat        : -10.89
+        Angle      : 22.36
+        Time       : 40.0
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)</code></pre><p>Once we have obtained all total reconstruction poles for 40 Ma, we concatenate into a plate circuit. Note that, according to literature, no motion was registered between Australia and India prior to 50 Ma. This rotation is therefore ignored, as no relative motion is contributed to the end rotation.  </p><pre><code class="language-julia hljs">using PlateKinematics: Concatenate_FiniteRotations
+
+FRs_IN_AU_40 = nothing;
+FRs_AU_AN_40 = FiniteRotSph(-145.35, -10.89, 22.36, 40.0);
+FRs_AN_AF_40 = FiniteRotSph(322.8, 5.8, 7.2, 40.0);
+FRs_AF_NA_40 = FiniteRotSph(162.38, -72.57, 11.62, 40.0);
+FRs_NA_EU_40 = FiniteRotSph(135.62, 62.65, 8.25, 40.0);
+
+FRsList = [
+    FRs_AU_AN_40,
+    FRs_AN_AF_40,
+    FRs_AF_NA_40,
+    FRs_NA_EU_40,
+];
+
+FRs_EU_IN_40 = Concatenate_FiniteRotations(FRsList)</code></pre><pre><code class="language-REPL hljs">FiniteRotSph:
+        Lon        : -145.1
+        Lat        : -17.21
+        Angle      : 24.35
+        Time       : nothing
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="mf_interpolate.html">« Interpolate Finite Rotations</a><a class="docs-footer-nextpage" href="mf_to_euler.html">Convert to Euler Vector »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Thursday 13 April 2023 10:04">Thursday 13 April 2023</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

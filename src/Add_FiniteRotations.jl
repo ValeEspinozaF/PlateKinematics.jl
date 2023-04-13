@@ -28,7 +28,7 @@ function Add_FiniteRotations(
     mMTX = Multiply_RotationMatrices(MTX2, MTX1)
     addFRs = ToFRs(mMTX)
 
-    if size(addFRs)[1] !== 1
+    if size(addFRs, 1) !== 1
         return AverageEnsemble(addFRs, time)
     else
         return addFRs[1]
