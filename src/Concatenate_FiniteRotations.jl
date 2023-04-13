@@ -31,7 +31,7 @@ function Concatenate_FiniteRotations(
                 "Consider using the Add_FiniteRotations function for simple summation of two Finite Rotations."
                 )
         else
-            time == FRtimes[1]
+            time = FRtimes[1]
         end
     end
 
@@ -67,7 +67,7 @@ function Concatenate_FiniteRotations(
                 "Consider using the Add_FiniteRotations function for simple summation of two Finite Rotations."
                 )
         else
-            time == FRtimes[1]
+            time = FRtimes[1]
         end
     end
  
