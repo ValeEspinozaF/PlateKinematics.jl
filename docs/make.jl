@@ -55,7 +55,7 @@ makedocs(
 
 withenv("GITHUB_REPOSITORY" => "ValeEspinozaF/PlateKinematics.jl") do
     deploydocs(
-        devbranch = "stable",
+        #devbranch = "main",
         branch = "gh-pages",
         repo   = "github.com/ValeEspinozaF/PlateKinematics.jl.git",
         #deps   = Deps.pip("mkdocs", "pygments", "python-markdown-math"),
