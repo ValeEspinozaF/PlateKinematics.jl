@@ -23,7 +23,7 @@ function Concatenate_FiniteRotations(
 
     if isnothing(time)
 
-        # Check if all finite rotations share same :Time parameter value.
+        # Check if all Finite Rotations share same :Time parameter value.
         FRtimes = [FRs.Time for FRs in FRsList]
         if !all(t == FRtimes[1] for t in FRtimes)
             println(

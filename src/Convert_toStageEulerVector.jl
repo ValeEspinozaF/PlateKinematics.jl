@@ -2,21 +2,28 @@
     ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::Int64)
     ToEulerVector(FRsArray::Array{FiniteRotSph}, reverseRot=false::Bool)
 
-Return a stage Euler Vector describing the motion between a total Finite Rotation `FRs`
-and present-day. The output time-orientation may the inverted by setting the `reverseRot` 
+Return a stage Euler Vector describing the [Forward Rotation](@ref) between a total 
+Finite Rotation `FRs` and present-day. FRs must represent a [Reconstruction Rotation](@ref).
+The output time-orientation may the inverted by setting the `reverseRot` 
 parameter to `true`.
 """
-function ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::Int64)
-
-    timeRange = [0.0 FRs.Time] 
-
-    # Reverses sense of rotation (when using reconstruction finite rotations)
-    if reverseRot == true
-        timeRange = reverse(timeRange)
-        rFRs = ChangeAngle(FRs, FRs.Angle * -1)
-    else
-        rFRs = FRs
+function ToEulerVector(FRs::FiniteRotSph; reverseRot=false::Bool, Nsize=100000::Int64)
+    
+    # Check if time is defined
+    if isnothing(FRs.Time)
+        error("The time of the Finite Rotation is not defined.")
     end
+
+
+    # Reverses output sense of rotation 
+    if reverseRot == true
+        timeRange = [0.0 FRs.Time] 
+        rFRs = FRs # Saves one sign invertion 
+    else
+        timeRange = [FRs.Time 0.0] 
+        rFRs = ChangeAngle(FRs, FRs.Angle * -1) # Saves one sign invertion 
+    end
+
 
     # Build ensemble if covariances are given
     if !CovIsZero(rFRs.Covariance)
@@ -25,8 +32,11 @@ function ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::
         MTX = ToRotationMatrix(rFRs)
     end 
 
+
     EVs = ToEulerVector(MTX, timeRange)
 
+
+    # Return average if ensemble
     if size(EVs, 1) !== 1  
         return AverageEnsemble(EVs)
     else
@@ -34,21 +44,34 @@ function ToEulerVector(FRs::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::
     end
 end
 
-function ToEulerVector(FRsArray::Array{T}, reverseRot=false::Bool) where {T<:FiniteRotSph}
+
+function ToEulerVector(FRsArray::Array{T}; 
+    time=nothing::Union{Nothing, Float64}, reverseRot=false::Bool) where {T<:FiniteRotSph}
 
     if FRsArray[1].Time != FRsArray[2].Time
-        error("This function is meant to handle the sample array of a single Finite Rotation. " *
+        error("This function is meant to handle the sampled array of a single Finite Rotation. " *
             "To sample and convert a list of individual Finite Rotations, use ToEulerVectorList function.")
     end
 
-    timeRange = [0.0 FRsArray[1].Time] 
+    # Check if time is defined
+    if isnothing(time)
 
-    # Reverses sense of rotation (when using reconstruction finite rotations)
+        if isnothing(FRsArray[1].Time)
+            error("The time of the Finite Rotation is not defined." *
+                "Provide a value using the keyword 'time' or through the Time keyword in FiniteRotSph.")
+        else
+            time = FRsArray[1].Time 
+        end
+    end
+    
+
+    # Reverses sense of rotation
     if reverseRot == true
-        timeRange = reverse(timeRange)
-        rFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * -1), FRsArray)
+        timeRange = [0.0 time]
+        rFRs = FRs # Saves one sign invertion
     else
-        rFRs = FRs
+        timeRange = [time 0.0]
+        rFRs = map(FRs -> ChangeAngle(FRs, FRs.Angle * -1), FRsArray) # Saves one sign invertion
     end
 
     MTX = ToRotationMatrix(rFRs)
@@ -64,36 +87,42 @@ end
         FRs1Array::Array{T}, FRs2Array::Array{T}, 
         reverseRot=false::Bool) where {T<:FiniteRotSph}
 
-Return a stage Euler Vector describing the motion between two total Finite Rotations
-(`FRs1` and `FRs2`). The output time-orientation may the inverted by setting the 
-`reverseRot` parameter to `true`.
+Return a stage Euler Vector describing the motion between 
+two total Finite Rotations (`FRs1` and `FRs2`). FRs1 and FRs2 must each represent 
+a [Reconstruction Rotation](@ref). If FRs1.Time > FRs2.Time, the resulting Euler Vector
+will represent a [Forward Rotation](@ref). The output time-orientation may the inverted by 
+setting the `reverseRot` parameter to `true`.
 """
 function ToEulerVector(
-    FRs1::FiniteRotSph, FRs2::FiniteRotSph, reverseRot=false::Bool, Nsize=100000::Int64)
+    FRs1::FiniteRotSph, FRs2::FiniteRotSph; reverseRot=false::Bool, Nsize=100000::Int64)
 
-    timeRange = [FRs1.Time FRs2.Time] 
-
-    # Reverses sense of rotation (when using reconstruction finite rotations)
-    if reverseRot == true
-        timeRange = reverse(timeRange)
-        rFRs1 = ChangeAngle(FRs1, FRs1.Angle * -1)
-        rFRs2 = ChangeAngle(FRs2, FRs2.Angle * -1)
-    else
-        rFRs1 = FRs1
-        rFRs2 = FRs2
+    # Check if time is defined
+    if isnothing(FRs1.Time) || isnothing(FRs2.Time)
+        error("The time of either Finite Rotation is not defined.")
     end
 
+
     # Build ensemble if covariances are given
-    if !CovIsZero(rFRs1.Covariance) && !CovIsZero(rFRs2.Covariance)
-        MTX1 = BuildEnsemble3D(rFRs1, Nsize)
-        MTX2 = BuildEnsemble3D(rFRs2, Nsize)
+    if !CovIsZero(FRs1.Covariance) && !CovIsZero(FRs2.Covariance)
+        MTX1 = BuildEnsemble3D(FRs1, Nsize)
+        MTX2 = BuildEnsemble3D(FRs2, Nsize)
     else
-        MTX1 = ToRotationMatrix(rFRs1)
-        MTX2 = ToRotationMatrix(rFRs2)
+        MTX1 = ToRotationMatrix(FRs1)
+        MTX2 = ToRotationMatrix(FRs2)
     end 
 
-    EVs = ToEulerVector(MTX1, MTX2, timeRange)
 
+    # Reverse output sense of rotation 
+    if reverseRot == true
+        timeRange = [FRs2.Time FRs1.Time] 
+        EVs = ToEulerVector(MTX2, MTX1, timeRange)
+    else
+        timeRange = [FRs1.Time FRs2.Time] 
+        EVs = ToEulerVector(MTX1, MTX2, timeRange)
+    end
+
+
+    # Return average if ensemble
     if size(EVs, 1) !== 1  
         return AverageEnsemble(EVs)
     else
@@ -101,48 +130,40 @@ function ToEulerVector(
     end
 end
 
-function ToEulerVector(
-    FRs1Array::Array{T}, FRs2Array::Array{T}, reverseRot=false::Bool) where {T<:FiniteRotSph}
+function ToEulerVector(FRs1Array::Array{T}, FRs2Array::Array{T}; 
+    time1=nothing::Union{Nothing, Float64}, time2=nothing::Union{Nothing, Float64}, 
+    reverseRot=false::Bool) where {T<:FiniteRotSph}
 
-    timeRange = [FRs1Array[1].Time FRs2Array[2].Time] 
-
-    # Reverses sense of rotation (when using reconstruction finite rotations)
-    if reverseRot == true
-        timeRange = reverse(timeRange)
-        rFRs1 = map(FRs1 -> ChangeAngle(FRs1, FRs1.Angle * -1), FRs1Array)
-        rFRs2 = map(FRs2 -> ChangeAngle(FRs2, FRs2.Angle * -1), FRs2Array)
-
-    else
-        rFRs1 = FRs1Array
-        rFRs2 = FRs2Array
+    # Check if time is defined
+    if isnothing(time1)
+        if isnothing(FRs1Array[1].Time)
+            error("The time of the Finite Rotation FRs1 is not defined." *
+                "Provide a value using the keyword 'time1' or through the Time keyword in FiniteRotSph.")
+        else
+            time1 = FRs1Array[1].Time
+        end
     end
 
-    MTX1 = ToRotationMatrix(rFRs1)
-    MTX2 = ToRotationMatrix(rFRs2)
-    return ToEulerVector(MTX1, MTX2, timeRange)
-end
-
-function ToEulerVector2(
-    FRs1Array::Array{T}, FRs2Array::Array{T}, reverseRot=false::Bool) where {T<:FiniteRotSph}
-
-    timeRange = [FRs1Array[1].Time FRs2Array[2].Time] 
+    if isnothing(time2)
+        if isnothing(FRs2Array[1].Time)
+            error("The time of the Finite Rotation FRs2 is not defined." *
+                "Provide a value using the keyword 'time1' or through the Time keyword in FiniteRotSph.")
+        else
+            time2 = FRs2Array[1].Time
+        end
+    end
 
     MTX1 = ToRotationMatrix(FRs1Array)
     MTX2 = ToRotationMatrix(FRs2Array)
 
-    # Reverses sense of rotation (when using reconstruction finite rotations)
-    if reverseRot == true
-        timeRange = reverse(timeRange)
-        rMTX1 = ToRotationMatrix(FRs1Array)
-        rMTX2 = ToRotationMatrix(FRs2Array)
 
-        return ToEulerVector(rMTX1, rMTX2, timeRange)
+    if reverseRot == true
+        timeRange = [time2 time1] 
+        return ToEulerVector(MTX2, MTX1, timeRange)
 
     else
-        #rFRs1 = FRs1Array
-        #rFRs2 = FRs2Array
+        timeRange = [time1 time2] 
         return ToEulerVector(MTX1, MTX2, timeRange)
-
     end
 end
 
@@ -159,7 +180,7 @@ function ToEulerVector(
     end
 
     iMTX1 = Invert_RotationMatrix(MTX1)
-    MTX = Multiply_RotationMatrices(iMTX1, MTX2)
+    MTX = Multiply_RotationMatrices(MTX2, iMTX1)
 
     return ToEulerVector(MTX, timeRange)
 end
@@ -196,7 +217,7 @@ Return a list of Euler Vectors describing the motion for a list of total Finite 
 The output time-orientation may the inverted by setting the `reverseRot` parameter to `true`.
 """
 function ToEulerVectorList(
-    FRsArray::Array{T}, reverseRot=false::Bool, Nsize=100000::Int64) where {T<:FiniteRotSph}
+    FRsArray::Array{T}; reverseRot=false::Bool, Nsize=100000::Int64) where {T<:FiniteRotSph}
 
     N_EV = length(FRsArray)
 

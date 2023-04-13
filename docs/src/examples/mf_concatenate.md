@@ -6,38 +6,30 @@ CurrentModule = PlateKinematics
 
 At time it may be useful to obtain the relative motion between two plates that do not share a divergent margin, or no boundary at all for that matter. The lack of common fracture zones and isochrons produces by a shared spreading center prevents the direct observation of the relative tectonic history between both plates. 
 
-This obstacle can be circunvented by using a plate circuit that links both plates, say India and Eurasia, by a series of well-defined relative plate motion reconstructions. To connect the India plate to the Eurasian one, one may use the total reconstruction poles of Eurasia/North-America, North-America/Nubia, Africa/Antarctica, Antarctica/Australia and Australia/India.
+This obstacle can be circumvented by using a plate circuit that links both plates, say India and Eurasia, by a series of well-defined relative plate motion reconstructions. To connect the India plate to the Eurasian one, one may use the total reconstruction poles of Eurasia/North-America, North-America/Nubia, Africa/Antarctica, Antarctica/Australia and Australia/India.
 
-This examples is taken from the book [Plate Tectonics: How it works][1] from Allan Cox, and provides on how to calculate the relative motion between plates that do not share a divergent boundary. All the other plate-pairs mentioned do share a common spreading center, which allows researcher to estimate opening rates of the ocean floor from the magnetic lineations parallel to the ridge.
+This examples is taken from the book [Plate Tectonics: How it works](https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212/) from Allan Cox, and provides on how to calculate the relative motion between plates that do not share a divergent boundary. All the other plate-pairs mentioned do share a common spreading center, which allows researcher to estimate opening rates of the ocean floor from the magnetic lineations parallel to the ridge.
 
 ```@raw html
-<img src="assets/plate_circuit.png" alt="Plate circuit example" width="230" height="180">
+<img src="../assets/plate_circuit.png" alt="Plate circuit example" width="230" height="180">
 ```
 ![alt text](assets/plate_circuit.png)
 
-Plate circuit example. Modified from [Plate Tectonics: How it works][1].
+Plate circuit example. Modified from [Plate Tectonics: How it works](https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212/).
 
 
 In terms of Finite Rotations (FR), one would pose the circuit as:
 
 ```@raw html
-FR<sub>IN/EU</sub> = FR<sub>IN/AU</sub> + FR<sub>AU/AN</sub> + FR<sub>AN/NB</sub> + FR<sub>NB/NA</sub> + FR<sub>NA/EU</sub>
-```
-
-
-Note how subscript are meant to indicate the fixed plate on each relative motion.
-```@raw html FR<sub>IN/EU</sub> ``` 
-is the finite rotation describing the motion of India relative to a fixed Eurasia plate.
-
-Note how subscript are meant to indicate the fixed plate on each relative motion.
+FR<sub>IN/EU</sub> = FR<sub>IN/AU</sub> + FR<sub>AU/AN</sub> + FR<sub>AN/NB</sub> + FR<sub>NB/NA</sub> + FR<sub>NA/EU</sub> <br/><br/>
+```  
+  
+In the posed equation, the fixed coordinate system was chosen to be Eurasia. This is also indicated with the subscripts on each individual relative motion, indicating both the moving and the fixed plate. For instance: 
 ```@raw html 
-FR<sub>IN/EU</sub> 
-``` 
-is the finite rotation describing the motion of India relative to a fixed Eurasia plate.
-
-Note how subscript are meant to indicate the fixed plate on each relative motion ```@raw html 
-FR<sub>IN/EU</sub> 
+FR<sub>IN/EU</sub> <br/>
 ``` is the finite rotation describing the motion of India relative to a fixed Eurasia plate.
+
+The equation is solved by performing each summation one by one, from left to right, adding relative motions from the moving plate towards the fixed reference frame. Following the books example, we want to find the position of India relative to Eurasia at 40 Ma. Total reconstruction poles available may not include the 40 Ma rotation:
 
 ```@raw html
 <table>
@@ -51,6 +43,7 @@ FR<sub>IN/EU</sub>
         </tr>
     </thead>
     <tbody>
+        <tr style="border-bottom: 1px solid black;">
         <tr>
             <td>AU/IN</td>
             <td>50.0</td>
@@ -104,20 +97,13 @@ FR<sub>IN/EU</sub>
             <td>50.8</td>
             <td>-9.8</td>
         </tr>
+        <tr style="border-bottom: 1px solid black;">
     </tbody>
 </table>
+<br/>
 ```
 
-|       | t(Ma) | Longitude(°E) | Latitude(°N) | Angle(°) |
-|-------|-------|---------------|--------------|----------|
-| AU_IN | 50.0  | _             | _            | 0        |
-| AN_AU | 37.0  | 34.4          | 11.9         | -20.5    |
-|       | 42.0  | 34.8          | 10.3         | -23.6    |
-| AF_AN | 40.0  | 322.8         | 5.8          | 7.2      |
-| AF_NA | 37.0  | 341.3         | 70.5         | 10.4     |
-|       | 66.0  | 351.4         | 80.8         | 22.5     |
-| NA_EU | 37.0  | 129.9         | 68.0         | -7.8     |
-|       | 48.0  | 142.8         | 50.8         | -9.8     |
+And indeed, some poles will require interpolation (e.g., AU/AN, NB/NA, NA/EU):
 
 ```julia
 using PlateKinematics
@@ -125,7 +111,7 @@ using PlateKinematics: FiniteRotSph, Interpolate_FiniteRotation
 
 FRs_AU_AN_37 = FiniteRotSph(34.4, 11.9, -20.5, 37.0);
 FRs_AU_AN_42 = FiniteRotSph(34.8, 10.3, -23.6, 42.0);
-FRs_AU_AN_40 = Interpolate_FiniteRotation(FRs_37, FRs_42, 40.0)
+FRs_AU_AN_40 = Interpolate_FiniteRotation(FRs_AU_AN_37, FRs_AU_AN_42, 40.0)
 ```
 
 ```REPL
@@ -136,6 +122,8 @@ FiniteRotSph:
         Time       : 40.0
         Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 ```
+
+Once we have obtained all total reconstruction poles for 40 Ma, we concatenate into a plate circuit. Note that, according to literature, no motion was registered between Australia and India prior to 50 Ma. This rotation is therefore ignored, as no relative motion is contributed to the end rotation.  
 
 ```julia
 using PlateKinematics: Concatenate_FiniteRotations
@@ -163,6 +151,3 @@ FiniteRotSph:
         Time       : nothing
         Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 ```
-
-
-[1]:https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212
