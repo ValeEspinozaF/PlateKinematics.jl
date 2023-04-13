@@ -11,7 +11,7 @@ This obstacle can be circumvented by using a plate circuit that links both plate
 This examples is taken from the book [Plate Tectonics: How it works](https://www.wiley.com/en-us/Plate+Tectonics%3A+How+It+Works-p-9781444314212/) from Allan Cox, and provides on how to calculate the relative motion between plates that do not share a divergent boundary. All the other plate-pairs mentioned do share a common spreading center, which allows researcher to estimate opening rates of the ocean floor from the magnetic lineations parallel to the ridge.
 
 ```@raw html
-<img src="../assets/plate_circuit.png" alt="Plate circuit example" width="600">
+<img src="../assets/plate_circuit.png" alt="Plate circuit example" width="230" height="180">
 ```
 ![alt text](assets/plate_circuit.png)
 
@@ -21,20 +21,18 @@ Plate circuit example. Modified from [Plate Tectonics: How it works](https://www
 In terms of Finite Rotations (FR), one would pose the circuit as:
 
 ```@raw html
-<center> <sub>IN</sub>FR<sub>EU</sub> = <sub>IN</sub>FR<sub>AU</sub> + <sub>AU</sub>FR<sub>AN</sub> + <sub>AN</sub>FR<sub>NB</sub> + <sub>NB</sub>FR<sub>NA</sub> + <sub>NA</sub>FR<sub>EU</sub> </center> 
-<br/><br/>
+FR<sub>IN/EU</sub> = FR<sub>IN/AU</sub> + FR<sub>AU/AN</sub> + FR<sub>AN/NB</sub> + FR<sub>NB/NA</sub> + FR<sub>NA/EU</sub> <br/><br/>
 ```  
   
 In the posed equation, the fixed coordinate system was chosen to be Eurasia. This is also indicated with the subscripts on each individual relative motion, indicating both the moving and the fixed plate. For instance: 
-
 ```@raw html 
-<sub>IN</sub>FR<sub>EU</sub> 
-``` is the Finite Rotation describing the motion of India relative to a fixed Eurasia plate.
+FR<sub>IN/EU</sub> <br/>
+``` is the finite rotation describing the motion of India relative to a fixed Eurasia plate.
 
 The equation is solved by performing each summation one by one, from left to right, adding relative motions from the moving plate towards the fixed reference frame. Following the books example, we want to find the position of India relative to Eurasia at 40 Ma. Total reconstruction poles available may not include the 40 Ma rotation:
 
 ```@raw html
-<table class="center">
+<table>
     <thead>
         <tr>
             <th></th>
@@ -109,8 +107,7 @@ And indeed, some poles will require interpolation (e.g., AU/AN, NB/NA, NA/EU):
 
 ```julia
 using PlateKinematics
-using PlateKinematics: FiniteRotSph, Covariance
-using PlateKinematics: Interpolate_FiniteRotation
+using PlateKinematics: FiniteRotSph, Interpolate_FiniteRotation
 
 FRs_AU_AN_37 = FiniteRotSph(34.4, 11.9, -20.5, 37.0);
 FRs_AU_AN_42 = FiniteRotSph(34.8, 10.3, -23.6, 42.0);
@@ -123,7 +120,7 @@ FiniteRotSph:
         Lat        : -10.89
         Angle      : 22.36
         Time       : 40.0
-        Covariance : Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 ```
 
 Once we have obtained all total reconstruction poles for 40 Ma, we concatenate into a plate circuit. Note that, according to literature, no motion was registered between Australia and India prior to 50 Ma. This rotation is therefore ignored, as no relative motion is contributed to the end rotation.  
@@ -146,14 +143,11 @@ FRsList = [
 
 FRs_EU_IN_40 = Concatenate_FiniteRotations(FRsList)
 ```
-
-Lastly, the Finite Rotation describing the motion of India relative to a fixed Eurasia plate at 40 Ma is: 
-
 ```REPL
 FiniteRotSph:
         Lon        : -145.1
         Lat        : -17.21
         Angle      : 24.35
-        Time       : 40.0
-        Covariance : Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        Time       : nothing
+        Covariance : PlateKinematics.Covariance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 ```

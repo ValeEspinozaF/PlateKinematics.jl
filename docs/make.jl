@@ -25,7 +25,7 @@ Examples = "Examples" => [
 #License = "License" => "license.md"
 
 format = Documenter.HTML(
-    edit_link = "stable",
+    edit_link = "main",
     collapselevel = 3,
     #prettyurls = get(ENV, "CI", nothing) == "true",
     assets = ["assets/logo.ico", "assets/table.css"],

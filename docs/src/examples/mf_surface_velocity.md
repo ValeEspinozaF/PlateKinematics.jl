@@ -15,7 +15,7 @@ where *V* is the velocity vector, *ω* is the Euler vector of rotation, *R* is t
 
 Instead of a vector, [`Calculate_SurfaceVelocity`](@ref) report the velocity vector *V* in terms of i) northward and eastward components, ii) norm (total velocity), and iii) azimuth of the velocity vector as measured clockwise from the North. The function takes the Euler vector of rotation, and the geographical position of interest in the Earth's surface as inputs. For convenience, this point is not given as a vector (*P*), but rather as longitude and latitude coordinates. [`Calculate_SurfaceVelocity`](@ref) then uses the WGS-84 ellipsoid to calculate the cartesian coordinates of the position vector *P*. 
 
-Take the following example values for the motion of the Anatolia plate relative to Eurasia, values taken from [Martin de Blas et al., 2022](https://doi.org/10.1093/gji/ggac020)). For the geographical position of interest, we will use coordinates close to the boundary between both plate, a structure also known as the North Anatolia Fault.
+Take the following example values for the motion of the Anatolia plate relative to Eurasia, values taken from [Martin de Blas et al., 2022](https://doi.org/10.1093/gji/ggac020). For the geographical position of interest, we will use coordinates close to the boundary between both plate, a structure also known as the North Anatolia Fault.
 
 ```julia
 using PlateKinematics
