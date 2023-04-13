@@ -1,11 +1,11 @@
 """
-    ToFiniteRotation(EVs::EulerVectorSph, reverseRot=false::Bool, Nsize=1e5::Number)
-    ToFiniteRotation(EVsArray::Array{EulerVectorSph}, reverseRot=false::Bool)
+    ToFiniteRotation(EVs::EulerVectorSph, reverseRot=false::Bool, Nsize=100000::Int64)
+    ToFiniteRotation(EVsArray::Array{T}, reverseRot=false::Bool) where {T<:EulerVectorSph}
 
 Return a total Finite Rotation from a total Euler Vector `EVs`. The output time-orientation 
 may the inverted by setting the `reverseRot` parameter to `true`.
 """
-function ToFiniteRotation(EVs::EulerVectorSph, reverseRot=false::Bool, Nsize=1e5::Number)
+function ToFiniteRotation(EVs::EulerVectorSph, reverseRot=false::Bool, Nsize=100000::Int64)
 
     # Reverses sense of rotation (when using reconstruction finite rotations)
     if reverseRot == true
@@ -43,7 +43,7 @@ function ToFiniteRotation(EVs::EulerVectorSph, reverseRot=false::Bool, Nsize=1e5
 end 
 
 
-function ToFiniteRotation(EVsArray::Array{EulerVectorSph}, reverseRot=false::Bool)
+function ToFiniteRotation(EVsArray::Array{T}, reverseRot=false::Bool) where {T<:EulerVectorSph}
 
     # Reverses sense of rotation (usually when using reconstruction finite rotations)
     if reverseRot == true

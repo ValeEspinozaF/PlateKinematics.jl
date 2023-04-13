@@ -1,0 +1,83 @@
+"""
+$(TYPEDEF)
+
+Euler vector in spherical coordinates with the following parameters:
+
+Fields
+------
+* `Lon::Float64`: Longitude of the Euler pole in degrees-East
+* `Lat::Float64`: Latitude of the Euler pole in degrees-North
+* `AngVelocity::Float64`: Angular velocity in degrees/Myr
+* `TimeRange::Union{Matrix, Nothing}`: Initial to final age of rotation
+* `Covariance::Covariance`: [`Covariance`](@ref) in radians²/Myr²
+
+Examples:
+------
+```julia-repl
+julia> PlateKinematics.EulerVectorSph(1, 2, 3)
+PlateKinematics.EulerVectorSph(1, 2, 3, nothing, PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+
+julia> array = [30, 20, 10];
+julia> PlateKinematics.EulerVectorSph(array)
+PlateKinematics.EulerVectorSph(30, 20, 10, nothing, PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+
+julia> array = [1.5 2.5];
+julia> length(array) == 2
+true
+julia> PlateKinematics.EulerVectorSph(30, 20, 10, array)
+PlateKinematics.EulerVectorSph(30, 20, 10, [1.5 2.5], PlateKinematics.Covariance(0, 0, 0, 0, 0, 0))
+
+julia> array = [1, 2, 3, 4, 5, 6];
+julia> length(array) != 2
+true
+julia> PlateKinematics.EulerVectorSph(30, 20, 10, array)
+PlateKinematics.EulerVectorSph(30, 20, 10, nothing, PlateKinematics.Covariance(1, 2, 3, 4, 5, 6))
+
+julia> array = [1, 2, 3, 4, 5, 6];
+julia> PlateKinematics.EulerVectorSph(1, 2, 3, [1.5 2.5], array)
+PlateKinematics.EulerVectorSph(1, 2, 3, [1.5 2.5], PlateKinematics.Covariance(1, 2, 3, 4, 5, 6))
+```
+"""
+struct EulerVectorSph
+    "Longitude of the Euler pole in degrees-East."
+        Lon::Float64
+    "Latitude of the Euler pole in degrees-North."
+        Lat::Float64
+    "Angular velocity in degrees/Myr."
+        AngVelocity::Float64
+    "Initial to final age of rotation."
+        TimeRange::Union{Matrix, Nothing}
+    "[`Covariance`](@ref) in radians²/Myr²."
+        Covariance::Covariance
+    
+end
+
+"""
+$(TYPEDEF)
+
+Euler vector in Cartesian coordinates, expressed in degrees/Myr.
+
+Fields
+------
+* `X::Float64`: X-coordinate in degrees/Myr
+* `Y::Float64`: Y-coordinate in degrees/Myr
+* `Z::Float64`: Z-coordinate in degrees/Myr
+* `TimeRange::Union{Matrix, Nothing}`: Initial to final age of rotation
+* `Covariance::Covariance`: [`Covariance`](@ref) in radians²/Myr²
+
+Examples:
+------
+Same outer Constructor Methods as [`EulerVectorSph`](@ref).
+"""
+struct EulerVectorCart
+    "X-coordinate in degrees/Myr."
+        X::Float64
+    "Y-coordinate in degrees/Myr."
+        Y::Float64
+    "Z-coordinate in degrees/Myr."
+        Z::Float64
+    "Initial to final age of rotation."
+        TimeRange::Union{Matrix, Nothing}
+    "[`Covariance`](@ref) in radians²/Myr²."
+        Covariance::Covariance
+end

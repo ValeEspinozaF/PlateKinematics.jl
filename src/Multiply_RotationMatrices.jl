@@ -1,4 +1,4 @@
-function Multiply_RotationMatrices(MTX1::Array{Float64, 3}, MTX2::Array{Float64, 3})
+function Multiply_RotationMatrices(MTX1::Array{N, 3}, MTX2::Array{N, 3}) where {N<:Float64}
 
     if size(MTX1)[1:2] != (3,3) || size(MTX2)[1:2] != (3,3)
         error("Input 3D arrays must be of size (3, 3, n).")

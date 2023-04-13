@@ -1,12 +1,13 @@
 """
-    AverageEnsemble(FRsArray::Array{T}, time=nothing::Union{Nothing, Number}) where {T<:FiniteRotSph}
-    AverageEnsemble(FRcArray::Array{T}, time=nothing::Union{Nothing, Number}) where {T<:FiniteRotCart}
+    AverageEnsemble(FRsArray::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotSph}
+    AverageEnsemble(FRcArray::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotCart}
 
 Return the average Finite Rotation from a given ensemble. A specific output `:Time` 
 field may be passed through the argument `time`. The output type ([`FiniteRotSph`](@ref) 
 or [`FiniteRotCart`](@ref)) will mirror the input array type.
 """
-function AverageEnsemble(FRsArray::Array{T}, time=nothing::Union{Nothing, Number}) where {T<:FiniteRotSph}
+function AverageEnsemble(
+    FRsArray::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotSph}
 
     N = length(FRsArray);
 
@@ -45,7 +46,8 @@ function AverageEnsemble(FRsArray::Array{T}, time=nothing::Union{Nothing, Number
 end
 
 
-function AverageEnsemble(FRcArray::Array{T}, time=nothing::Union{Nothing, Number}) where {T<:FiniteRotCart}
+function AverageEnsemble(
+    FRcArray::Array{T}, time=nothing::Union{Nothing, Float64}) where {T<:FiniteRotCart}
 
     # Calculate mean vector and its covariance
     return ToFRc(AverageEnsemble(ToFRs(FRcArray), time))
@@ -61,7 +63,8 @@ Return the average Euler Vector from a given ensemble. A specific output `:TimeR
 field may be passed through the argument `timeRange`. The output type ([`EulerVectorSph`](@ref) 
 or [`EulerVectorCart`](@ref)) will mirror the input array type.
 """
-function AverageEnsemble(EVsArray::Matrix{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorSph} #!!! Why matrix
+function AverageEnsemble(
+    EVsArray::Matrix{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorSph} #!!! Why matrix
 
     # Ensemble array components [degrees/Myr]
     XYZ = map(v -> sph2cart(v[1], v[2], v[3]), EVsArray)

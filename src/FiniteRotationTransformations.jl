@@ -1,52 +1,57 @@
 """
-    ChangeLon(FRs::FiniteRotSph, newLon)
+    ChangeLon(FRs::FiniteRotSph, newLon::Float64)
 
 Change the :Lon (longitude) value of `FRs` with `newLon`.
 """
-function ChangeLon(FRs::FiniteRotSph, newLon::Number)
+function ChangeLon(FRs::FiniteRotSph, newLon::Float64)
     return FiniteRotSph(newLon, FRs.Lat, FRs.Angle, FRs.Time, FRs.Covariance)
 end
 
 """
+    ChangeLat(FRs::FiniteRotSph, newLat::Float64)
+
 Change the :Lat (latitude) value of `FRs` with `newLat`.
 """
-function ChangeLat(FRs::FiniteRotSph, newLat::Number)
+function ChangeLat(FRs::FiniteRotSph, newLat::Float64)
     return FiniteRotSph(FRs.Lon, newLat, FRs.Angle, FRs.Time, FRs.Covariance)
 end
 
 """
-    ChangeAngle(FRs::FiniteRotSph, newAngle::Number)
+    ChangeAngle(FRs::FiniteRotSph, newAngle::Float64)
 
 Change the :Angle (angle) value of `FRs` with `newAngle`.
 """
-function ChangeAngle(FRs::FiniteRotSph, newAngle::Number)
+function ChangeAngle(FRs::FiniteRotSph, newAngle::Float64)
     return FiniteRotSph(FRs.Lon, FRs.Lat, newAngle, FRs.Time, FRs.Covariance)
 end
 
 """
-    ChangeTime(FRs::FiniteRotSph, newTime::Number)
+    ChangeTime(FRs::FiniteRotSph, newTime::Float64)
 
 Change the :Time (rotation age) value of `FRs` with `newTime`.
 """
-function ChangeTime(FRs::FiniteRotSph, newTime::Number)
+function ChangeTime(FRs::FiniteRotSph, newTime::Float64)
     return FiniteRotSph(FRs.Lon, FRs.Lat, FRs.Angle, newTime, FRs.Covariance)
 end
 
 """
-    ChangeCovariance(FRs::FiniteRotSph, newCovariance::Union{Covariance, Array})
+    ChangeCovariance(
+        FRs::FiniteRotSph, newCovariance::Union{Covariance, Array{N}}) where {N<:Float64}
 
 Change the ::Covariance (covariance elements) of `FRs` with `newCovariance`.
 """
-function ChangeCovariance(FRs::FiniteRotSph, newCovariance::Union{Covariance, Array})
+function ChangeCovariance(
+    FRs::FiniteRotSph, newCovariance::Union{Covariance, Array{N}}) where {N<:Float64}
+    
     return FiniteRotSph(FRs.Lon, FRs.Lat, FRs.Angle, FRs.Time, newCovariance)
 end
 
 
 """
     ToFRs(FRc::FiniteRotCart)
-    ToFRs(FRcArray::Array{FiniteRotCart})
+    ToFRs(FRcArray::Array{T}) where {T<:FiniteRotCart}
     ToFRs(EA::EulerAngles)
-    ToFRs(EA::Array{EulerAngles})
+    ToFRs(EA::Array{T}) where {T<:EulerAngles}
 
 Return a Finite Rotation in Spherical coordinates (`::FiniteRotSph`), expressed in degrees.
 """
@@ -56,7 +61,8 @@ function ToFRs(FRc::FiniteRotCart)
 end
 
 
-function ToFRs(FRcArray::Array{FiniteRotCart})
+
+function ToFRs(FRcArray::Array{T}) where {T<:FiniteRotCart}
     return map(FRc -> ToFRs(FRc), FRcArray)
 end
 
@@ -78,7 +84,7 @@ function ToFRs(EA::EulerAngles)
     return ToFRs(MTX)[1]
 end
 
-function ToFRs(EA::Array{EulerAngles})
+function ToFRs(EA::Array{T}) where {T<:EulerAngles}
 
     MTX = Array{Float64}(undef, 3, 3, length(EA))
     EAx = getindex.(EA, 1)
@@ -99,12 +105,12 @@ function ToFRs(EA::Array{EulerAngles})
 end
 
 """
-    ToFRs(MTX::Array{T, 3}, time=nothing::Union{Nothing, Number}) where {T<:Number}
+    ToFRs(MTX::Array{N, 3}, time=nothing::Union{Nothing, N}) where {N<:Float64}
 
 Convert an array of Rotation Matrices `MTX` to an array of Finite Rotations (`::FiniteRotSph`), 
 expressed in degrees. The :Time field may be passed with the argument `time`.
 """
-function ToFRs(MTX::Array{T, 3}, time=nothing::Union{Nothing, Number}) where {T<:Number}
+function ToFRs(MTX::Array{N, 3}, time=nothing::Union{Nothing, N}) where {N<:Float64}
 
     if size(MTX)[1:2] != (3,3)
         error("Input 3D array must be of size (3, 3, n).")
@@ -127,7 +133,7 @@ end
 
 """
     ToFRc(FRs::FiniteRotSph)
-    ToFRc(FRsArray::Array{FiniteRotSph})
+    ToFRc(FRsArray::Array{T}) where {T<:FiniteRotSph}
 
 Return a Finite Rotation in Cartesian coordinates (`::FiniteRotCart`), expressed in degrees.
 """
@@ -136,7 +142,7 @@ function ToFRc(FRs::FiniteRotSph)
     return FiniteRotCart(x, y, z , FRs.Time, FRs.Covariance)
 end
 
-function ToFRc(FRsArray::Array{FiniteRotSph})
+function ToFRc(FRsArray::Array{T}) where {T<:FiniteRotSph}
     return map(FRs -> ToFRc(FRs), FRsArray)
 end
 
@@ -144,9 +150,9 @@ end
 
 """
     ToRotationMatrix(FRs::FiniteRotSph)
-    ToRotationMatrix(FRsArray::Array{FiniteRotSph})
-    ToRotationMatrix(EA::Array{EulerAngles})
-    ToRotationMatrix(EAx::Array{T, 1}, EAy::Array{T, 1}, EAz::Array{T, 1}) where {T<:Number}
+    ToRotationMatrix(FRsArray::Array{T}) where {T<:FiniteRotSph}
+    ToRotationMatrix(EA::Array{T}) where {T<:EulerAngles}
+    ToRotationMatrix(EAx::Array{N, 1}, EAy::Array{N, 1}, EAz::Array{N, 1}) where {N<:Float64}
 
 Return a Rotation Matrix (3x3 Array) expressed in radians.
 """
@@ -174,7 +180,7 @@ function ToRotationMatrix(FRs::FiniteRotSph)
     return MTX
 end
 
-function ToRotationMatrix(FRsArray::Array{FiniteRotSph})
+function ToRotationMatrix(FRsArray::Array{T}) where {T<:FiniteRotSph}
 
     FRsArray = vec(FRsArray)
     x, y, z = sph2cart( getindex.(FRsArray, 1), getindex.(FRsArray, 2) )
@@ -199,11 +205,11 @@ function ToRotationMatrix(FRsArray::Array{FiniteRotSph})
     return MTX
 end
 
-function ToRotationMatrix(EA::Array{EulerAngles})
+function ToRotationMatrix(EA::Array{T}) where {T<:EulerAngles}
     return ToRotationMatrix( getindex.(EA, 1), getindex.(EA, 2), getindex.(EA, 3))
 end
 
-function ToRotationMatrix(EAx::Array{T, 1}, EAy::Array{T, 1}, EAz::Array{T, 1}) where {T<:Number}
+function ToRotationMatrix(EAx::Array{N, 1}, EAy::Array{N, 1}, EAz::Array{N, 1}) where {N<:Float64}
 
     MTX = Array{Float64}(undef, 3, 3, length(EAx))
 
@@ -230,7 +236,7 @@ end
 
 """
     ToEulerAngles(FRs::FiniteRotSph)
-    ToEulerAngles(FRsArray::Array{FiniteRotSph})
+    ToEulerAngles(FRsArray::Array{T}) where {T<:FiniteRotSph}
 
 Return the set of Euler angles (`::EulerAngles`) from a Finite Rotation.
 """
@@ -245,7 +251,7 @@ function ToEulerAngles(FRs::FiniteRotSph)
     return EulerAngles(EAx, EAy, EAz)
 end
 
-function ToEulerAngles(FRsArray::Array{FiniteRotSph})
+function ToEulerAngles(FRsArray::Array{T}) where {T<:FiniteRotSph}
 
     MTX = ToRotationMatrix(FRsArray)
 

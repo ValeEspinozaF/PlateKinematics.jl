@@ -1,4 +1,4 @@
-function Invert_RotationMatrix(MTX::Array{Float64, 3})
+function Invert_RotationMatrix(MTX::Array{N, 3}) where {N<:Float64}
 
     if size(MTX)[1:2] != (3,3)
         error("Input 3D array must be of size (3, 3, n).")
