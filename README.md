@@ -1,5 +1,8 @@
 # PlateKinematics.jl
 
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://valeespinozaf.github.io/PlateKinematics.jl/dev/)
+[![Build Status](https://github.com/ValeEspinozaF/PlateKinematics.jl/workflows/CI/badge.svg)](https://github.com/JuliaGeodynamics/GeoParams.jl/actions)
+
 <!-- description -->
 <p>
   <strong> Tools for easy handling of Plate Kinematics functions with Julia 🌏 📐. </strong>
@@ -18,14 +21,16 @@ to add the package and also to instantiate/build all the required dependencies.
 
 ```@julia
 julia> using Pkg
-julia> Pkg.add(url="https://https://github.com/ValeEspinozaF/PlateKinematics.jl")
+julia> Pkg.add("PlateKinematics")
 ```
 
-<!--
-julia> ]
-(v1.7) pkg> add PlateKinematics
-(v1.7) pkg> instantiate
- -->
+
+# Getting started
+
+```@julia
+julia> using PlateKinematics
+julia> ?PlateKinematics
+```
 
 ## Examples
 
