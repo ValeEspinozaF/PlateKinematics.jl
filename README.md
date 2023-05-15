@@ -1,7 +1,7 @@
 # PlateKinematics.jl
 
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://valeespinozaf.github.io/PlateKinematics.jl/dev/)
-[![Build Status](https://github.com/ValeEspinozaF/PlateKinematics.jl/workflows/CI/badge.svg)](https://github.com/JuliaGeodynamics/GeoParams.jl/actions)
+[![Build Status](https://github.com/ValeEspinozaF/PlateKinematics.jl/workflows/CI/badge.svg)](https://github.com/ValeEspinozaF/PlateKinematics.jl/actions)
 
 <!-- description -->
 <p>
