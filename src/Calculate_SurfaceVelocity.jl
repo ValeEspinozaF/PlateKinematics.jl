@@ -80,7 +80,7 @@ end =#
 Calculate the Surface Velocity components for a given point on Earth, subject to the motion
 described by an Euler Vector `EVs`. Location(s) are given through parameters `pntLon` 
 and `pntLat`, which represent spherical coordinates in degrees-East and degrees-North, 
-respectively. 
+respectively. Outputs are given in cm/yr and degrees.	
 """
 function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat::Float64, Nsize=100000::Int64)
     
@@ -241,6 +241,31 @@ function Calculate_SurfaceVelocity(EVsArray::Array{T}, pntLon::Float64, pntLat::
     
     # Return surface velocity components
     return [eastVel, northVel, totalVel, azimuth]
+end
+
+function Calculate_MeanSurfaceVelocity(EVsArray::Array{T}, pntLon::Float64, pntLat::Float64) where {T<:EulerVectorSph}
+    
+    eastVel, northVel, totalVel, azimuth = Calculate_SurfaceVelocity(EVsArray, pntLon, pntLat)
+    
+    # Surface velocity statistics
+    meanEast = mean(eastVel)
+    meanNorth = mean(northVel)
+    meanTotal = mean(totalVel)
+    meanAzim = mean(azimuth)
+
+    stdEast = std(eastVel)
+    stdNorth = std(northVel)
+    stdTotal = std(totalVel)
+    stdAzimuth = std(azimuth)
+
+    # Return SurfaceVelocityVector instance
+    return SurfaceVelocityVector(
+            pntLon, pntLat, 
+            Stat(meanEast, stdEast), 
+            Stat(meanNorth, stdNorth), 
+            Stat(meanTotal, stdTotal), 
+            Stat(meanAzim, stdAzimuth)
+            )
 end
 
 

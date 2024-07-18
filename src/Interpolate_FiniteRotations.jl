@@ -84,8 +84,8 @@ function Interpolate_FiniteRotation(
     else
         # Build ensemble if covariances are given
         if !CovIsZero(FRs1.Covariance) && !CovIsZero(FRs2.Covariance)
-            MTX1 = BuildEnsemble3D(FRs1, Nsize)
-            MTX2 = BuildEnsemble3D(FRs2, Nsize)
+            MTX1 = BuildEnsemble3D(FRs1, Nsize, true)
+            MTX2 = BuildEnsemble3D(FRs2, Nsize, true)
         else
             MTX1 = ToRotationMatrix(FRs1)
             MTX2 = ToRotationMatrix(FRs2)

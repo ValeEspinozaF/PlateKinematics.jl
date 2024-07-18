@@ -36,6 +36,11 @@ AverageEnsemble
 Interpolate_FiniteRotation
 ```
 
+### Add Finite Rotations
+```@docs
+Add_FiniteRotations
+```
+
 ### Concatenate Finite Rotations
 Concatenate two or more finite rotations into a plate circuit that links two plates. 
 ```@docs

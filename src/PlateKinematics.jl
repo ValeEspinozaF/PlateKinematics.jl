@@ -15,6 +15,9 @@ include("types/FiniteRotation_types.jl")
 include("types/EulerVector_types.jl")
 include("types/SurfaceVelocity_types.jl")
 
+# TODO Add the other pertinent exports!
+export Covariance, FiniteRotSph, FiniteRotCart, EulerVectorSph, EulerVectorCart
+
 # Methods
 include("methods/Covariance_methods.jl")
 include("methods/FiniteRotations_methods.jl")

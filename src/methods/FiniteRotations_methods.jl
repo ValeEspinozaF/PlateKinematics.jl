@@ -9,6 +9,7 @@ FiniteRotSph(lon, lat, angle, time, array::Array) = FiniteRotSph(lon, lat, angle
 FiniteRotSph(array::Array) = FiniteRotSph(array[1], array[2], array[3], nothing, Covariance())
 FiniteRotSph(array::Array, time) = FiniteRotSph(array[1], array[2], array[3], time, Covariance())
 FiniteRotSph(array::Array, time, covariance::Covariance) = FiniteRotSph(array[1], array[2], array[3], time, covariance)
+FiniteRotSph(array::Array, time, covariance::Array) = FiniteRotSph(array[1], array[2], array[3], time, Covariance(covariance))
 
 
 # Cartesian finite rotations 
@@ -19,6 +20,7 @@ FiniteRotCart(x, y, z, array::Array) = FiniteRotCart(x, y, z, nothing, Covarianc
 FiniteRotCart(x, y, z, time, array::Array) = FiniteRotCart(x, y, z, time, Covariance(array))
 FiniteRotCart(array::Array) = FiniteRotCart(array[1], array[2], array[3], nothing, Covariance())
 FiniteRotCart(array::Array, time) = FiniteRotCart(array[1], array[2], array[3], time, Covariance())
+FiniteRotCart(array::Array, time, covariance::Array) = FiniteRotCart(array[1], array[2], array[3], time, Covariance(covariance))
 
 # Euler angles
 EulerAngles(array::Array) = EulerAngles(array[1], array[2], array[3])

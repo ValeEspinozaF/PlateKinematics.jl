@@ -64,7 +64,7 @@ field may be passed through the argument `timeRange`. The output type ([`EulerVe
 or [`EulerVectorCart`](@ref)) will mirror the input array type.
 """
 function AverageEnsemble(
-    EVsArray::Matrix{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorSph} #!!! Why matrix
+    EVsArray::Array{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorSph}
 
     # Ensemble array components [degrees/Myr]
     XYZ = map(v -> sph2cart(v[1], v[2], v[3]), EVsArray)
@@ -74,26 +74,27 @@ function AverageEnsemble(
 
     # Use passed timeRange argument if not nothing, otherwise use EVsArray[1].Time
     if isnothing(timeRange)
-        time = EVsArray[1].TimeRange
+        timeRange = EVsArray[1].TimeRange
     end
     
     # Mean pole in degrees, magnitude in [deg/Myr], covariace in [radians²/Myr²]
-    return T(cart2sph(x_mean, y_mean, z_mean), time, cov * (pi/180)^2)
+    return T(cart2sph(x_mean, y_mean, z_mean), timeRange, cov * (pi/180)^2)
 end
 
 
-function AverageEnsemble(EVcArray::Matrix{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorCart}
+function AverageEnsemble(
+    EVcArray::Array{T}, timeRange=nothing::Union{Nothing, Matrix}) where {T<:EulerVectorCart}
 
     # Calculate mean vector [deg/Myr] and its covariance [deg²/Myr²]
     x_mean, y_mean, z_mean, cov = AverageVector(getindex.(EVcArray, 1), getindex.(EVcArray, 2), getindex.(EVcArray, 3))
     
-    # Use passed timeRange argument if not nothing, otherwise use EVsArray[1].Time
+    # Use passed timeRange argument if not nothing, otherwise use EVcArray[1].Time
     if isnothing(timeRange)
-        time = EVsArray[1].TimeRange
+        timeRange = EVcArray[1].TimeRange
     end
     
     # Mean vector in [deg/Myr], covariace in [rad²/Myr²]
-    return T(x_mean, y_mean, z_mean, time, cov * (pi/180)^2)
+    return T(x_mean, y_mean, z_mean, timeRange, cov * (pi/180)^2)
     
 end
 

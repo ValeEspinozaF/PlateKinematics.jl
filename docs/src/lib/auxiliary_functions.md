@@ -19,7 +19,12 @@ Pages = ["auxiliary_functions.md"]
 
 ## Auxiliary Functions
 
-### Add Finite Rotations
+### Load Data
 ```@docs
-Add_FiniteRotations
+LoadData
+```
+
+### Save Data
+```@docs
+SaveData
 ```

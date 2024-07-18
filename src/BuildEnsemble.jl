@@ -3,19 +3,25 @@
     
 Draws `Nsize` Rotation Matrix samples from the covariance of a given Finite Rotation `FRs`.
 """
-function BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1000000::Int64)
+function BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1000000::Int64, reverseRot=false::Bool)
 
     if CovIsZero(FRs.Covariance)
         error("Provided Finite rotations must include a valid covariance.")
     end
 
+    # Process correlation matrix
     covMatrix = CovToMatrix(FRs)
-    
     if !CheckCovariance(covMatrix)
         covMatrix = ReplaceCovariaceEigs(covMatrix)
     end
 
+    # Make correlation ensemble
     xc, yc, zc = CorrelatedEnsemble3D(covMatrix, Nsize)
+
+    # Reverses output sense of rotation 
+    if reverseRot == false
+        FRs = ChangeAngle(FRs, FRs.Angle * -1) # Saves one sign invertion 
+    end
 
     # Get Euler angles
     EuAngles = ToEulerAngles(FRs)
@@ -56,6 +62,28 @@ function BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1000000::Int64)
     EVz = z .+ zc
 
     return ToEVs(EVx, EVy, EVz, EVs.TimeRange)
+end
+
+function BuildEnsemble3D(EVc::EulerVectorCart, Nsize=1000000::Int64)
+
+    if CovIsZero(EVc.Covariance)
+        error("Provided Euler Vector must include a valid covariance.")
+    end
+
+    covMatrix = CovToMatrix(EVc)
+    
+    if !CheckCovariance(covMatrix)
+        covMatrix = ReplaceCovariaceEigs(covMatrix)
+    end
+
+    xc, yc, zc = CorrelatedEnsemble3D(covMatrix, Nsize)
+
+    # Build ensemble
+    EVx = EVc.X .+ xc
+    EVy = EVc.Y .+ yc
+    EVz = EVc.Z .+ zc
+    
+    return mapslices(v -> EulerVectorCart(v), [EVx EVy EVz], dims=(2))
 end
 
 

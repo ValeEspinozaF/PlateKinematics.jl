@@ -62,3 +62,12 @@ function Add_FiniteRotations(
     return ToFRs(mMTX, time)
 
 end
+
+
+function Add_FiniteRotations(
+    MTX1::Array{N, 3}, MTX2::Array{N, 3}) where {N<:Float64}
+
+    mMTX = Multiply_RotationMatrices(MTX2, MTX1)
+    return mMTX
+
+end
