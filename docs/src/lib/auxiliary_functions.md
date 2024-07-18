@@ -21,10 +21,12 @@ Pages = ["auxiliary_functions.md"]
 
 ### Load Data
 ```@docs
-LoadData
+LoadTXT_asStruct
+ParseArray_asFiniteRotation
+ParseArray_asEulerVector
 ```
 
 ### Save Data
 ```@docs
-SaveData
+SaveStruct_asTXT
 ```
