@@ -32,6 +32,12 @@ julia> using PlateKinematics
 julia> ?PlateKinematics
 ```
 
+To assign as alias to the module, you may use the following:
+
+```@julia
+const pk = PlateKinematics
+``` 
+
 ## Examples
 
 Some usage examples may be found under `examples/`. These examples are further explained in the package's [documentation]. 
