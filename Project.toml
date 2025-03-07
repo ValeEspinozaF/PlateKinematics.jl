@@ -1,7 +1,7 @@
 name = "PlateKinematics"
 uuid = "f961096e-11ae-497c-ad8a-ff09638a4fbf"
 authors = ["Valentina-Espinoza"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"

@@ -15,24 +15,35 @@ SurfaceVelocityVector(lon, lat, ev::Array, nv::Array, tv::Array) = SurfaceVeloci
 
 # --- Base overload methods ---
 
-function Base.show(io::IO, x::Stat)
+function Base.show(io::IO, m::Stat)
+    print(io, "Stat(", m.Mean, ", ", m.StDev, ")")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", x::Stat)
     max_field_name_length = maximum(length.([string(field) for field in fieldnames(Stat)]))
-    println(string(Stat) * ":")
+    print(io, "Stat:\n")
     for field_name in fieldnames(Stat)
         field_value = getfield(x, field_name)
         field_name_padded = rpad(field_name, max_field_name_length)
         try
-            println(io, "\t$field_name_padded : $(round(field_value, digits=2))")
+            print(io, "\t$field_name_padded : $(round(field_value, digits=2))\n")
         catch
-            println(io, "\t$field_name_padded : $field_value")
+            print(io, "\t$field_name_padded : $field_value\n")
         end
     end
 end
 
+function Base.show(io::IO, m::SurfaceVelocityVector)
+    try
+        print(io, "SurfaceVelocityVector(", m.Lon, ", ", m.Lat, ", ", m.EastVel.Mean, ", ", m.NorthVel.Mean, ")")
+    catch
+        print(io, "SurfaceVelocityVector(", m.Lon, ", ", m.Lat, ", ", m.EastVel, ", ", m.NorthVel, ")")
+    end
+end
 
-function Base.show(io::IO, x::SurfaceVelocityVector)
+function Base.show(io::IO, ::MIME"text/plain", x::SurfaceVelocityVector)
     max_field_name_length = maximum(length.([string(field) for field in fieldnames(SurfaceVelocityVector)]))
-    println(string(SurfaceVelocityVector) * ":")
+    print(io, "SurfaceVelocityVector:\n")
     for field_name in fieldnames(SurfaceVelocityVector)
         field_value = getfield(x, field_name)
         field_name_padded = rpad(field_name, max_field_name_length)

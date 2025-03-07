@@ -33,20 +33,32 @@ Base.getindex(x::FiniteRotSph, i::Int) = getfield(x, i)
 Base.getindex(x::FiniteRotCart, i::Int) = getfield(x, i)
 Base.getindex(x::EulerAngles, i::Int) = getfield(x, i)
 
-function Base.show(io::IO, x::Union{FiniteRotSph, FiniteRotCart, EulerAngles})
-    max_field_name_length = maximum(length.([string(field) for field in fieldnames(typeof(x))]))
-    println(string(typeof(x)) * ":")
-    for field_name in fieldnames(typeof(x))
-        field_value = getfield(x, field_name)
+
+function Base.show(io::IO, m::FiniteRotSph)
+    print(io, "FiniteRotSph(", m.Lon, ", ", m.Lat, ", ", m.Angle, ")")
+end
+
+function Base.show(io::IO, m::FiniteRotCart)
+    print(io, "FiniteRotCart(", m.X, ", ", m.Y, ", ", m.Z, ")")
+end
+
+function Base.show(io::IO, m::EulerAngles)
+    print(io, "EulerAngles(", m.X, ", ", m.Y, ", ", m.Z, ")")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", m::Union{FiniteRotSph, FiniteRotCart, EulerAngles})
+    max_field_name_length = maximum(length.([string(field) for field in fieldnames(typeof(m))]))
+    print(io, string(typeof(m)) * ":\n")
+    for field_name in fieldnames(typeof(m))
+        field_value = getfield(m, field_name)
         field_name_padded = rpad(field_name, max_field_name_length)
         try
-            println(io, "\t$field_name_padded : $(round(field_value, digits=2))")
+            print(io, "\t$field_name_padded : $(round(field_value, digits=2))\n")
         catch
-            println(io, "\t$field_name_padded : $field_value")
+            print(io, "\t$field_name_padded : $field_value\n")
         end
     end
 end
-
 
 
 # --- Other type-specific functions ---

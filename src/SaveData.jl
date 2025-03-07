@@ -64,7 +64,7 @@ function SaveStruct_asTXT(array::Writables, filePath::String;
             for covField in covFields
                 heading = heading * delimiter * string(covField)
             end
-        elseif (field in velFields) && (typeof(getproperty(ENS[1], field)) == Stat)
+        elseif (field in velFields) && (typeof(getproperty(ENS[1], field)) != Float64)
             heading = heading * string(field) * "_mean" * delimiter * string(field) * "_std"
         elseif field == "TimeRange"
             heading = heading * delimiter * "Age1" * delimiter * "Age2"
@@ -114,7 +114,7 @@ function SaveStruct_asTXT(array::Writables, filePath::String;
                     line = line * delimiter * Printf.format(Printf.Format(fmt), fieldValue)
                 end
 
-            elseif (field in velFields) && (typeof(getproperty(array[1], Symbol(field))) == Stat)
+            elseif (Symbol(field) in velFields) && (typeof(getproperty(array[1], Symbol(field))) == Stat)
                 fieldValue = getproperty(array[idx], Symbol(field))
                 line = line * delimiter * Printf.format(Printf.Format(fmt), fieldValue.Mean)
                 line = line * delimiter * Printf.format(Printf.Format(fmt), fieldValue.StDev)

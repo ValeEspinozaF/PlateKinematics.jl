@@ -31,6 +31,12 @@ julia> Pkg.add("PlateKinematics")
 julia> using PlateKinematics
 julia> ?PlateKinematics
 ```
+Make sure you are running the latest version of PlateKinematics.jl by updating the package:
+
+```@julia
+julia> using Pkg
+julia> Pkg.update("PlateKinematics")
+```
 
 To assign as alias to the module, you may use the following:
 
@@ -56,12 +62,13 @@ if you have any questions, comments, suggestions, etc.
 -->
 
 
-<!-- citing
+
 ## Citing
 
-If you use PlateKinematics.jl in research, teaching, or other activities, we would be grateful 
-if you could mention PlateKinematics.jl and cite our paper:
- -->
+If you use PlateKinematics.jl in research, teaching, or other activities, I would be grateful if you could mention PlateKinematics.jl and cite via Zenodo:
+
+Valentina Espinoza. (2024). ValeEspinozaF/PlateKinematics.jl: v0.2.0 (v0.2.0). Zenodo. https://doi.org/10.5281/zenodo.12773819
+
 
 
 [PlateKinematics.jl]: https://github.com/ValeEspinozaF/PlateKinematics.jl

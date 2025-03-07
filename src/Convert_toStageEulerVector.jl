@@ -18,16 +18,16 @@ function ToEulerVector(FRs::FiniteRotSph; reverseRot=false::Bool, Nsize=100000::
     # Reverses output sense of rotation 
     if reverseRot == true
         timeRange = [0.0 FRs.Time] 
-        rFRs = FRs # Saves one sign invertion 
+        rFRs = FRs # Saves one sign inversion 
     else
         timeRange = [FRs.Time 0.0] 
-        rFRs = ChangeAngle(FRs, FRs.Angle * -1) # Saves one sign invertion 
+        rFRs = ChangeAngle(FRs, FRs.Angle * -1) # Saves one sign inversion 
     end
 
 
     # Build ensemble if covariances are given
     if !CovIsZero(rFRs.Covariance)
-        MTX = BuildEnsemble3D(rFRs, Nsize)
+        MTX = BuildEnsemble(rFRs, Nsize)
     else
         MTX = ToRotationMatrix(rFRs)
     end 
@@ -104,8 +104,8 @@ function ToEulerVector(
 
     # Build ensemble if covariances are given
     if !CovIsZero(FRs1.Covariance) && !CovIsZero(FRs2.Covariance)
-        MTX1 = BuildEnsemble3D(FRs1, Nsize)
-        MTX2 = BuildEnsemble3D(FRs2, Nsize)
+        MTX1 = BuildEnsemble(FRs1, Nsize)
+        MTX2 = BuildEnsemble(FRs2, Nsize)
     else
         MTX1 = ToRotationMatrix(FRs1)
         MTX2 = ToRotationMatrix(FRs2)
@@ -256,11 +256,11 @@ function ToEulerVectorList(
 
         if i == 1
             FRs = FRsArray[i]
-            EVs_out[i] = ToEulerVector(FRs, reverseRot, Nsize)
+            EVs_out[i] = ToEulerVector(FRs, reverseRot=reverseRot, Nsize=Nsize)
         else
             FRs1 = FRsArray[i - 1]
             FRs2 = FRsArray[i]
-            EVs_out[i] = ToEulerVector(FRs1, FRs2, reverseRot, Nsize)
+            EVs_out[i] = ToEulerVector(FRs1, FRs2, reverseRot=reverseRot, Nsize=Nsize)
         end
 
     end

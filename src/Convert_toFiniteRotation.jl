@@ -32,7 +32,7 @@ function ToFiniteRotation(EVs::EulerVectorSph, reverseRot=false::Bool, Nsize=100
 
     # Build ensemble if covariances are given
     if !CovIsZero(EVs.Covariance)
-        EVs_array = BuildEnsemble3D(rEVs, Nsize)
+        EVs_array = BuildEnsemble(rEVs, Nsize)
         nFRs = map(ev -> FiniteRotSph(ev.Lon, ev.Lat, ev.AngVelocity * FRt), EVs_array)
         return ChangeTime(AverageEnsemble(nFRs), FRt)
 

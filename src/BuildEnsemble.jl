@@ -1,9 +1,9 @@
 """
-    BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1000000::Int64)
+    BuildEnsemble(FRs::FiniteRotSph, Nsize=1000000::Int64)
     
 Draws `Nsize` Rotation Matrix samples from the covariance of a given Finite Rotation `FRs`.
 """
-function BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1000000::Int64, reverseRot=false::Bool)
+function BuildEnsemble(FRs::FiniteRotSph, Nsize=1000000::Int64, reverseRot=false::Bool)
 
     if CovIsZero(FRs.Covariance)
         error("Provided Finite rotations must include a valid covariance.")
@@ -35,11 +35,11 @@ function BuildEnsemble3D(FRs::FiniteRotSph, Nsize=1000000::Int64, reverseRot=fal
 end
 
 """
-    BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1000000::Int64)
+    BuildEnsemble(EVs::EulerVectorSph, Nsize=1000000::Int64)
 
 Draws `Nsize` Euler Vector samples from the covariance of a given Euler Vector `EVs`.
 """
-function BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1000000::Int64)
+function BuildEnsemble(EVs::EulerVectorSph, Nsize=1000000::Int64)
 
     if CovIsZero(EVs.Covariance)
         error("Provided Euler Vector must include a valid covariance.")
@@ -64,7 +64,7 @@ function BuildEnsemble3D(EVs::EulerVectorSph, Nsize=1000000::Int64)
     return ToEVs(EVx, EVy, EVz, EVs.TimeRange)
 end
 
-function BuildEnsemble3D(EVc::EulerVectorCart, Nsize=1000000::Int64)
+function BuildEnsemble(EVc::EulerVectorCart, Nsize=1000000::Int64)
 
     if CovIsZero(EVc.Covariance)
         error("Provided Euler Vector must include a valid covariance.")

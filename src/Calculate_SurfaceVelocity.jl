@@ -1,6 +1,6 @@
 using Statistics, LinearAlgebra
 using PlateKinematics
-using PlateKinematics: EulerVectorSph, CovIsZero, BuildEnsemble3D, SurfaceVelocityVector, sph2cart, ToDegrees, ToRadians
+using PlateKinematics: EulerVectorSph, CovIsZero, BuildEnsemble, SurfaceVelocityVector, sph2cart, ToDegrees, ToRadians
 
 #= """ Simplified, faster version. - Does not use the ellipsoid and gives an azimuth between -90 and 270. 
 
@@ -15,7 +15,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
     if CovIsZero(EVs.Covariance)
         EVsArray = [EVs]
     else
-        EVsArray = BuildEnsemble3D(EVs, Nsize)
+        EVsArray = BuildEnsemble(EVs, Nsize)
     end 
 
     
@@ -88,7 +88,7 @@ function Calculate_SurfaceVelocity(EVs::EulerVectorSph, pntLon::Float64, pntLat:
     if CovIsZero(EVs.Covariance)
         EVsArray = [EVs]
     else
-        EVsArray = BuildEnsemble3D(EVs, Nsize)
+        EVsArray = BuildEnsemble(EVs, Nsize)
     end 
 
 
@@ -139,7 +139,7 @@ function Calculate_SurfaceVelocity(
     if CovIsZero(EVs.Covariance)
         EVsArray = [EVs]
     else
-        EVsArray = BuildEnsemble3D(EVs, Nsize)
+        EVsArray = BuildEnsemble(EVs, Nsize)
     end 
 
 

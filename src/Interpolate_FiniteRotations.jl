@@ -15,7 +15,7 @@ function Interpolate_FiniteRotation(FRs::FiniteRotSph, time::Float64, Nsize=1000
     else
         # Build ensemble if covariances are given
         if !CovIsZero(FRs.Covariance)
-            MTX = BuildEnsemble3D(FRs, Nsize)
+            MTX = BuildEnsemble(FRs, Nsize)
         else
             MTX = ToRotationMatrix(FRs)
         end 
@@ -84,8 +84,8 @@ function Interpolate_FiniteRotation(
     else
         # Build ensemble if covariances are given
         if !CovIsZero(FRs1.Covariance) && !CovIsZero(FRs2.Covariance)
-            MTX1 = BuildEnsemble3D(FRs1, Nsize, true)
-            MTX2 = BuildEnsemble3D(FRs2, Nsize, true)
+            MTX1 = BuildEnsemble(FRs1, Nsize, true)
+            MTX2 = BuildEnsemble(FRs2, Nsize, true)
         else
             MTX1 = ToRotationMatrix(FRs1)
             MTX2 = ToRotationMatrix(FRs2)
@@ -190,7 +190,7 @@ end
 
 Interpolate a Finite Fotation for a given `time` between a Rotation Matrix `MTX`
 and present-day. `t1` is the age of the Rotation Matrix. `MTX` may be a sampled 
-ensemble from [`BuildEnsemble3D`](@ref).
+ensemble from [`BuildEnsemble`](@ref).
 """
 function Interpolate_FiniteRotation(MTX::Array{N, 3}, t1::N, time::N) where {N<:Float64}
 
@@ -216,7 +216,7 @@ Interpolate_FiniteRotation(
 
 Interpolate a Finite Rotation for a given `time` between two total Rotation Matrices,
 a younger `MTX1` and an older one `MTX2`. Rotation Matrices ages are `t1` and `t2`, 
-respectively. `MTX1` and `MTX2` may be sampled ensembles from [`BuildEnsemble3D`](@ref).
+respectively. `MTX1` and `MTX2` may be sampled ensembles from [`BuildEnsemble`](@ref).
 """
 function Interpolate_FiniteRotation(
     MTX1::Array{N, 3}, MTX2::Array{N, 3}, t1::N, t2::N, time::N) where {N<:Float64}
