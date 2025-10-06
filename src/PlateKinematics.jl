@@ -35,6 +35,7 @@ include("SaveData.jl")
 include("BuildEnsemble.jl")
 include("AverageEnsemble.jl")
 include("Add_FiniteRotations.jl")
+include("Add_EulerVectors.jl")
 include("Invert_RotationMatrix.jl")
 include("Multiply_RotationMatrices.jl")
 
